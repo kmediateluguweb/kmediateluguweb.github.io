@@ -34,8 +34,9 @@ used = set()
 for article in articles:
     article_id = str(article.get("id", ""))
     slug = slugify(article.get("slug") or article.get("title"), "news")
+    slug = f"{slug}-{article_id[:8]}"
     if slug in used:
-        slug = f"{slug}-{article_id[:8]}"
+        slug = f"{slug}-{len(used)}"
     used.add(slug)
     article["public_slug"] = slug
     article["public_url"] = BASE + "articles/" + slug + "/"
