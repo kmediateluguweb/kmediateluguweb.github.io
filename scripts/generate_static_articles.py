@@ -119,6 +119,8 @@ def add_url(root, loc, lastmod=None):
         SubElement(node, "{" + SITEMAP_NS + "}lastmod").text = lastmod
 
 add_url(urlset, BASE)
+add_url(urlset, BASE + "about.html")
+add_url(urlset, BASE + "contact.html")
 for article in articles:
     add_url(urlset, article["public_url"], article.get("updated_at") or article.get("published_at"))
 ElementTree(urlset).write("sitemap.xml", encoding="UTF-8", xml_declaration=True)
