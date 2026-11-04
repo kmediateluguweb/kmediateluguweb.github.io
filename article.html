@@ -7,6 +7,8 @@
 <title>K Media Telugu | News</title>
 <meta name="description" content="K Media Telugu తాజా తెలుగు వార్తలు">
 <meta name="robots" content="index, follow">
+<meta property="og:type" content="article">
+<meta name="twitter:card" content="summary_large_image">
 <link rel="stylesheet" href="style.css">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
@@ -115,6 +117,19 @@ let ogDescription=document.createElement('meta');
 ogDescription.setAttribute('property','og:description');
 ogDescription.setAttribute('content',metaDescription);
 document.head.appendChild(ogDescription);
+
+const socialMeta = (attr, key, value) => {
+  let tag = document.querySelector(`meta[${attr}="${key}"]`);
+  if (!tag) { tag = document.createElement('meta'); tag.setAttribute(attr, key); document.head.appendChild(tag); }
+  tag.setAttribute('content', value);
+};
+socialMeta('property','og:type','article');
+socialMeta('property','og:image',data.featured_image || 'https://kmediatelugu.rweb.site/K%20Media%20Logo.jpg');
+socialMeta('property','og:url',location.href);
+socialMeta('name','twitter:card','summary_large_image');
+socialMeta('name','twitter:title',seoTitle);
+socialMeta('name','twitter:description',metaDescription);
+socialMeta('name','twitter:image',data.featured_image || 'https://kmediatelugu.rweb.site/K%20Media%20Logo.jpg');
 
 let canonical=document.createElement('link');
 canonical.setAttribute('rel','canonical');
