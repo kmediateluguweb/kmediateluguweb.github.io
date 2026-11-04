@@ -70,3 +70,83 @@ footer{margin-top:35px}
  .shorts-promo .button,.shorts-promo .outline-button{width:100%;text-align:center}
  .youtube-strip{padding:22px}
 }
+
+
+/* K Media Telugu modern editorial design */
+:root{
+ --km-red:#e31b2b;--km-dark:#101319;--km-paper:#f7f7f8;--km-white:#fff;
+ --km-muted:#68707d;--km-border:#e8e9ed;--km-shadow:0 12px 34px rgba(18,22,30,.08);
+}
+html{scroll-padding-top:105px}
+body{background:var(--km-paper);color:#171a20;font-family:Arial,"Noto Sans Telugu",sans-serif}
+.container{width:min(1240px,94%)}
+.top{background:rgba(255,255,255,.97);backdrop-filter:blur(12px);border-bottom:1px solid var(--km-border);box-shadow:0 4px 24px rgba(10,15,25,.05)}
+.nav{min-height:76px}
+.logo{font-size:23px;letter-spacing:.5px}
+.logo img{border-radius:10px!important;box-shadow:0 2px 10px #1111}
+nav{gap:clamp(10px,1.4vw,20px)}
+nav a{font-size:13px;font-weight:800;transition:color .2s}
+.news-ticker{background:var(--km-dark)}
+.ticker-inner{min-height:42px;letter-spacing:.15px}
+.ticker-label{background:var(--km-red);border-radius:3px}
+.hero{position:relative;isolation:isolate;margin-top:24px;padding:clamp(24px,4vw,52px);grid-template-columns:1.25fr .75fr;gap:clamp(20px,4vw,48px);border:1px solid var(--km-border);border-radius:20px;box-shadow:var(--km-shadow);overflow:hidden}
+.hero:before{content:"";position:absolute;z-index:-1;width:360px;height:360px;right:-130px;top:-190px;border-radius:50%;background:rgba(227,27,43,.055)}
+.eyebrow{letter-spacing:2.4px}
+.hero h1{font-size:clamp(34px,4.5vw,58px);letter-spacing:-1.4px;line-height:1.08}
+.hero-text{font-size:clamp(16px,1.6vw,19px);line-height:1.75}
+.hero-card{position:relative;min-height:260px;border-radius:16px;background:linear-gradient(145deg,#101319 0%,#252b37 100%);border:1px solid #ffffff18;box-shadow:0 18px 40px #10131925}
+.hero-card:after{content:"K";position:absolute;right:18px;bottom:-50px;font-size:220px;line-height:1;font-weight:900;color:#ffffff08;pointer-events:none}
+.hero-card span{display:inline-block;align-self:flex-start;background:var(--km-red);color:#fff;padding:7px 11px;border-radius:4px;font-size:11px;letter-spacing:1px}
+.hero-card h2{font-size:clamp(25px,2.7vw,36px);max-width:400px;line-height:1.25}
+.button{border-radius:7px;padding:13px 20px;box-shadow:0 6px 16px rgba(227,27,43,.16);transition:transform .2s,box-shadow .2s}
+.button:hover{transform:translateY(-2px);box-shadow:0 10px 22px rgba(227,27,43,.23)}
+.quick-categories{gap:9px;padding:18px 0 8px}
+.quick-categories a{border-radius:8px;padding:10px 16px;box-shadow:0 2px 9px #11100006;transition:all .2s}
+.section{padding:34px 0}
+.section-head{border-left:5px solid var(--km-red);padding-left:14px;margin-bottom:22px}
+.section-head h2{font-size:clamp(23px,2.4vw,30px);letter-spacing:-.5px}
+.section-head span{font-size:11px;letter-spacing:1px}
+.grid{gap:20px}
+.news-card{border-radius:14px;border:1px solid var(--km-border);box-shadow:0 5px 22px rgba(15,20,30,.045);transition:transform .22s,box-shadow .22s}
+.news-card:hover{transform:translateY(-5px);box-shadow:0 16px 34px rgba(15,20,30,.12)}
+.news-card-image{height:clamp(175px,18vw,230px);background:#eceef2}
+.news-card .card-body{padding:19px;min-height:190px}
+.news-card h3{font-size:clamp(17px,1.5vw,20px);line-height:1.45;letter-spacing:-.2px}
+.news-card p{color:#68707d;line-height:1.7}
+.news-card a{display:inline-flex;align-items:center;gap:6px;font-size:14px}
+.youtube-strip{padding:clamp(22px,3vw,36px);border-radius:16px;box-shadow:var(--km-shadow)}
+.youtube-feature{padding:16px;border-radius:16px;box-shadow:var(--km-shadow)}
+.youtube-frame{border-radius:12px}
+.youtube-info h3{font-size:clamp(22px,2.2vw,30px)}
+.shorts-promo{border-radius:16px;box-shadow:var(--km-shadow);padding:clamp(20px,3vw,32px)}
+.shorts-promo h2{font-size:clamp(22px,2.2vw,30px)}
+.outline-button{border-radius:7px;transition:all .2s}
+footer{background:#101319}
+.footer{padding:48px 0}
+.footer a{transition:color .2s}
+.footer a:hover{color:#fff!important}
+.copyright{letter-spacing:.2px}
+@media(max-width:800px){
+ .container{width:min(100% - 28px,680px)}
+ .nav{padding:12px 0}
+ nav{gap:15px}
+ .hero{grid-template-columns:1fr;padding:24px;margin-top:14px;border-radius:15px}
+ .hero h1{font-size:clamp(32px,8vw,42px)}
+ .hero-card{min-height:185px}
+ .grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+ .news-card-image{height:160px}
+ .news-card .card-body{padding:13px;min-height:170px}
+ .news-card h3{font-size:16px}
+ .youtube-strip{border-radius:13px}
+}
+@media(max-width:480px){
+ .container{width:calc(100% - 24px)}
+ .grid{grid-template-columns:1fr}
+ .news-card-image{height:215px}
+ .news-card .card-body{min-height:0;padding:16px}
+ .news-card h3{font-size:19px}
+ .quick-categories{margin-left:0}
+ .section{padding:24px 0}
+ .section-head{margin-bottom:16px}
+ .shorts-promo{border-radius:13px}
+}
