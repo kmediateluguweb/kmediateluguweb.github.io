@@ -64,7 +64,7 @@
     <a class="logo brand-logo" href="#home" aria-label="K Media Telugu Home"><img src="K%20Media%20Logo.jpg" alt="K Media Telugu Logo" style="width:52px;height:52px;object-fit:contain;background:#fff;border-radius:6px;vertical-align:middle;margin-right:10px"><span>K MEDIA TELUGU</span></a>
     <nav><a href="#home">హోమ్</a><a href="#latest">తాజా వార్తలు</a><a href="#politics">రాజకీయాలు</a><a href="#movies">సినిమా</a><a href="#bigg-boss">బిగ్ బాస్</a><a href="#public-talk">పబ్లిక్ టాక్</a><a href="#youtube-videos">వీడియోలు</a><a href="#shorts">Shorts</a><a href="about.html">మా గురించి</a><a href="contact.html">కాంటాక్ట్</a></nav>
   </div></header>
-  <div class="news-ticker"><div class="container ticker-inner"><span class="ticker-label">K MEDIA UPDATE</span><span>తెలంగాణ • ఆంధ్రప్రదేశ్ • రాజకీయాలు • సినిమా • బిగ్ బాస్ • పబ్లిక్ టాక్</span></div></div><main id="home">
+  <div class="news-ticker"><div class="container ticker-inner"><span class="ticker-label">K MEDIA UPDATE</span><span class="ticker-topics">తెలంగాణ • ఆంధ్రప్రదేశ్ • రాజకీయాలు • సినిమా • బిగ్ బాస్ • పబ్లిక్ టాక్</span><span class="site-datetime" id="siteDateTime" aria-label="ప్రస్తుత తేదీ మరియు సమయం">తేదీ & సమయం</span></div></div><main id="home">
     <section class="hero container"><div><p class="eyebrow">K MEDIA TELUGU</p><h1>Telugu News – తెలుగు వార్తలు & ప్రజల మాట</h1><p class="hero-text">రాజకీయాలు, సినిమా, బిగ్ బాస్, ట్రెండింగ్ న్యూస్ మరియు పబ్లిక్ టాక్ — తాజా అప్డేట్స్ ఒకే చోట.</p><a class="button" href="#latest">తాజా వార్తలు చూడండి</a></div>
       <div class="hero-card"><span>BREAKING</span><h2>మీ వార్త... మీ వాయిస్... K Media Telugu</h2><p>Latest updates • Public reactions • Entertainment</p></div>
     </section>
@@ -123,6 +123,20 @@ async function loadNews() {
    for(const id of ['cat-politics','cat-cinema','cat-bigg-boss','cat-public-talk']) {document.getElementById(id).innerHTML='<div class="empty-category">వార్తలు లోడ్ కాలేదు.</div>';}
  }
 }
+function updateSiteDateTime() {
+  const now = new Date();
+  const date = new Intl.DateTimeFormat('te-IN', {
+    timeZone: 'Asia/Kolkata', day: '2-digit', month: 'long', year: 'numeric'
+  }).format(now);
+  const time = new Intl.DateTimeFormat('en-IN', {
+    timeZone: 'Asia/Kolkata', hour: '2-digit', minute: '2-digit', second: '2-digit',
+    hour12: true
+  }).format(now);
+  const el = document.getElementById('siteDateTime');
+  if (el) el.textContent = date + ' | ' + time + ' IST';
+}
+updateSiteDateTime();
+setInterval(updateSiteDateTime, 1000);
 loadNews();
 </script>
 </body></html>
