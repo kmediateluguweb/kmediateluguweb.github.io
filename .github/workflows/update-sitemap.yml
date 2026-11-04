@@ -1,0 +1,73 @@
+
+name: Update News Sitemap
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: "17 */6 * * *"
+
+permissions:
+  contents: write
+
+jobs:
+  update-sitemap:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Build sitemap
+        env:
+          SUPABASE_URL: https://mewyojxgsuceppsauesh.supabase.co
+          SUPABASE_KEY: sb_publishable_-ee5Pt9U0ZvZuUkipLcq-Q_KBXKsEDa
+        run: |
+          curl --fail --silent --show-error --get \
+            "$SUPABASE_URL/rest/v1/news_articles" \
+            --data-urlencode "select=id,updated_at,published_at" \
+            --data-urlencode "status=eq.published" \
+            -H "apikey: $SUPABASE_KEY" \
+            -H "Authorization: Bearer $SUPABASE_KEY" \
+            -o /tmp/news.json
+
+          python3 - <<'PY'
+          import json
+          from xml.etree.ElementTree import Element, SubElement, ElementTree
+
+          base = "https://kmediatelugu.rweb.site/"
+          ns = "http://www.sitemaps.org/schemas/sitemap/0.9"
+          root = Element("{" + ns + "}urlset")
+
+          def add_url(loc, lastmod=None):
+              url = SubElement(root, "{" + ns + "}url")
+              SubElement(url, "{" + ns + "}loc").text = loc
+              if lastmod:
+                  SubElement(url, "{" + ns + "}lastmod").text = lastmod
+
+          add_url(base)
+
+          with open("/tmp/news.json", encoding="utf-8") as f:
+              articles = json.load(f)
+
+          for article in articles:
+              add_url(
+                  base + "article.html?id=" + article["id"],
+                  article.get("updated_at") or article.get("published_at")
+              )
+
+          ElementTree(root).write(
+              "sitemap.xml",
+              encoding="UTF-8",
+              xml_declaration=True
+          )
+          print("Sitemap updated:", len(articles), "published news articles")
+          PY
+
+      - name: Save updated sitemap
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          if ! git diff --quiet -- sitemap.xml; then
+            git add sitemap.xml
+            git commit -m "Update news sitemap"
+            git push
+          fi
