@@ -3,13 +3,23 @@
 <html lang="te">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>K Media Telugu - Admin Panel</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="theme-color" content="#101827">
+<meta name="description" content="K Media Telugu News Manager - manage Telugu news from your phone.">
+<link rel="manifest" href="/app.webmanifest">
+<link rel="apple-touch-icon" href="/K%20Media%20Logo.jpg">
+<title>K Media Telugu - News Manager</title>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
 *{box-sizing:border-box}
 body{margin:0;background:#f3f5f9;font-family:Arial,sans-serif;color:#222}
-header{background:#101827;color:white;padding:18px 25px;display:flex;justify-content:space-between;align-items:center}
+header{background:#101827;color:white;padding:18px 25px;display:flex;justify-content:space-between;align-items:center;gap:10px;position:sticky;top:0;z-index:5}
+.header-actions{display:flex;gap:8px;align-items:center}
+.install{background:#facc15;color:#111;display:none}
+input,textarea,select,button{font-family:inherit}
+button{min-height:44px}
+input,textarea,select{font-size:16px}
+body{padding-bottom:env(safe-area-inset-bottom)}
 header h2{margin:0;font-size:21px}
 button{border:0;border-radius:6px;padding:11px 17px;cursor:pointer;font-weight:bold}
 .primary{background:#087c55;color:white}
@@ -27,14 +37,27 @@ label{font-weight:bold;font-size:14px}
 .small{font-size:13px;color:#64748b}
 #dashboard,#logout{display:none}
 #message{margin:12px 0;color:#087c55;font-weight:bold}
-@media(max-width:600px){main{padding:10px}header{padding:15px}header h2{font-size:17px}}
+@media(max-width:600px){
+main{padding:10px;margin:12px auto}
+header{padding:12px;align-items:center}
+header h2{font-size:15px}
+.header-actions{gap:6px}
+button{padding:10px 12px}
+.panel{padding:15px}
+.row button{flex:1}
+.article{padding:12px}
+textarea{min-height:110px}
+}
 </style>
 </head>
 <body>
 
 <header>
 <h2>K MEDIA TELUGU | ADMIN</h2>
+<div class="header-actions">
+<button id="installBtn" class="install" type="button">Install App</button>
 <button id="logout" class="danger">Logout</button>
+</div>
 </header>
 
 <main>
@@ -311,6 +334,32 @@ $("refreshBtn").onclick=loadNews;
   const {data}=await db.auth.getSession();
   if(data.session)await showDashboard(data.session.user);
 })();
+
+if ("serviceWorker" in navigator) {
+  window.addEventListener("load", () => {
+    navigator.serviceWorker.register("/service-worker.js").catch(() => {});
+  });
+}
+let installPrompt = null;
+const installButton = document.getElementById("installBtn");
+window.addEventListener("beforeinstallprompt", (event) => {
+  event.preventDefault();
+  installPrompt = event;
+  if (installButton) installButton.style.display = "inline-block";
+});
+if (installButton) {
+  installButton.addEventListener("click", async () => {
+    if (!installPrompt) return;
+    installPrompt.prompt();
+    await installPrompt.userChoice;
+    installPrompt = null;
+    installButton.style.display = "none";
+  });
+}
+window.addEventListener("appinstalled", () => {
+  if (installButton) installButton.style.display = "none";
+});
+
 </script>
 </body>
 </html>
