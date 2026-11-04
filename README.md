@@ -1,5 +1,5 @@
 # K Media Telugu Website
 
-Updated website: published Supabase news appears automatically on the homepage. News cards open a full article page.
+Files: index.html (dynamic published news homepage), article.html (full article view), admin.html (admin panel), style.css.
 
-Deploy all files in the repository root using GitHub Pages (main branch, /root).
+Upload all files to the root of the GitHub Pages repository. The site reads only rows with status = published from Supabase table public.news_articles.

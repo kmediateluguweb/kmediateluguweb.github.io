@@ -1,35 +1,4 @@
-<!DOCTYPE html>
-<html lang="te">
-<head>
-<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>K Media Telugu | News</title><link rel="stylesheet" href="style.css">
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-</head>
-<body>
-<header class="top"><div class="container nav"><a class="logo" href="index.html">K MEDIA <span>TELUGU</span></a><nav><a href="index.html">హోమ్</a><a href="index.html#latest">తాజా వార్తలు</a></nav></div></header>
-<main class="container article-page"><a href="index.html#latest">← తాజా వార్తలకు తిరిగి వెళ్లండి</a><div id="articleContent"><p class="loading">వార్త లోడ్ అవుతోంది...</p></div></main>
-<footer><div class="copyright">© 2026 K Media Telugu. All rights reserved.</div></footer>
-<script>
-const SUPABASE_URL="https://mewyojxgsuceppsauesh.supabase.co";
-const SUPABASE_KEY="sb_publishable_-ee5Pt9U0ZvZuUktpLcq-Q_KBXKsEDa";
-const db=window.supabase.createClient(SUPABASE_URL,SUPABASE_KEY);
-const params=new URLSearchParams(location.search);
-const id=params.get("id");
-async function loadArticle(){
- const root=document.getElementById("articleContent");
- if(!id){root.textContent="వార్త ID కనిపించలేదు.";return;}
- const {data,error}=await db.from("news_articles")
-  .select("title,summary,content,featured_image,published_at,categories(name)")
-  .eq("id",id).eq("status","published").single();
- if(error||!data){root.textContent="ఈ వార్త అందుబాటులో లేదు లేదా ఇంకా Publish కాలేదు.";return;}
- root.innerHTML="";
- const tag=document.createElement("span");tag.className="tag";tag.textContent=data.categories?.name||"తాజా వార్తలు";
- const h=document.createElement("h1");h.textContent=data.title;
- const date=document.createElement("p");date.className="small";date.textContent=data.published_at?new Date(data.published_at).toLocaleString("te-IN"):"";
- root.append(tag,h,date);
- if(data.featured_image && /^https?:\/\//i.test(data.featured_image)){const img=document.createElement("img");img.className="article-image";img.src=data.featured_image;img.alt=data.title;root.appendChild(img);}
- if(data.summary){const s=document.createElement("p");s.className="article-summary";s.textContent=data.summary;root.appendChild(s);}
- const content=document.createElement("div");content.className="article-content";content.style.whiteSpace="pre-wrap";content.textContent=data.content||"";root.appendChild(content);
-}
-loadArticle();
-</script></body></html>
+<!DOCTYPE html><html lang="te"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>K Media Telugu | News</title><link rel="stylesheet" href="style.css"><script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script><style>.article-wrap{max-width:850px;margin:45px auto;background:#fff;padding:28px;border-radius:14px}.article-wrap img{width:100%;max-height:480px;object-fit:cover;border-radius:10px}.article-content{font-size:18px;line-height:1.9;white-space:pre-wrap}.article-meta{color:#777}@media(max-width:700px){.article-wrap{margin:20px auto;padding:18px}}</style></head><body><header class="top"><div class="container nav"><a class="logo" href="index.html">K MEDIA <span>TELUGU</span></a><nav><a href="index.html">హోమ్</a><a href="index.html#latest">తాజా వార్తలు</a></nav></div></header><main class="container"><article id="article" class="article-wrap">వార్త లోడ్ అవుతోంది...</article></main><footer><div class="copyright">© 2026 K Media Telugu. All rights reserved.</div></footer><script>
+const db=window.supabase.createClient("https://mewyojxgsuceppsauesh.supabase.co","sb_publishable_-ee5Pt9U0ZvZuUkipLcq-Q_KBXKsEDa");
+const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+(async()=>{const id=new URLSearchParams(location.search).get('id');const box=document.getElementById('article');if(!id){box.textContent='వార్త ID దొరకలేదు.';return;}const {data,error}=await db.from('news_articles').select('title,summary,content,featured_image,published_at,status').eq('id',id).eq('status','published').maybeSingle();if(error||!data){box.textContent='వార్త అందుబాటులో లేదు. మళ్లీ ప్రయత్నించండి.';console.error(error);return;}document.title=data.title+' | K Media Telugu';box.innerHTML=`${data.featured_image?`<img src="${esc(data.featured_image)}" alt="${esc(data.title)}">`:''}<p class="eyebrow">K MEDIA TELUGU</p><h1>${esc(data.title)}</h1><p class="article-meta">${data.published_at?new Date(data.published_at).toLocaleString('te-IN'):''}</p>${data.summary?`<p><strong>${esc(data.summary)}</strong></p>`:''}<div class="article-content">${esc(data.content)}</div><p><a href="index.html">← హోమ్‌కు తిరిగి వెళ్లండి</a></p>`;})();</script></body></html>
