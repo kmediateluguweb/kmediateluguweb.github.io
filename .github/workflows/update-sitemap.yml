@@ -103,8 +103,8 @@ jobs:
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          if ! git diff --quiet -- sitemap.xml news-sitemap.xml; then
-            git add sitemap.xml news-sitemap.xml
+          git add sitemap.xml news-sitemap.xml
+          if ! git diff --cached --quiet; then
             git commit -m "Update news sitemap"
             git push
           fi
