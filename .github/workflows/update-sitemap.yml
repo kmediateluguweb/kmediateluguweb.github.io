@@ -2,6 +2,10 @@ name: Update News Sitemap and Static Articles
 
 on:
   workflow_dispatch:
+  push:
+    paths:
+      - "scripts/generate_static_articles.py"
+      - ".github/workflows/update-sitemap.yml"
   schedule:
     - cron: "17 */6 * * *"
 
