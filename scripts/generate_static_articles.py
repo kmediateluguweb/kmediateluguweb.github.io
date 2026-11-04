@@ -104,7 +104,7 @@ for article in articles:
 <div class="article-content">{body}</div>
 <p><a href="../../">← హోమ్‌కు తిరిగి వెళ్లండి</a></p>
 </article></main>
-<footer><div class="copyright">© 2026 K Media Telugu. All rights reserved.</div></footer>
+<footer><div class="copyright">© 2026 K Media Telugu. All rights reserved. | <a style="color:#fff" href="../../privacy-policy.html">Privacy Policy</a></div></footer>
 </body></html>
 """
     target = out_dir / slug / "index.html"
