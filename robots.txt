@@ -1,3 +1,4 @@
 User-agent: *
 Allow: /
-Sitemap: https://kmediateluguweb.github.io/sitemap.xml
+
+Sitemap: https://kmediatelugu.rweb.site/sitemap.xml
