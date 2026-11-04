@@ -150,3 +150,14 @@ footer{background:#101319}
  .section-head{margin-bottom:16px}
  .shorts-promo{border-radius:13px}
 }
+
+
+/* Live India date and time in the news ticker */
+.ticker-inner{display:flex;align-items:center;gap:14px}
+.ticker-topics{flex:1;min-width:0}
+.site-datetime{margin-left:auto;white-space:nowrap;font-size:12px;font-weight:800;color:#fff;background:#30343d;border:1px solid #ffffff22;border-radius:5px;padding:7px 10px;font-variant-numeric:tabular-nums}
+@media(max-width:700px){
+ .ticker-inner{gap:8px;flex-wrap:wrap;padding:7px 0}
+ .ticker-topics{flex:1 1 calc(100% - 140px);white-space:normal;line-height:1.5}
+ .site-datetime{margin-left:0;font-size:11px}
+}
