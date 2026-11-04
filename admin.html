@@ -64,6 +64,12 @@ label{font-weight:bold;font-size:14px}
 <label>Short Summary</label>
 <textarea id="summary" placeholder="వార్త సంక్షిప్త వివరణ"></textarea>
 
+<label>SEO Title (Google Search)</label>
+<input id="seoTitle" maxlength="70" placeholder="Googleలో కనిపించే Title">
+
+<label>Meta Description (Google Search)</label>
+<textarea id="metaDescription" maxlength="160" placeholder="Googleలో కనిపించే చిన్న వివరణ"></textarea>
+
 <label>Full News Content</label>
 <textarea id="content" placeholder="పూర్తి వార్త వివరాలు"></textarea>
 
@@ -95,7 +101,6 @@ label{font-weight:bold;font-size:14px}
 </main>
 
 <script>
-// SUPABASE SETTINGS: Replace these two values
 const SUPABASE_URL = "https://mewyojxgsuceppsauesh.supabase.co";
 const SUPABASE_KEY = "sb_publishable_-ee5Pt9U0ZvZuUkipLcq-Q_KBXKsEDa";
 
@@ -225,6 +230,8 @@ $("saveBtn").onclick=async()=>{
     category_id:Number(category),
     slug:makeSlug(title),
     summary:$("summary").value.trim(),
+    seo_title:$("seoTitle").value.trim()||title,
+    meta_description:$("metaDescription").value.trim()||$("summary").value.trim(),
     content,
     featured_image:$("image").value.trim()||null,
     source_url:$("source").value.trim()||null,
@@ -265,6 +272,8 @@ async function editNews(id){
   $("title").value=data.title||"";
   $("category").value=data.category_id||"";
   $("summary").value=data.summary||"";
+  $("seoTitle").value=data.seo_title||"";
+  $("metaDescription").value=data.meta_description||"";
   $("content").value=data.content||"";
   $("image").value=data.featured_image||"";
   $("source").value=data.source_url||"";
@@ -287,7 +296,7 @@ async function deleteNews(id){
 }
 
 function resetForm(){
-  ["editId","title","summary","content","image","source"].forEach(id=>$(id).value="");
+  ["editId","title","summary","seoTitle","metaDescription","content","image","source"].forEach(id=>$(id).value="");
   $("category").value="";
   $("status").value="draft";
   $("formTitle").textContent="Add New News";
@@ -299,7 +308,6 @@ $("cancelBtn").onclick=resetForm;
 $("refreshBtn").onclick=loadNews;
 
 (async()=>{
-  if(SUPABASE_URL.includes("PASTE_"))return;
   const {data}=await db.auth.getSession();
   if(data.session)await showDashboard(data.session.user);
 })();
