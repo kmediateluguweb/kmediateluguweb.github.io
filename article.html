@@ -71,6 +71,36 @@ return;
 const seoTitle=data.seo_title||data.title;
 const metaDescription=data.meta_description||data.summary||data.title;
 
+
+const articleSchema = {
+  "@context": "https://schema.org",
+  "@type": "NewsArticle",
+  "headline": seoTitle,
+  "description": metaDescription,
+  "mainEntityOfPage": {
+    "@type": "WebPage",
+    "@id": location.href
+  },
+  "publisher": {
+    "@type": "NewsMediaOrganization",
+    "name": "K Media Telugu",
+    "logo": {
+      "@type": "ImageObject",
+      "url": "https://kmediatelugu.rweb.site/K%20Media%20Logo.jpg"
+    }
+  },
+  "author": {
+    "@type": "Organization",
+    "name": "K Media Telugu"
+  },
+  ...(data.featured_image ? {"image": [data.featured_image]} : {}),
+  ...(data.published_at ? {"datePublished": data.published_at} : {})
+};
+const schemaScript = document.createElement('script');
+schemaScript.type = 'application/ld+json';
+schemaScript.textContent = JSON.stringify(articleSchema);
+document.head.appendChild(schemaScript);
+
 document.title=seoTitle+' | K Media Telugu';
 
 let description=document.querySelector('meta[name="description"]');
