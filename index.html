@@ -73,7 +73,8 @@ const escapeHtml = value => String(value ?? '').replace(/[&<>"']/g, c => ({'&':'
 function makeCard(article, categoryName='తాజా వార్తలు') {
   const image = article.featured_image ? `<img class="news-card-image" src="${escapeHtml(article.featured_image)}" alt="${escapeHtml(article.title)}" loading="lazy">` : `<div class="thumb talk">K MEDIA TELUGU</div>`;
   const summary = article.summary || (article.content || '').slice(0,150);
-  const articlePath = article.slug ? `articles/${encodeURIComponent(article.slug)}/` : `article.html?id=${encodeURIComponent(article.id)}`;
+  const baseSlug = (article.slug || '').toLowerCase().replace(/[^a-z0-9-]+/g, '-').replace(/-+/g, '-').replace(/^-|-$/g, '').slice(0, 90) || 'news';
+  const articlePath = article.slug ? `articles/${baseSlug}-${String(article.id).slice(0,8)}/` : `article.html?id=${encodeURIComponent(article.id)}`;
   return `<article class="card news-card">${image}<div class="card-body"><span class="tag">${escapeHtml(categoryName)}</span><h3>${escapeHtml(article.title)}</h3><p>${escapeHtml(summary)}</p><a href="${articlePath}">పూర్తి వార్త చదవండి →</a></div></article>`;
 }
 function renderList(id, rows, emptyText) {
