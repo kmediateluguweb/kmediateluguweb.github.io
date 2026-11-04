@@ -161,3 +161,13 @@ footer{background:#101319}
  .ticker-topics{flex:1 1 calc(100% - 140px);white-space:normal;line-height:1.5}
  .site-datetime{margin-left:0;font-size:11px}
 }
+
+
+/* Make K MEDIA TELUGU brand name more prominent */
+.nav .logo.brand-logo{font-size:clamp(27px,2.5vw,34px);font-weight:1000;letter-spacing:.8px;gap:10px}
+.nav .logo.brand-logo img{width:62px!important;height:62px!important}
+.nav .logo.brand-logo span{font-size:inherit;line-height:1.05}
+@media(max-width:800px){
+ .nav .logo.brand-logo{font-size:clamp(25px,6vw,31px);gap:8px}
+ .nav .logo.brand-logo img{width:58px!important;height:58px!important}
+}
