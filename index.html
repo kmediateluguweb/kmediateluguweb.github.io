@@ -6,22 +6,19 @@
   <title>K Media Telugu | Latest Telugu News & Public Talk</title>
   <meta name="description" content="K Media Telugu - తెలుగు వార్తలు, రాజకీయాలు, సినిమా, బిగ్ బాస్, పబ్లిక్ టాక్ మరియు తాజా అప్డేట్స్.">
   <link rel="stylesheet" href="style.css">
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
 <body>
   <header class="top">
     <div class="container nav">
-      <a class="logo" href="#">K MEDIA <span>TELUGU</span></a>
+      <a class="logo" href="#home">K MEDIA <span>TELUGU</span></a>
       <nav>
-        <a href="#home">హోమ్</a>
-        <a href="#politics">రాజకీయాలు</a>
-        <a href="#movies">సినిమా</a>
-        <a href="#bigg-boss">బిగ్ బాస్</a>
-        <a href="#public-talk">పబ్లిక్ టాక్</a>
-        <a href="#contact">కాంటాక్ట్</a>
+        <a href="#home">హోమ్</a><a href="#politics">రాజకీయాలు</a>
+        <a href="#movies">సినిమా</a><a href="#bigg-boss">బిగ్ బాస్</a>
+        <a href="#public-talk">పబ్లిక్ టాక్</a><a href="#contact">కాంటాక్ట్</a>
       </nav>
     </div>
   </header>
-
   <main id="home">
     <section class="hero container">
       <div>
@@ -30,91 +27,136 @@
         <p class="hero-text">రాజకీయాలు, సినిమా, బిగ్ బాస్, ట్రెండింగ్ న్యూస్ మరియు పబ్లిక్ టాక్ — తాజా అప్డేట్స్ ఒకే చోట.</p>
         <a class="button" href="#latest">తాజా వార్తలు చూడండి</a>
       </div>
-      <div class="hero-card">
-        <span>BREAKING</span>
-        <h2>మీ వార్త… మీ వాయిస్… K Media Telugu</h2>
-        <p>Latest updates • Public reactions • Entertainment</p>
-      </div>
+      <div class="hero-card"><span>BREAKING</span><h2>మీ వార్త… మీ వాయిస్… K Media Telugu</h2><p>Latest updates • Public reactions • Entertainment</p></div>
     </section>
 
     <section id="latest" class="section container">
-      <div class="section-head">
-        <h2>తాజా వార్తలు</h2>
-        <span>Latest Updates</span>
-      </div>
-      <div class="grid">
-        <article class="card">
-          <div class="thumb politics">POLITICS</div>
-          <div class="card-body">
-            <span class="tag">రాజకీయాలు</span>
-            <h3>AP Politics: ప్రజల అభిప్రాయం ఏమిటి?</h3>
-            <p>ఆంధ్రప్రదేశ్ రాజకీయాలపై ప్రజల స్పందన మరియు తాజా చర్చలు.</p>
-            <a href="#contact">Read More →</a>
-          </div>
-        </article>
-        <article class="card">
-          <div class="thumb cinema">CINEMA</div>
-          <div class="card-body">
-            <span class="tag">సినిమా</span>
-            <h3>టాలీవుడ్‌లో తాజా సినిమా అప్డేట్స్</h3>
-            <p>హీరోలు, సినిమాలు, ట్రైలర్లు మరియు ఇండస్ట్రీలోని తాజా విషయాలు.</p>
-            <a href="#contact">Read More →</a>
-          </div>
-        </article>
-        <article class="card">
-          <div class="thumb talk">PUBLIC TALK</div>
-          <div class="card-body">
-            <span class="tag">పబ్లిక్ టాక్</span>
-            <h3>ప్రజలు ఏమంటున్నారు?</h3>
-            <p>ప్రజల దగ్గరికి వెళ్లి వారి నిజమైన అభిప్రాయాలను మీ ముందుకు తీసుకువస్తాం.</p>
-            <a href="#contact">Read More →</a>
-          </div>
-        </article>
-      </div>
+      <div class="section-head"><h2>తాజా వార్తలు</h2><span>Latest Updates</span></div>
+      <div id="latestNews" class="grid"><p class="loading">వార్తలు లోడ్ అవుతున్నాయి...</p></div>
     </section>
 
     <section class="youtube-strip container">
-      <div>
-        <p class="eyebrow">WATCH NOW</p>
-        <h2>K Media Telugu YouTube Channel</h2>
-        <p>వీడియోలు, Shorts మరియు Public Talk కోసం మా YouTube ఛానల్‌ను చూడండి.</p>
-      </div>
+      <div><p class="eyebrow">WATCH NOW</p><h2>K Media Telugu YouTube Channel</h2><p>వీడియోలు, Shorts మరియు Public Talk కోసం మా YouTube ఛానల్‌ను చూడండి.</p></div>
       <a class="button" href="https://www.youtube.com/@kmediateluguofficial" target="_blank" rel="noopener">YouTube Channel</a>
     </section>
 
-    <section id="politics" class="section container">
-      <div class="section-head"><h2>రాజకీయాలు</h2><span>Politics</span></div>
-      <div class="category-box">AP & Telangana politics • Public Opinion • Political Updates</div>
+    <section id="politics" class="section container category-section">
+      <div class="section-head"><h2>రాజకీయాలు</h2><span>Politics</span></div><div id="cat-politics" class="grid"><p class="loading">వార్తలు లోడ్ అవుతున్నాయి...</p></div>
     </section>
-
-    <section id="movies" class="section container">
-      <div class="section-head"><h2>సినిమా</h2><span>Movies</span></div>
-      <div class="category-box">Movie News • Trailers • Reactions • Tollywood Updates</div>
+    <section id="movies" class="section container category-section">
+      <div class="section-head"><h2>సినిమా</h2><span>Movies</span></div><div id="cat-cinema" class="grid"><p class="loading">వార్తలు లోడ్ అవుతున్నాయి...</p></div>
     </section>
-
-    <section id="bigg-boss" class="section container">
-      <div class="section-head"><h2>బిగ్ బాస్</h2><span>Bigg Boss</span></div>
-      <div class="category-box">Contestants • Public Talk • Latest Discussions</div>
+    <section id="bigg-boss" class="section container category-section">
+      <div class="section-head"><h2>బిగ్ బాస్</h2><span>Bigg Boss</span></div><div id="cat-bigg-boss" class="grid"><p class="loading">వార్తలు లోడ్ అవుతున్నాయి...</p></div>
     </section>
-
-    <section id="public-talk" class="section container">
-      <div class="section-head"><h2>పబ్లిక్ టాక్</h2><span>Public Talk</span></div>
-      <div class="category-box">ప్రజల అభిప్రాయాలు, street interviews మరియు trending discussions.</div>
+    <section id="public-talk" class="section container category-section">
+      <div class="section-head"><h2>పబ్లిక్ టాక్</h2><span>Public Talk</span></div><div id="cat-public-talk" class="grid"><p class="loading">వార్తలు లోడ్ అవుతున్నాయి...</p></div>
     </section>
   </main>
+  <footer id="contact"><div class="container footer">
+    <div><div class="logo">K MEDIA <span>TELUGU</span></div><p>తెలుగు వార్తలు, ప్రజల మాట మరియు ఎంటర్‌టైన్‌మెంట్.</p></div>
+    <div><strong>Contact</strong><p>Email: kmediatelugu@gmail.com</p></div>
+  </div><div class="copyright">© 2026 K Media Telugu. All rights reserved.</div></footer>
 
-  <footer id="contact">
-    <div class="container footer">
-      <div>
-        <div class="logo">K MEDIA <span>TELUGU</span></div>
-        <p>తెలుగు వార్తలు, ప్రజల మాట మరియు ఎంటర్‌టైన్‌మెంట్.</p>
-      </div>
-      <div>
-        <strong>Contact</strong>
-        <p>Email: kmediatelugu@gmail.com</p>
-      </div>
-    </div>
-    <div class="copyright">© 2026 K Media Telugu. All rights reserved.</div>
-  </footer>
+<script>
+  // Public publishable key is intended for website use. Never put a Supabase secret key here.
+  const SUPABASE_URL = "https://mewyojxgsuceppsauesh.supabase.co";
+  const SUPABASE_KEY = "sb_publishable_-ee5Pt9U0ZvZuUktpLcq-Q_KBXKsEDa";
+  const db = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+  const categoryTargets = {
+    "politics": "cat-politics",
+    "cinema": "cat-cinema",
+    "bigg-boss": "cat-bigg-boss",
+    "public-talk": "cat-public-talk"
+  };
+
+  function makeCard(article, categoryName) {
+    const card = document.createElement("article");
+    card.className = "card";
+    if (article.featured_image && /^https?:\/\//i.test(article.featured_image)) {
+      const img = document.createElement("img");
+      img.className = "news-image";
+      img.src = article.featured_image;
+      img.alt = article.title || "K Media Telugu News";
+      img.loading = "lazy";
+      img.onerror = () => { img.replaceWith(makeThumb(categoryName)); };
+      card.appendChild(img);
+    } else {
+      card.appendChild(makeThumb(categoryName));
+    }
+    const body = document.createElement("div");
+    body.className = "card-body";
+    const tag = document.createElement("span");
+    tag.className = "tag";
+    tag.textContent = categoryName || "తాజా వార్తలు";
+    const heading = document.createElement("h3");
+    heading.textContent = article.title || "";
+    const summary = document.createElement("p");
+    summary.textContent = article.summary || (article.content || "").slice(0, 150);
+    const link = document.createElement("a");
+    link.href = "article.html?id=" + encodeURIComponent(article.id);
+    link.textContent = "పూర్తి వార్త చదవండి →";
+    body.append(tag, heading, summary, link);
+    card.appendChild(body);
+    return card;
+  }
+
+  function makeThumb(categoryName) {
+    const thumb = document.createElement("div");
+    thumb.className = "thumb";
+    thumb.textContent = categoryName || "K MEDIA TELUGU";
+    return thumb;
+  }
+
+  function showEmpty(target, message) {
+    const el = document.getElementById(target);
+    el.innerHTML = "";
+    const p = document.createElement("p");
+    p.className = "empty-message";
+    p.textContent = message;
+    el.appendChild(p);
+  }
+
+  function renderCards(target, articles, emptyMessage) {
+    const el = document.getElementById(target);
+    el.innerHTML = "";
+    if (!articles || articles.length === 0) {
+      showEmpty(target, emptyMessage);
+      return;
+    }
+    articles.forEach(article => el.appendChild(makeCard(article, article.categories?.name)));
+  }
+
+  async function loadWebsiteNews() {
+    const latestEl = document.getElementById("latestNews");
+    try {
+      const { data: articles, error } = await db
+        .from("news_articles")
+        .select("id,title,summary,content,featured_image,published_at,created_at,category_id,categories(name,slug)")
+        .eq("status", "published")
+        .order("published_at", { ascending: false, nullsFirst: false })
+        .order("created_at", { ascending: false })
+        .limit(30);
+
+      if (error) throw error;
+      renderCards("latestNews", articles.slice(0, 6), "ప్రస్తుతం Published వార్తలు లేవు.");
+      const categorySlugs = Object.keys(categoryTargets);
+      for (const slug of categorySlugs) {
+        const filtered = articles.filter(a => a.categories && a.categories.slug === slug).slice(0, 6);
+        renderCards(categoryTargets[slug], filtered, "ఈ విభాగంలో ఇంకా వార్తలు లేవు.");
+      }
+    } catch (err) {
+      console.error("News loading error:", err);
+      latestEl.innerHTML = "";
+      const p = document.createElement("p");
+      p.className = "empty-message";
+      p.textContent = "వార్తలు లోడ్ కాలేదు. Supabase RLS / Database settings చెక్ చేయాలి. (" + (err.message || "Unknown error") + ")";
+      latestEl.appendChild(p);
+      Object.values(categoryTargets).forEach(id => showEmpty(id, "వార్తలు లోడ్ కాలేదు."));
+    }
+  }
+  loadWebsiteNews();
+</script>
 </body>
 </html>

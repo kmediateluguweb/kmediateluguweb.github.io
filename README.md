@@ -1,9 +1,5 @@
 # K Media Telugu Website
 
-Basic responsive Telugu news/media website.
+Updated website: published Supabase news appears automatically on the homepage. News cards open a full article page.
 
-## Publish with GitHub Pages
-1. Create a GitHub repository named `kmediatelugu.github.io`.
-2. Upload `index.html` and `style.css`.
-3. Repository Settings -> Pages -> Deploy from branch -> main -> /(root) -> Save.
-4. Your site will be available at `https://kmediatelugu.github.io/`.
+Deploy all files in the repository root using GitHub Pages (main branch, /root).
