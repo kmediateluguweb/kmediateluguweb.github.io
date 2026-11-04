@@ -23,7 +23,7 @@ jobs:
         run: |
           curl --fail --silent --show-error --get \
             "$SUPABASE_URL/rest/v1/news_articles" \
-            --data-urlencode "select=id,updated_at,published_at" \
+            --data-urlencode "select=id,title,updated_at,published_at" \
             --data-urlencode "status=eq.published" \
             -H "apikey: $SUPABASE_KEY" \
             -H "Authorization: Bearer $SUPABASE_KEY" \
@@ -59,15 +59,52 @@ jobs:
               encoding="UTF-8",
               xml_declaration=True
           )
-          print("Sitemap updated:", len(articles), "published news articles")
+
+          # Google News sitemap: include only articles first published in the last 2 days.
+          from datetime import datetime, timedelta, timezone
+          news_ns = "http://www.google.com/schemas/sitemap-news/0.9"
+          news_root = Element("{" + ns + "}urlset")
+          cutoff = datetime.now(timezone.utc) - timedelta(days=2)
+          recent_count = 0
+
+          for article in articles:
+              published = article.get("published_at")
+              if not published:
+                  continue
+              try:
+                  published_dt = datetime.fromisoformat(published.replace("Z", "+00:00"))
+                  if published_dt.tzinfo is None:
+                      published_dt = published_dt.replace(tzinfo=timezone.utc)
+              except ValueError:
+                  continue
+              if published_dt < cutoff:
+                  continue
+
+              url = SubElement(news_root, "{" + ns + "}url")
+              SubElement(url, "{" + ns + "}loc").text = base + "article.html?id=" + article["id"]
+              news = SubElement(url, "{" + news_ns + "}news")
+              publication = SubElement(news, "{" + news_ns + "}publication")
+              SubElement(publication, "{" + news_ns + "}name").text = "K Media Telugu"
+              SubElement(publication, "{" + news_ns + "}language").text = "te"
+              SubElement(news, "{" + news_ns + "}publication_date").text = published_dt.isoformat()
+              SubElement(news, "{" + news_ns + "}title").text = article.get("title") or "K Media Telugu"
+
+              recent_count += 1
+
+          ElementTree(news_root).write(
+              "news-sitemap.xml",
+              encoding="UTF-8",
+              xml_declaration=True
+          )
+          print("Sitemap updated:", len(articles), "published articles;", recent_count, "recent Google News articles")
           PY
 
       - name: Save updated sitemap
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          if ! git diff --quiet -- sitemap.xml; then
-            git add sitemap.xml
+          if ! git diff --quiet -- sitemap.xml news-sitemap.xml; then
+            git add sitemap.xml news-sitemap.xml
             git commit -m "Update news sitemap"
             git push
           fi
