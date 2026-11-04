@@ -2,3 +2,4 @@ User-agent: *
 Allow: /
 
 Sitemap: https://kmediatelugu.rweb.site/sitemap.xml
+Sitemap: https://kmediatelugu.rweb.site/news-sitemap.xml
