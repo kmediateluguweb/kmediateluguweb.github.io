@@ -96,7 +96,11 @@ textarea{min-height:110px}
 <label>Full News Content</label>
 <textarea id="content" placeholder="పూర్తి వార్త వివరాలు"></textarea>
 
-<label>Featured Image URL</label>
+<label>News Photo (Phone Gallery నుంచి ఎంచుకోండి)</label>
+<input id="imageFile" type="file" accept="image/*">
+<p class="small">JPG, PNG లేదా WebP ఫోటో. గరిష్టంగా 5 MB.</p>
+<img id="imagePreview" alt="Selected news photo preview" style="display:none;width:100%;max-width:320px;max-height:200px;object-fit:contain;border-radius:8px;margin:4px 0 14px">
+<label>లేదా Featured Image URL</label>
 <input id="image" type="url" placeholder="https://example.com/image.jpg">
 
 <label>Source URL (Optional)</label>
@@ -237,6 +241,30 @@ function makeSlug(text){
     .replace(/^-|-$/g,"")+"-"+Date.now().toString().slice(-6);
 }
 
+$("imageFile").addEventListener("change",()=>{
+  const file=$("imageFile").files[0];
+  const preview=$("imagePreview");
+  if(!file){preview.style.display="none";preview.removeAttribute("src");return;}
+  if(!file.type.startsWith("image/")||file.size>5*1024*1024){
+    message("Image file మాత్రమే ఎంచుకోండి. గరిష్ట పరిమాణం 5 MB.","#dc3545");
+    $("imageFile").value="";
+    preview.style.display="none";
+    return;
+  }
+  preview.src=URL.createObjectURL(file);
+  preview.style.display="block";
+});
+
+async function uploadNewsImage(file){
+  if(!file)return $("image").value.trim()||null;
+  const extension=(file.name.split(".").pop()||"jpg").toLowerCase().replace(/[^a-z0-9]/g,"")||"jpg";
+  const path=Date.now()+"-"+Math.random().toString(36).slice(2)+"."+extension;
+  const {error}=await db.storage.from("news-images").upload(path,file,{cacheControl:"3600",upsert:false,contentType:file.type});
+  if(error)throw error;
+  const {data}=db.storage.from("news-images").getPublicUrl(path);
+  return data.publicUrl;
+}
+
 $("saveBtn").onclick=async()=>{
   const id=$("editId").value;
   const title=$("title").value.trim();
@@ -248,7 +276,11 @@ $("saveBtn").onclick=async()=>{
     return;
   }
 
-  const payload={
+  $("saveBtn").disabled=true;
+  try{
+    const selectedFile=$("imageFile").files[0];
+    const imageUrl=await uploadNewsImage(selectedFile);
+    const payload={
     title,
     category_id:Number(category),
     slug:makeSlug(title),
@@ -256,15 +288,13 @@ $("saveBtn").onclick=async()=>{
     seo_title:$("seoTitle").value.trim()||title,
     meta_description:$("metaDescription").value.trim()||$("summary").value.trim(),
     content,
-    featured_image:$("image").value.trim()||null,
+    featured_image:imageUrl,
     source_url:$("source").value.trim()||null,
     status:$("status").value,
     updated_at:new Date().toISOString(),
     published_at:$("status").value==="published"?new Date().toISOString():null
   };
 
-  $("saveBtn").disabled=true;
-  try{
     let result;
     if(id){
       delete payload.slug;
@@ -299,6 +329,9 @@ async function editNews(id){
   $("metaDescription").value=data.meta_description||"";
   $("content").value=data.content||"";
   $("image").value=data.featured_image||"";
+  $("imageFile").value="";
+  if(data.featured_image){$("imagePreview").src=data.featured_image;$("imagePreview").style.display="block";}
+  else{$("imagePreview").style.display="none";}
   $("source").value=data.source_url||"";
   $("status").value=data.status||"draft";
 
@@ -319,7 +352,9 @@ async function deleteNews(id){
 }
 
 function resetForm(){
-  ["editId","title","summary","seoTitle","metaDescription","content","image","source"].forEach(id=>$(id).value="");
+  ["editId","title","summary","seoTitle","metaDescription","content","image","source","imageFile"].forEach(id=>$(id).value="");
+  $("imagePreview").style.display="none";
+  $("imagePreview").removeAttribute("src");
   $("category").value="";
   $("status").value="draft";
   $("formTitle").textContent="Add New News";
