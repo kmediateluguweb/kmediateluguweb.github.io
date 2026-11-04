@@ -18,7 +18,7 @@ def esc(value):
 
 def slugify(value, fallback):
     raw = str(value or "").strip().lower()
-    slug = re.sub(r"[^a-z0-9\\u0c00-\\u0c7f-]+", "-", raw)
+    slug = re.sub(r"[^a-z0-9-]+", "-", raw)
     slug = re.sub(r"-+", "-", slug).strip("-")
     return slug[:90].strip("-") or fallback
 
