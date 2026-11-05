@@ -1,4 +1,4 @@
-const CACHE_NAME = "kmedia-news-manager-v1";
+const CACHE_NAME = "kmedia-news-manager-v2";
 const APP_SHELL = [
   "/admin.html",
   "/app.webmanifest",
