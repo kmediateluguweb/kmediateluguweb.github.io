@@ -236,3 +236,42 @@ footer{background:linear-gradient(145deg,#0d1119,#171f2c);border-top:4px solid v
 @media(prefers-reduced-motion:reduce){
  *,*:before,*:after{scroll-behavior:auto!important;transition:none!important;animation:none!important}
 }
+
+/* Premium styling for article, about, contact and policy pages */
+body{background:#fff8fc;color:#24182a;font-family:Arial,"Noto Sans Telugu",sans-serif}
+.top{position:sticky;top:0;z-index:20;background:rgba(255,255,255,.97);color:#21152a;border-bottom:1px solid #f0e4ed;box-shadow:0 4px 20px rgba(40,10,40,.07);backdrop-filter:blur(12px)}
+.nav{min-height:76px;gap:18px}
+.logo{display:flex;align-items:center;color:#21152a;font-weight:900;letter-spacing:.3px}
+.logo span{color:#e71955}
+nav{gap:clamp(10px,1.5vw,20px)}
+nav a{color:#34263a;font-weight:700;font-size:13px}
+nav a:hover{color:#e71955}
+main.container.section{max-width:1040px;margin:34px auto 48px;padding:clamp(22px,4vw,48px);background:#fff;border:1px solid #f0e4ed;border-radius:20px;box-shadow:0 12px 34px rgba(56,12,61,.07)}
+main.container.section h1{font-size:clamp(28px,4vw,42px);line-height:1.35;color:#2a1231;margin:8px 0 20px}
+main.container.section h2{font-size:clamp(20px,2.5vw,27px);color:#3d1748;margin:0 0 12px}
+main.container.section p,main.container.section li{font-size:15px;line-height:1.95;color:#5e5262}
+main.container.section a, .article-wrap a{color:#dc1452;font-weight:700}
+main.container.section a:hover,.article-wrap a:hover{text-decoration:underline}
+main.container.section .section{padding:20px 0;border-top:1px solid #f3e7ee}
+main.container.section .hero-text{font-size:17px;line-height:2;color:#5d5061}
+.category-box{background:#fff5f9;border:1px solid #f4d7e4;border-left:5px solid #e71955;border-radius:14px;padding:22px;box-shadow:none}
+.article-wrap{max-width:920px;margin:38px auto 52px;padding:clamp(20px,4vw,44px);background:#fff;border:1px solid #f0e4ed;border-radius:20px;box-shadow:0 12px 34px rgba(56,12,61,.08);font-size:16px;line-height:1.9}
+.article-wrap>img{display:block;width:100%;max-height:510px;object-fit:cover;border-radius:15px;margin:0 0 28px;background:#f5edf2}
+.article-wrap h1{font-size:clamp(28px,4vw,43px);line-height:1.4;color:#28132f;margin:10px 0 12px}
+.article-wrap .eyebrow{color:#e71955;font-weight:900;letter-spacing:2px}
+.article-meta{font-size:12px;color:#918493;border-bottom:1px solid #f1e5ec;padding-bottom:15px}
+.article-wrap>p strong{color:#38213d;font-size:17px}
+.article-content{white-space:pre-wrap;overflow-wrap:anywhere;font-size:17px;line-height:2.05;color:#433849;margin:22px 0}
+footer{background:#170020;color:#fff;margin-top:40px}
+footer .copyright{color:#d4c0d5}
+footer .copyright a{color:#ffb4cc!important}
+@media(max-width:700px){
+ .nav{align-items:flex-start;flex-direction:column;padding:12px 0}
+ nav{width:100%;flex-wrap:nowrap;overflow-x:auto;white-space:nowrap;padding:3px 0 8px}
+ nav a{font-size:12px}
+ main.container.section{width:94%;margin:16px auto 28px;padding:20px;border-radius:15px}
+ main.container.section p,main.container.section li{font-size:14px}
+ .article-wrap{width:94%;margin:16px auto 28px;padding:18px;border-radius:15px}
+ .article-content{font-size:15px;line-height:1.9}
+ .article-wrap>img{border-radius:10px}
+}
