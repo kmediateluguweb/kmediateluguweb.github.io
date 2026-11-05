@@ -27,7 +27,7 @@
 <script>
 const SUPABASE_URL="https://mewyojxgsuceppsauesh.supabase.co",SUPABASE_KEY="sb_publishable_-ee5Pt9U0ZvZuUkipLcq-Q_KBXKsEDa",db=window.supabase.createClient(SUPABASE_URL,SUPABASE_KEY);
 const esc=v=>String(v??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
-function url(a){return "article.html?id="+encodeURIComponent(a.id);}
+function url(a){return "articles/news-"+String(a.id||"").replace(/[^a-zA-Z0-9]/g,"").slice(0,8)+"/";}
 function card(a){const im=a.featured_image?'<img class="news-card-image" src="'+esc(a.featured_image)+'" alt="'+esc(a.title)+'" loading="lazy">':'<div class="image-placeholder">K MEDIA TELUGU</div>';return '<article class="news-card">'+im+'<div class="card-body"><span class="tag">'+esc(a.category_name||"తాజా వార్తలు")+'</span><h3>'+esc(a.title)+'</h3><p>'+esc(a.summary||(a.content||"").slice(0,125))+'</p><a href="'+url(a)+'">పూర్తి వార్త చదవండి →</a></div></article>';}
 function render(id,rows,empty){const el=document.getElementById(id);if(el)el.innerHTML=rows.length?rows.map(card).join(""):'<div class="empty-state">'+empty+'</div>';}
 let articles=[];
