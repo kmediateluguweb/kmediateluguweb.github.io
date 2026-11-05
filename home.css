@@ -48,3 +48,17 @@ body{background:#f2f3f5;color:#191b20}
 footer{background:#101114}
 .footer-grid>div>a{color:#d7d9de}
 @media(max-width:560px){.hero-panel{background:linear-gradient(145deg,#252830,#111216 75%,#4a171c)}}
+
+/* Dedicated video category cards */
+.video-categories{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px;margin-top:18px}
+.video-category-card{padding:20px;border-radius:17px;background:#fff;border:1px solid #e1e3e8;box-shadow:0 8px 24px #11110b}
+.video-category-card h2{font-size:21px;margin:7px 0}
+.video-category-card p{font-size:12px;line-height:1.8;color:#687080;margin:0 0 13px}
+.video-category-card>a{display:inline-flex;background:#d71920;color:#fff;padding:10px 15px;border-radius:25px;font-size:12px;font-weight:800}
+.video-category-card small{display:block;margin-top:12px;color:#777f8d;font-size:10px;line-height:1.7}
+.boss-video-card{border-top:4px solid #d71920}
+.politics-video-card{border-top:4px solid #252830}
+.video-frame iframe{display:block}
+.news-card img{display:block}
+button,a,input{touch-action:manipulation}
+@media(max-width:560px){.video-categories{grid-template-columns:1fr;gap:10px}.video-category-card{padding:16px}.video-category-card h2{font-size:18px}.video-panel{gap:12px}.video-frame{min-height:190px}}
