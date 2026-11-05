@@ -131,7 +131,7 @@ textarea{min-height:110px}
 const SUPABASE_URL = "https://mewyojxgsuceppsauesh.supabase.co";
 const SUPABASE_KEY = "sb_publishable_-ee5Pt9U0ZvZuUkipLcq-Q_KBXKsEDa";
 
-const db = window.supabase.createClient(SUPABASE_URL,SUPABASE_KEY);
+const db = window.supabase.createClient(SUPABASE_URL,SUPABASE_KEY,{auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:true}});
 const $ = id => document.getElementById(id);
 let currentPublishedAt = null;
 
