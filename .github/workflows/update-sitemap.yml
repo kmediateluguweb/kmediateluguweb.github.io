@@ -31,7 +31,6 @@ jobs:
             --data-urlencode "status=eq.published" \
             --data-urlencode "order=published_at.desc" \
             -H "apikey: $SUPABASE_KEY" \
-            -H "Authorization: Bearer $SUPABASE_KEY" \
             -o /tmp/news.json
           python3 scripts/generate_static_articles.py
 
