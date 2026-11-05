@@ -3,3 +3,48 @@
 @media(max-width:1100px){.page-layout{grid-template-columns:175px minmax(0,1fr) 285px;gap:14px}.brand{min-width:230px}.brand strong{font-size:24px}.youtube-btn{font-size:11px;padding:11px}.news-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
 @media(max-width:850px){.header-inner{flex-wrap:wrap;padding:13px 0;gap:12px}.brand{min-width:0;flex:1}.brand img{width:54px;height:54px}.brand strong{font-size:22px}.search{order:3;flex-basis:100%;max-width:none}.youtube-btn{font-size:10px}.page-layout{grid-template-columns:1fr}.left-rail{position:static;min-height:0;padding:12px}.side-brand{display:none}.side-menu{display:flex;overflow-x:auto}.side-menu a{white-space:nowrap;padding:10px}.side-menu a span{font-size:11px}.promo-box{display:none}.right-rail{grid-template-columns:repeat(2,minmax(0,1fr))}.right-rail .follow{grid-column:1/-1}.top-inner{gap:10px}.social-mini{display:none}}
 @media(max-width:560px){.wrap{width:94%}.top-inner{min-height:32px;font-size:10px}.trend{font-size:10px}.header-inner{min-height:0}.brand small{font-size:9px}.brand img{width:47px;height:47px}.brand strong{font-size:20px}.youtube-btn{padding:9px 11px;font-size:9px}.main-nav a{padding:12px;font-size:11px}.page-layout{padding-top:12px;gap:12px}.left-rail{border-radius:14px;padding:7px}.side-menu a{font-size:12px;gap:7px;padding:8px}.side-menu a span{font-size:10px}.hero-panel{grid-template-columns:1fr;padding:13px;border-radius:16px;gap:10px}.hero-copy{padding:8px}.hero-copy h1{font-size:35px}.hero-feature{min-height:190px;padding:17px}.hero-feature h2{font-size:20px}.category-pills{padding:12px 0}.category-pills a{font-size:10px;padding:8px 11px}.content-section{padding-top:20px}.section-title h2{font-size:18px}.news-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}.news-card-image,.image-placeholder{height:112px}.card-body{padding:9px}.news-card h3{font-size:12px}.news-card p{font-size:10px}.news-card a{font-size:10px}.video-panel{grid-template-columns:1fr;padding:15px}.video-panel h2{font-size:20px}.right-rail{grid-template-columns:1fr}.right-rail .follow{grid-column:auto}.rail-card{padding:14px}.footer-grid{grid-template-columns:1fr;gap:14px}.shorts-panel{gap:8px}.shorts-panel>a{flex:1;text-align:center}.search input{font-size:12px}}@media(prefers-reduced-motion:reduce){*{scroll-behavior:auto!important;transition:none!important}}
+
+/* K MEDIA TELUGU — premium black & red newsroom finish */
+:root{--ink:#17191d;--muted:#687080;--red:#d71920;--purple:#25272d;--deep:#101114;--line:#e4e6eb;--shadow:0 10px 28px rgba(16,17,20,.08)}
+body{background:#f2f3f5;color:#191b20}
+.topline{background:#101114}
+.trend b{background:#d71920}
+.site-header{background:linear-gradient(105deg,#111216 0%,#252830 72%,#17191e 100%);border-bottom:4px solid #d71920}
+.brand em{color:#ff646a}
+.youtube-btn,.primary-btn{background:#d71920;box-shadow:0 6px 16px #d719202b}
+.youtube-btn:hover,.primary-btn:hover{background:#ad1118}
+.nav-bar{background:#1a1c21}
+.main-nav a:hover,.main-nav .active{background:#d71920;border-color:#ff777c}
+.left-rail{background:linear-gradient(160deg,#292c33,#111216);box-shadow:0 10px 28px #1011141c}
+.side-menu a:hover,.side-menu .selected{background:linear-gradient(100deg,#e02027,#a90f17);box-shadow:0 5px 14px #d7192033}
+.promo-box a{color:#ff777c}
+.hero-panel{background:linear-gradient(125deg,#252830,#111216 62%,#3a1115);box-shadow:0 12px 28px #11121624}
+.hero-copy h1 em{color:#ff7378}
+.hero-feature{background:linear-gradient(140deg,#20232a,#4a171c 65%,#a81720)}
+.hero-feature span{color:#ffb5b8}
+.hero-feature>a{color:#ff9b9f}
+.category-pills a{border-color:#e1e3e8;box-shadow:0 4px 12px #1111}
+.category-pills a:hover{background:#fff0f0;border-color:#e68b8e;color:#b9151c}
+.section-title{border-color:#dfe1e6}
+.section-title>a,.section-kicker{color:#c71920}
+.news-card{border-color:#e3e5e9;box-shadow:0 5px 17px #11110b}
+.news-card:hover{box-shadow:0 12px 30px #1112}
+.news-card-image,.image-placeholder{background:linear-gradient(135deg,#252830,#d71920)}
+.tag{color:#c71920}
+.news-card a{color:#c71920}
+.video-panel{background:linear-gradient(120deg,#17191e,#30343d);border-left:5px solid #d71920}
+.video-panel .section-kicker{color:#ff777c}
+.shorts-panel{background:#fff;border-color:#e1e3e8}
+.shorts-panel>a{border-color:#e0a2a4;color:#b9151c}
+.rail-card{border-color:#e3e5e9;box-shadow:0 8px 24px #11110b}
+.rail-heading>span,.service-grid b{color:#d71920}
+.service-grid a{background:#fafafa;border-color:#e5e6ea}
+.service-grid a:hover{border-color:#e18b8e;background:#fff4f4}
+.trend-item>b{color:#d71920}
+.trend-placeholder{background:linear-gradient(135deg,#252830,#d71920)}
+.all-stories{background:#fff0f0;color:#b9151c}
+.yt{background:#d71920}
+.follow i{background:#d71920}
+footer{background:#101114}
+.footer-grid>div>a{color:#d7d9de}
+@media(max-width:560px){.hero-panel{background:linear-gradient(145deg,#252830,#111216 75%,#4a171c)}}
