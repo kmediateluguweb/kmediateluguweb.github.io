@@ -1,142 +1,32 @@
-<!DOCTYPE html>
-<html lang="te">
-<head>
-  <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Telugu News | K Media Telugu Official – తెలంగాణ & AP వార్తలు</title>
-  <meta name="description" content="K Media Teluguలో తెలంగాణ వార్తలు, ఆంధ్రప్రదేశ్ వార్తలు, తాజా Telugu News, రాజకీయాలు, తెలుగు సినిమా, Bigg Boss Telugu, రాశి ఫలాలు, జ్యోతిష్యం, Public Talk, ప్రత్యేక ఇంటర్వ్యూలు మరియు వీడియో అప్‌డేట్స్ చదవండి.">
-  <meta name="author" content="K Media Telugu">
-  <meta name="application-name" content="K Media Telugu">
-  <meta name="keywords" content="K Media Telugu, K Media Telugu Official, K Media News, Telugu News, Telangana News, Andhra Pradesh News, Bigg Boss Telugu, Telugu Cinema, Rasi Phalalu, Daily Horoscope, Public Talk">
-  <meta property="og:locale" content="te_IN">
-  <meta name="robots" content="index, follow, max-image-preview:large">
-  <link rel="canonical" href="https://kmediatelugu.rweb.site/">
-  <link rel="stylesheet" href="style.css">
-  <link rel="icon" type="image/jpeg" href="K%20Media%20Logo.jpg">
-  <meta property="og:site_name" content="K Media Telugu">
-  <meta property="og:title" content="Telugu News | K Media Telugu Official – తెలంగాణ & AP వార్తలు">
-  <meta property="og:description" content="తాజా Telugu News, తెలంగాణ & ఆంధ్రప్రదేశ్ వార్తలు, రాజకీయాలు, సినిమా, Bigg Boss Telugu మరియు Public Talk అప్‌డేట్స్.">
-  <meta property="og:image" content="https://kmediatelugu.rweb.site/K%20Media%20Logo.jpg">
-  <meta property="og:type" content="website">
-  <meta property="og:url" content="https://kmediatelugu.rweb.site/">
-  <meta name="twitter:title" content="Telugu News | K Media Telugu Official – తెలంగాణ & AP వార్తలు">
-  <meta name="twitter:description" content="తాజా Telugu News, తెలంగాణ & ఆంధ్రప్రదేశ్ వార్తలు, రాజకీయాలు, సినిమా, Bigg Boss Telugu మరియు Public Talk అప్‌డేట్స్.">
-  <meta name="twitter:card" content="summary_large_image">
-  <meta name="twitter:image" content="https://kmediatelugu.rweb.site/K%20Media%20Logo.jpg">
-  <script type="application/ld+json">
-  {
-    "@context": "https://schema.org",
-    "@type": "NewsMediaOrganization",
-    "name": "K Media Telugu",
-    "alternateName": ["K Media Telugu Official", "K Media News"],
-    "url": "https://kmediatelugu.rweb.site/",
-    "description": "K Media Telugu is a Telugu digital news and media platform covering Telangana and Andhra Pradesh news, politics, cinema, Bigg Boss Telugu, public talk and interviews.",
-    "logo": {
-      "@type": "ImageObject",
-      "url": "https://kmediatelugu.rweb.site/K%20Media%20Logo.jpg"
-    },
-    "publishingPrinciples": "https://kmediatelugu.rweb.site/about.html",
-    "contactPoint": {
-      "@type": "ContactPoint",
-      "contactType": "editorial and general enquiries",
-      "email": "kmediatelugu@gmail.com",
-      "availableLanguage": ["Telugu", "English"]
-    },
-    "sameAs": [
-      "https://www.youtube.com/@kmediateluguofficial",
-      "https://www.instagram.com/kmediateluguofficial/",
-      "https://www.facebook.com/kmediateluguofficial/"
-    ]
-  }
-  </script>
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <style>
-    .news-status{padding:18px;background:#fff;border-radius:10px;color:#555;margin:18px 0}
-    .news-card-image{width:100%;height:190px;object-fit:cover;display:block;background:#e5e7eb}
-    .news-card .card-body{min-height:190px}
-    .news-card h3{margin:10px 0}
-    .news-card a{display:inline-block;margin-top:10px}
-    .empty-category{background:#fff;padding:20px;border-radius:10px;color:#777}
-    .source-link{font-size:13px;color:#666}
-  </style>
-</head>
-<body>
-  <header class="top"><div class="container nav">
-    <a class="logo brand-logo" href="#home" aria-label="K Media Telugu Home"><img src="K%20Media%20Logo.jpg" alt="K Media Telugu Logo" style="width:52px;height:52px;object-fit:contain;background:#fff;border-radius:6px;vertical-align:middle;margin-right:10px"><span>K MEDIA TELUGU</span></a>
-    <nav><a href="#home">హోమ్</a><a href="#latest">తాజా వార్తలు</a><a href="#politics">రాజకీయాలు</a><a href="#movies">సినిమా</a><a href="#bigg-boss">బిగ్ బాస్</a><a href="#rasi-phalalu">రాశి ఫలాలు</a><a href="#public-talk">పబ్లిక్ టాక్</a><a href="#youtube-videos">వీడియోలు</a><a href="#shorts">Shorts</a><a href="about.html">మా గురించి</a><a href="contact.html">కాంటాక్ట్</a></nav>
-  </div></header>
-  <div class="news-ticker"><div class="container ticker-inner"><span class="ticker-label">K MEDIA UPDATE</span><span class="ticker-topics">తెలంగాణ • ఆంధ్రప్రదేశ్ • రాజకీయాలు • సినిమా • బిగ్ బాస్ • రాశి ఫలాలు • పబ్లిక్ టాక్</span><span class="site-datetime" id="siteDateTime" aria-label="ప్రస్తుత తేదీ మరియు సమయం">తేదీ & సమయం</span></div></div><main id="home">
-    <section class="hero container"><div><p class="eyebrow">K MEDIA TELUGU</p><h1>Telugu News – తెలుగు వార్తలు & ప్రజల మాట</h1><p class="hero-text">రాజకీయాలు, సినిమా, బిగ్ బాస్, ట్రెండింగ్ న్యూస్ మరియు పబ్లిక్ టాక్ — తాజా అప్డేట్స్ ఒకే చోట.</p><a class="button" href="#latest">తాజా వార్తలు చూడండి</a></div>
-      <div class="hero-card"><span>BREAKING</span><h2>మీ వార్త... మీ వాయిస్... K Media Telugu</h2><p>Latest updates • Public reactions • Entertainment</p></div>
-    </section>
-    <section class="quick-categories container" aria-label="వార్తల విభాగాలు"><a href="#latest">తాజా వార్తలు</a><a href="#politics">రాజకీయాలు</a><a href="#movies">సినిమా</a><a href="#bigg-boss">బిగ్ బాస్</a><a href="#rasi-phalalu">రాశి ఫలాలు</a><a href="#public-talk">పబ్లిక్ టాక్</a><a href="#youtube-videos">వీడియోలు</a></section><section id="latest" class="section container"><div class="section-head"><h2>తాజా వార్తలు</h2><span>Latest Updates</span></div><div id="latestNews" class="grid"><div class="news-status">వార్తలు లోడ్ అవుతున్నాయి...</div></div></section>
-    <section class="youtube-strip container"><div><p class="eyebrow">WATCH NOW</p><h2>K Media Telugu YouTube Channel</h2><p>వీడియోలు, Shorts మరియు Public Talk కోసం మా YouTube ఛానల్‌ను చూడండి.</p></div><a class="button" href="https://www.youtube.com/@kmediateluguofficial" target="_blank" rel="noopener">YouTube Channel</a></section>
-    <section id="youtube-videos" class="section container">
-      <div class="section-head"><h2>K Media Telugu వీడియోలు</h2><span>YouTube Videos</span></div>
-      <div class="youtube-feature">
-        <div class="youtube-frame"><iframe src="https://www.youtube-nocookie.com/embed/videoseries?list=UU0dM3uiSoM9Vhb2ENeUFW2g" title="K Media Telugu Latest YouTube Uploads" loading="lazy" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe></div>
-        <div class="youtube-info"><span class="tag">LATEST UPLOADS</span><h3>K Media Telugu తాజా వీడియోలు</h3><p>ఈ ప్లేయర్‌లో మా ఛానల్ Uploads Playlist కనిపిస్తుంది. YouTubeలో కొత్త వీడియోలు అప్‌లోడ్ చేసినప్పుడు ఈ Playlistలో ఆటోమేటిక్‌గా చేరతాయి.</p><a class="button" href="https://www.youtube.com/@kmediateluguofficial" target="_blank" rel="noopener">మరిన్ని వీడియోలు చూడండి</a></div>
-      </div>
-    </section>
-    <section id="shorts" class="shorts-promo container"><div><span class="tag">WATCH SHORTS</span><h2>చిన్న వీడియోలు — పెద్ద అప్‌డేట్స్!</h2><p>K Media Telugu తాజా Shorts మరియు Reels చూడండి.</p></div><a class="button" href="https://www.youtube.com/@kmediateluguofficial/shorts" target="_blank" rel="noopener">YouTube Shorts చూడండి</a><a class="outline-button" href="https://www.instagram.com/kmediateluguofficial/reels/" target="_blank" rel="noopener">Instagram Reels</a></section><section id="politics" class="section container"><div class="section-head"><h2>రాజకీయాలు</h2><span>Politics</span></div><div id="cat-politics" class="grid"><div class="empty-category">వార్తలు లోడ్ అవుతున్నాయి...</div></div></section>
-    <section id="movies" class="section container"><div class="section-head"><h2>సినిమా</h2><span>Movies</span></div><div id="cat-cinema" class="grid"><div class="empty-category">వార్తలు లోడ్ అవుతున్నాయి...</div></div></section>
-    <section id="bigg-boss" class="section container"><div class="section-head"><h2>బిగ్ బాస్</h2><span>Bigg Boss</span></div><div id="cat-bigg-boss" class="grid"><div class="empty-category">వార్తలు లోడ్ అవుతున్నాయి...</div></div></section>
-    <section id="rasi-phalalu" class="section container"><div class="section-head"><h2>రోజువారీ రాశి ఫలాలు</h2><span>Daily Horoscope</span></div><p class="section-intro">12 రాశుల ఈరోజు రాశి ఫలాలు, జ్యోతిష్య విశేషాలు మరియు ప్రత్యేక అప్‌డేట్స్.</p><div id="cat-rasi-phalalu" class="grid"><div class="empty-category">రాశి ఫలాలు లోడ్ అవుతున్నాయి...</div></div></section>\n    <section id="public-talk" class="section container"><div class="section-head"><h2>పబ్లిక్ టాక్</h2><span>Public Talk</span></div><div id="cat-public-talk" class="grid"><div class="empty-category">వార్తలు లోడ్ అవుతున్నాయి...</div></div></section>
-  </main>
-  <footer id="contact"><div class="container footer"><div><div class="logo brand-logo"><img src="K%20Media%20Logo.jpg" alt="K Media Telugu Logo" style="width:64px;height:64px;object-fit:contain;background:#fff;border-radius:6px;vertical-align:middle;margin-right:10px"><span>K MEDIA TELUGU</span></div><p>తెలుగు వార్తలు, ప్రజల మాట మరియు ఎంటర్‌టైన్‌మెంట్.</p></div><div><strong>Contact & Information</strong><p>Email: kmediatelugu@gmail.com</p><p><a style="color:#fff" href="about.html">About K Media Telugu</a></p><p><a style="color:#fff" href="contact.html">Contact / Promotions</a></p><p><a style="color:#fff" href="privacy-policy.html">Privacy Policy</a></p><p><a style="color:#fff" href="https://www.youtube.com/@kmediateluguofficial">YouTube: K Media Telugu</a></p><p><a style="color:#fff" href="https://www.instagram.com/kmediateluguofficial/">Instagram: @kmediateluguofficial</a></p><p><a style="color:#fff" href="https://www.facebook.com/kmediateluguofficial/">Facebook: K Media Telugu</a></p></div></div><div class="copyright">© 2026 K Media Telugu. All rights reserved.</div></footer>
+<!doctype html>
+<html lang="te"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>K Media Telugu | తెలుగు వార్తలు, Bigg Boss, సినిమా & రాజకీయాలు</title>
+<meta name="description" content="K Media Teluguలో తాజా తెలుగు వార్తలు, Bigg Boss Telugu, సినిమా అప్‌డేట్స్, తెలంగాణ & AP రాజకీయాలు, పబ్లిక్ టాక్ మరియు ప్రత్యేక ఇంటర్వ్యూలు.">
+<meta name="keywords" content="K Media Telugu, Telugu News, Bigg Boss Telugu, Telangana News, AP Politics, Telugu Cinema, Public Talk"><meta name="robots" content="index,follow,max-image-preview:large">
+<link rel="canonical" href="https://kmediatelugu.rweb.site/"><link rel="stylesheet" href="style.css"><link rel="icon" href="K%20Media%20Logo.jpg"><meta name="theme-color" content="#170020">
+<meta property="og:locale" content="te_IN"><meta property="og:site_name" content="K Media Telugu"><meta property="og:title" content="K Media Telugu | తెలుగు వార్తలు & ప్రజల మాట"><meta property="og:description" content="తాజా తెలుగు వార్తలు, Bigg Boss, సినిమా, రాజకీయాలు మరియు Public Talk."><meta property="og:image" content="https://kmediatelugu.rweb.site/K%20Media%20Logo.jpg"><meta property="og:url" content="https://kmediatelugu.rweb.site/"><meta property="og:type" content="website"><meta name="twitter:card" content="summary_large_image">
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"NewsMediaOrganization","name":"K Media Telugu","url":"https://kmediatelugu.rweb.site/","logo":"https://kmediatelugu.rweb.site/K%20Media%20Logo.jpg","email":"kmediatelugu@gmail.com","sameAs":["https://www.youtube.com/@kmediateluguofficial","https://www.instagram.com/kmediateluguofficial/","https://www.facebook.com/kmediateluguofficial/"]}</script><script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script></head>
+<body><div class="topline"><div class="wrap top-inner"><span id="siteDateTime">నేటి తేదీ</span><span class="trend"><b>🔥 TRENDING</b> Bigg Boss Telugu • తాజా వార్తలు • Public Talk</span><div class="social-mini"><a href="https://www.youtube.com/@kmediateluguofficial">▶</a><a href="https://www.instagram.com/kmediateluguofficial/">◎</a><a href="https://www.facebook.com/kmediateluguofficial/">f</a></div></div></div>
+<header class="site-header"><div class="wrap header-inner"><a class="brand" href="#home"><img src="K%20Media%20Logo.jpg" alt="K Media Telugu logo"><span><strong>K Media <em>Telugu</em></strong><small>Movies | Bigg Boss | Politics | Public Talk</small></span></a><form class="search" id="searchForm"><input id="searchInput" type="search" placeholder="వార్తలు, వీడియోలు, విశేషాలు వెతకండి..." aria-label="Search"><button aria-label="Search">⌕</button></form><a class="youtube-btn" href="https://www.youtube.com/@kmediateluguofficial" target="_blank" rel="noopener">▶ మా YouTube ఛానెల్</a></div></header>
+<div class="nav-bar"><nav class="wrap main-nav"><a class="active" href="#home">⌂ హోమ్</a><a href="#bigg-boss">♛ Bigg Boss 10</a><a href="#movies">▣ సినిమా వార్తలు</a><a href="#politics">▤ రాజకీయాలు</a><a href="#public-talk">♧ పబ్లిక్ టాక్</a><a href="#latest">🔥 ట్రెండింగ్</a><a href="#videos">▷ వీడియోలు</a><a href="about.html">మా గురించి</a><a href="contact.html">కాంటాక్ట్</a></nav></div>
+<main id="home" class="wrap page-layout"><aside class="left-rail"><div class="side-brand">K <span>MEDIA</span><small>TELUGU</small></div><div class="side-menu"><a class="selected" href="#home">⌂ <span>హోమ్</span></a><a href="#latest">▤ <span>తాజా వార్తలు</span></a><a href="#bigg-boss">♛ <span>Bigg Boss 10</span></a><a href="#movies">▣ <span>సినిమా వార్తలు</span></a><a href="#politics">▥ <span>రాజకీయాలు</span></a><a href="#public-talk">♧ <span>పబ్లిక్ టాక్</span></a><a href="#videos">▷ <span>వీడియోలు</span></a><a href="#shorts">▧ <span>Shorts & Reels</span></a></div><div class="promo-box"><b>ప్రచారాల కోసం</b><p>మీ బ్రాండ్‌ను ప్రమోట్ చేయండి</p><a href="contact.html">Contact Us →</a><small>@kmediateluguofficial</small></div></aside>
+<div class="main-column"><section class="hero-panel"><div class="hero-copy"><span class="live-tag">✦ K MEDIA EXCLUSIVE</span><p class="eyebrow">తెలుగు వార్తలు • ప్రజల మాట</p><h1>మీ వార్త...<br><em>మీ వాయిస్!</em></h1><p>రాజకీయాలు, సినిమా, బిగ్ బాస్, ట్రెండింగ్ అప్‌డేట్స్ — అన్నీ ఒకే చోట.</p><a class="primary-btn" href="#latest">తాజా వార్తలు చదవండి →</a></div><div class="hero-feature" id="heroFeature"><div class="feature-orb">K</div><span>TOP STORY</span><h2>తాజా వార్తలు & ప్రత్యేక విశ్లేషణలు</h2><p>K Media Teluguతో ఎప్పటికప్పుడు అప్‌డేట్ అవ్వండి.</p></div></section>
+<div class="category-pills"><a href="#bigg-boss">♛ Bigg Boss 10</a><a href="#movies">🎬 సినిమా</a><a href="#politics">🏛 రాజకీయాలు</a><a href="#public-talk">🎤 పబ్లిక్ టాక్</a><a href="#videos">▶ వీడియోలు</a></div>
+<section id="latest" class="content-section"><div class="section-title"><div><span class="section-kicker">JUST IN</span><h2>తాజా వార్తలు</h2></div><a href="#latest">అన్నీ చూడండి →</a></div><div id="latestNews" class="news-grid"><div class="loading">వార్తలు లోడ్ అవుతున్నాయి...</div></div></section>
+<section id="videos" class="video-panel"><div><span class="section-kicker">WATCH ON YOUTUBE</span><h2>K Media Telugu వీడియోలు</h2><p>మా తాజా వీడియోలు, పబ్లిక్ రియాక్షన్స్ మరియు ప్రత్యేక ఇంటర్వ్యూలు చూడండి.</p><a class="primary-btn" href="https://www.youtube.com/@kmediateluguofficial" target="_blank" rel="noopener">YouTube ఛానెల్ చూడండి →</a></div><div class="video-frame"><iframe src="https://www.youtube-nocookie.com/embed/videoseries?list=UU0dM3uiSoM9Vhb2ENeUFW2g" title="K Media Telugu latest YouTube uploads" loading="lazy" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe></div></section>
+<section id="bigg-boss" class="content-section"><div class="section-title"><div><span class="section-kicker">REALITY SHOW</span><h2>Bigg Boss వార్తలు</h2></div></div><div id="cat-bigg-boss" class="news-grid"></div></section><section id="movies" class="content-section"><div class="section-title"><div><span class="section-kicker">ENTERTAINMENT</span><h2>సినిమా వార్తలు</h2></div></div><div id="cat-cinema" class="news-grid"></div></section><section id="politics" class="content-section"><div class="section-title"><div><span class="section-kicker">POLITICAL UPDATES</span><h2>రాజకీయాలు</h2></div></div><div id="cat-politics" class="news-grid"></div></section><section id="public-talk" class="content-section"><div class="section-title"><div><span class="section-kicker">VOICE OF THE PEOPLE</span><h2>పబ్లిక్ టాక్</h2></div></div><div id="cat-public-talk" class="news-grid"></div></section><section id="shorts" class="shorts-panel"><div><span class="section-kicker">QUICK UPDATES</span><h2>చిన్న వీడియోలు — పెద్ద అప్‌డేట్స్!</h2><p>YouTube Shorts & Instagram Reelsలో మమ్మల్ని ఫాలో అవ్వండి.</p></div><a href="https://www.youtube.com/@kmediateluguofficial/shorts">YouTube Shorts ↗</a><a href="https://www.instagram.com/kmediateluguofficial/reels/">Instagram Reels ↗</a></section></div>
+<aside class="right-rail"><section class="rail-card"><div class="rail-heading"><span>✦</span><div><h2>OUR SERVICES</h2><small>K Media Telugu — మీకు అందించే కంటెంట్</small></div></div><div class="service-grid"><a href="#bigg-boss"><b>♛</b><span>Bigg Boss<br>Updates</span></a><a href="#movies"><b>▣</b><span>Movie<br>News</span></a><a href="#politics"><b>♜</b><span>AP Politics<br>& Analysis</span></a><a href="#public-talk"><b>♩</b><span>Public<br>Talk</span></a><a href="#latest"><b>▥</b><span>Reviews &<br>Analysis</span></a><a href="contact.html"><b>▷</b><span>Exclusive<br>Interviews</span></a></div></section>
+<section class="rail-card"><div class="rail-heading"><span>✦</span><div><h2>OUR LATEST BLOG</h2><small>తాజా వార్తలు & ప్రత్యేక కథనాలు</small></div></div><div id="trendingList" class="trending-list"><div class="loading">ట్రెండింగ్ వార్తలు లోడ్ అవుతున్నాయి...</div></div><a class="all-stories" href="#latest">మరిన్ని వార్తలు చూడండి →</a></section>
+<section class="rail-card follow"><div class="rail-heading"><span>♡</span><div><h2>మా సోషల్ మీడియా</h2><small>మమ్మల్ని ఫాలో అవ్వండి</small></div></div><a href="https://www.youtube.com/@kmediateluguofficial"><b class="social-icon yt">▶</b><span><strong>K Media Telugu</strong><small>YouTubeలో Subscribe చేయండి</small></span><i>Subscribe</i></a><a href="https://www.instagram.com/kmediateluguofficial/"><b class="social-icon ig">◎</b><span><strong>@kmediateluguofficial</strong><small>Instagramలో Follow అవ్వండి</small></span><i>Follow</i></a><a href="https://www.facebook.com/kmediateluguofficial/"><b class="social-icon fb">f</b><span><strong>K Media Telugu</strong><small>Facebookలో Like చేయండి</small></span><i>Like</i></a></section></aside></main>
+<footer><div class="wrap footer-grid"><div class="footer-brand"><div class="brand"><img src="K%20Media%20Logo.jpg" alt="K Media Telugu"><span><strong>K Media <em>Telugu</em></strong><small>Movies | Bigg Boss | Politics | Public Talk</small></span></div><p>తెలుగు వార్తలు, ప్రజల మాట మరియు ఎంటర్‌టైన్‌మెంట్.</p></div><div><h3>ముఖ్యమైన లింకులు</h3><a href="about.html">మా గురించి</a><a href="contact.html">Contact / Promotions</a><a href="privacy-policy.html">Privacy Policy</a></div><div><h3>Follow K Media Telugu</h3><a href="https://www.youtube.com/@kmediateluguofficial">YouTube</a><a href="https://www.instagram.com/kmediateluguofficial/">Instagram</a><a href="https://www.facebook.com/kmediateluguofficial/">Facebook</a><p>kmediatelugu@gmail.com</p></div></div><div class="copyright">© 2026 K Media Telugu. All rights reserved.</div></footer>
 <script>
-const SUPABASE_URL = "https://mewyojxgsuceppsauesh.supabase.co";
-const SUPABASE_KEY = "sb_publishable_-ee5Pt9U0ZvZuUkipLcq-Q_KBXKsEDa";
-const db = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
-const escapeHtml = value => String(value ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-function makeCard(article, categoryName='తాజా వార్తలు') {
-  const image = article.featured_image ? `<img class="news-card-image" src="${escapeHtml(article.featured_image)}" alt="${escapeHtml(article.title)}" loading="lazy">` : `<div class="thumb talk">K MEDIA TELUGU</div>`;
-  const summary = article.summary || (article.content || '').slice(0,150);
-  const baseSlug = (article.slug || '').toLowerCase().replace(/[^a-z0-9-]+/g, '-').replace(/-+/g, '-').replace(/^-|-$/g, '').slice(0, 90) || 'news';
-  const articlePath = article.slug ? `articles/${baseSlug}-${String(article.id).slice(0,8)}/` : `article.html?id=${encodeURIComponent(article.id)}`;
-  return `<article class="card news-card">${image}<div class="card-body"><span class="tag">${escapeHtml(categoryName)}</span><h3>${escapeHtml(article.title)}</h3><p>${escapeHtml(summary)}</p><a href="${articlePath}">పూర్తి వార్త చదవండి →</a></div></article>`;
-}
-function renderList(id, rows, emptyText) {
- const el=document.getElementById(id); if(!el) return;
- el.innerHTML = rows.length ? rows.map(a=>makeCard(a,a.category_name)).join('') : `<div class="empty-category">${emptyText}</div>`;
-}
-async function loadNews() {
- const latest=document.getElementById('latestNews');
- try {
-   const [newsResult, catsResult] = await Promise.all([
-     db.from('news_articles').select('id,title,slug,summary,content,featured_image,category_id,published_at').eq('status','published').order('published_at',{ascending:false}).limit(30),
-     db.from('categories').select('id,name,slug').order('id')
-   ]);
-   if(newsResult.error) throw newsResult.error;
-   if(catsResult.error) throw catsResult.error;
-   const categories = new Map((catsResult.data||[]).map(c=>[String(c.id),c]));
-   const rows=(newsResult.data||[]).map(a=>({...a,category_name:categories.get(String(a.category_id))?.name || 'తాజా వార్తలు',category_slug:categories.get(String(a.category_id))?.slug || ''}));
-   renderList('latestNews', rows.slice(0,9), 'ప్రస్తుతం Published వార్తలు లేవు. Admin Panelలో వార్తను Publish చేయండి.');
-   const slugToElement={'politics':'cat-politics','cinema':'cat-cinema','bigg-boss':'cat-bigg-boss','public-talk':'cat-public-talk','rasi-phalalu':'cat-rasi-phalalu'};
-   for(const [slug,id] of Object.entries(slugToElement)) {
-     const selected=rows.filter(a=>a.category_slug===slug).slice(0,6);
-     renderList(id,selected, 'ఈ విభాగంలో ప్రస్తుతం Published వార్తలు లేవు.');
-   }
- } catch(err) {
-   console.error('K Media Telugu news loading error:',err);
-   const message = (err && err.message) ? err.message : String(err);
-   latest.innerHTML = `<div class="news-status">వార్తలు లోడ్ కాలేదు: ${escapeHtml(message)}<br>Supabase URL / Publishable Key / Database Permission తనిఖీ చేయాలి.</div>`;
-   for(const id of ['cat-politics','cat-cinema','cat-bigg-boss','cat-public-talk','cat-rasi-phalalu']) {document.getElementById(id).innerHTML='<div class="empty-category">వార్తలు లోడ్ కాలేదు.</div>';}
- }
-}
-function updateSiteDateTime() {
-  const now = new Date();
-  const date = new Intl.DateTimeFormat('te-IN', {
-    timeZone: 'Asia/Kolkata', day: '2-digit', month: 'long', year: 'numeric'
-  }).format(now);
-  const time = new Intl.DateTimeFormat('en-IN', {
-    timeZone: 'Asia/Kolkata', hour: '2-digit', minute: '2-digit', second: '2-digit',
-    hour12: true
-  }).format(now);
-  const el = document.getElementById('siteDateTime');
-  if (el) el.textContent = date + ' | ' + time + ' IST';
-}
-updateSiteDateTime();
-setInterval(updateSiteDateTime, 1000);
-loadNews();
-</script>
-</body></html>
+const SUPABASE_URL="https://mewyojxgsuceppsauesh.supabase.co",SUPABASE_KEY="sb_publishable_-ee5Pt9U0ZvZuUkipLcq-Q_KBXKsEDa",db=window.supabase.createClient(SUPABASE_URL,SUPABASE_KEY);
+const esc=v=>String(v??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+function url(a){const s=(a.slug||"").toLowerCase().replace(/[^a-z0-9-]+/g,"-").replace(/-+/g,"-").replace(/^-|-$/g,"").slice(0,90);return s&&a.id?"articles/"+s+"-"+String(a.id).slice(0,8)+"/":"article.html?id="+encodeURIComponent(a.id);}
+function card(a){const im=a.featured_image?'<img class="news-card-image" src="'+esc(a.featured_image)+'" alt="'+esc(a.title)+'" loading="lazy">':'<div class="image-placeholder">K MEDIA TELUGU</div>';return '<article class="news-card">'+im+'<div class="card-body"><span class="tag">'+esc(a.category_name||"తాజా వార్తలు")+'</span><h3>'+esc(a.title)+'</h3><p>'+esc(a.summary||(a.content||"").slice(0,125))+'</p><a href="'+url(a)+'">పూర్తి వార్త చదవండి →</a></div></article>';}
+function render(id,rows,empty){const el=document.getElementById(id);if(el)el.innerHTML=rows.length?rows.map(card).join(""):'<div class="empty-state">'+empty+'</div>';}
+let articles=[];
+async function loadNews(){try{const [n,c]=await Promise.all([db.from("news_articles").select("id,title,slug,summary,content,featured_image,category_id,published_at").eq("status","published").order("published_at",{ascending:false}).limit(40),db.from("categories").select("id,name,slug").order("id")]);if(n.error)throw n.error;if(c.error)throw c.error;const cats=new Map((c.data||[]).map(x=>[String(x.id),x]));articles=(n.data||[]).map(a=>({...a,category_name:cats.get(String(a.category_id))?.name||"తాజా వార్తలు",category_slug:cats.get(String(a.category_id))?.slug||""}));render("latestNews",articles.slice(0,6),"ప్రస్తుతం Published వార్తలు లేవు. Admin Panelలో వార్తను Publish చేయండి.");const ids={"bigg-boss":"cat-bigg-boss","cinema":"cat-cinema","politics":"cat-politics","public-talk":"cat-public-talk"};Object.keys(ids).forEach(s=>render(ids[s],articles.filter(a=>a.category_slug===s).slice(0,3),"ఈ విభాగంలో ప్రస్తుతం వార్తలు లేవు."));document.getElementById("trendingList").innerHTML=articles.slice(0,5).map((a,i)=>'<a class="trend-item" href="'+url(a)+'"><b>'+String(i+1).padStart(2,"0")+'</b>'+(a.featured_image?'<img src="'+esc(a.featured_image)+'" alt="" loading="lazy">':'<span class="trend-placeholder">K</span>')+'<span><strong>'+esc(a.title)+'</strong><small>'+(a.published_at?new Date(a.published_at).toLocaleDateString("te-IN"):"K Media Telugu")+'</small></span></a>').join("")||'<p class="empty-state">ట్రెండింగ్ వార్తలు త్వరలో...</p>';if(articles[0]){const a=articles[0],h=document.getElementById("heroFeature");h.innerHTML=(a.featured_image?'<img src="'+esc(a.featured_image)+'" alt="'+esc(a.title)+'">':'<div class="feature-orb">K</div>')+'<span>TOP STORY · '+esc(a.category_name)+'</span><h2>'+esc(a.title)+'</h2><a href="'+url(a)+'">పూర్తి వార్త చదవండి →</a>';}}catch(e){console.error(e);document.getElementById("latestNews").innerHTML='<div class="empty-state">వార్తలు లోడ్ కాలేదు: '+esc(e.message||e)+'</div>';document.getElementById("trendingList").textContent="వార్తలు అందుబాటులో లేవు.";}}
+function clock(){const d=new Date(),date=new Intl.DateTimeFormat("te-IN",{timeZone:"Asia/Kolkata",day:"2-digit",month:"long",year:"numeric"}).format(d),time=new Intl.DateTimeFormat("en-IN",{timeZone:"Asia/Kolkata",hour:"2-digit",minute:"2-digit",hour12:true}).format(d);document.getElementById("siteDateTime").textContent=date+" · "+time+" IST";}
+document.getElementById("searchForm").addEventListener("submit",e=>{e.preventDefault();const q=document.getElementById("searchInput").value.trim().toLowerCase();render("latestNews",articles.filter(a=>(a.title+" "+(a.summary||"")+" "+a.category_name).toLowerCase().includes(q)).slice(0,12),"ఈ పదానికి సంబంధించిన వార్తలు కనిపించలేదు.");document.getElementById("latest").scrollIntoView({behavior:"smooth"});});clock();setInterval(clock,30000);loadNews();
+</script></body></html>
