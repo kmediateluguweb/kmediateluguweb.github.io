@@ -1,4 +1,5 @@
 name: Update News Sitemap and Static Articles
+# Regenerate static article URLs whenever this workflow definition is refreshed.
 
 on:
   workflow_dispatch:
