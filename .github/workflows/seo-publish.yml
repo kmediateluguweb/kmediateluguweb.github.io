@@ -1,5 +1,6 @@
 name: Publish SEO article pages and sitemaps
 on:
+  push:
   workflow_dispatch:
   schedule:
     - cron: "*/30 * * * *"
