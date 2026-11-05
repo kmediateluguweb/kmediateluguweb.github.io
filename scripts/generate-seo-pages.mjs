@@ -61,6 +61,7 @@ await fs.writeFile("sitemap.xml", `<?xml version="1.0" encoding="UTF-8"?>\n<urls
 
 const cutoff = Date.now() - 48 * 60 * 60 * 1000;
 const recent = urls.filter(x => Date.parse(x.published) >= cutoff).slice(0, 1000);
-const newsEntries = recent.map(x => `<url><loc>${x.url}</loc><news:news><news:publication><news:name>K Media Telugu</news:name><news:language>te</news:language></news:publication><news:publication_date>${x.published}</news:publication_date><news:title>${esc(x.title)}</news:title></news:news></url>`).join("");
+const xmlEsc = (value = "") => String(value).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+const newsEntries = recent.map(x => `<url><loc>${xmlEsc(x.url)}</loc><news:news><news:publication><news:name>K Media Telugu</news:name><news:language>te</news:language></news:publication><news:publication_date>${xmlEsc(x.published)}</news:publication_date><news:title>${xmlEsc(x.title.slice(0, 100))}</news:title></news:news></url>`).join("");
 await fs.writeFile("news-sitemap.xml", `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:news="http://www.google.com/schemas/sitemap-news/0.9">${newsEntries}</urlset>\n`);
 console.log(`Generated ${urls.length} article pages; ${recent.length} recent news sitemap entries.`);
