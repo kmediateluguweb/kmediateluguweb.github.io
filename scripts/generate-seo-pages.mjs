@@ -43,16 +43,16 @@ for (const item of articles) {
 <link rel="icon" href="/K%20Media%20Logo.jpg"><link rel="stylesheet" href="/style.css">
 <script type="application/ld+json">${JSON.stringify({"@context":"https://schema.org","@type":"NewsArticle","headline":title,"description":description,"image":[image],"datePublished":published,"dateModified":modified,"inLanguage":"te-IN","mainEntityOfPage":url,"author":{"@type":"Organization","name":"K Media Telugu"},"publisher":{"@type":"NewsMediaOrganization","name":"K Media Telugu","logo":{"@type":"ImageObject","url":`${SITE}/K%20Media%20Logo.jpg`}}})}</script>
 <style>.article-wrap{max-width:850px;margin:40px auto;background:#fff;padding:28px;border-radius:14px}.article-wrap img{width:100%;max-height:480px;object-fit:cover;border-radius:10px}.article-content{font-size:18px;line-height:1.9;overflow-wrap:anywhere}.article-meta{color:#777;font-size:14px}@media(max-width:700px){.article-wrap{margin:18px auto;padding:18px}}</style></head>
-<body><header class="top"><div class="container nav"><a class="logo" href="/">K MEDIA <span>TELUGU</span></a><nav><a href="/">హోమ్</a><a href="/#latest">తాజా వార్తలు</a><a href="/about.html">మా గురించి</a></nav></div></header>
+<body><header class="top"><div class="container nav"><a class="logo" href="/">K MEDIA <span>TELUGU</span></a><nav><a href="/">హోమ్</a><a href="/#latest">తాజా వార్తలు</a><a href="/about.html">మా గురించి</a><a href="/editorial-policy.html">సంపాదకీయ విధానం</a></nav></div></header>
 <main class="container"><article class="article-wrap"><p class="eyebrow">K MEDIA TELUGU · ${esc(category)}</p><h1>${esc(item.title)}</h1><p class="article-meta">${esc(dateText(item.published_at))} · K Media Telugu</p><img src="${esc(image)}" alt="${esc(item.title)}" fetchpriority="high"><div class="article-content">${body}</div><p><a href="/">← హోమ్‌కు తిరిగి వెళ్లండి</a></p></article></main>
-<footer><div class="copyright">© 2026 K Media Telugu. All rights reserved. | <a href="/privacy-policy.html">Privacy Policy</a> | <a href="/contact.html">Contact</a></div></footer></body></html>`;
+<footer><div class="copyright">© 2026 K Media Telugu. All rights reserved. | <a href="/privacy-policy.html">Privacy Policy</a> | <a href="/contact.html">Contact</a> | <a href="/editorial-policy.html">Editorial Policy</a></div></footer></body></html>`;
   await import("node:fs/promises").then(fs => fs.mkdir(`.${dir}`, { recursive: true }));
   await import("node:fs/promises").then(fs => fs.writeFile(`.${dir}/index.html`, html));
   urls.push({ url, published, modified, title: item.title });
 }
 
 const fs = await import("node:fs/promises");
-const fixed = ["", "about.html", "contact.html", "privacy-policy.html"];
+const fixed = ["", "about.html", "contact.html", "privacy-policy.html", "editorial-policy.html"];
 const sitemapEntries = [
   ...fixed.map(path => `<url><loc>${SITE}/${path}</loc></url>`),
   ...urls.map(x => `<url><loc>${x.url}</loc><lastmod>${x.modified}</lastmod></url>`)
