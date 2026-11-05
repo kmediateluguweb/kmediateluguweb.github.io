@@ -1,7 +1,7 @@
 const SITE = "https://kmediatelugu.rweb.site";
 const API = "https://mewyojxgsuceppsauesh.supabase.co";
 const KEY = "sb_publishable_-ee5Pt9U0ZvZuUkipLcq-Q_KBXKsEDa";
-const headers = { apikey: KEY, Authorization: `Bearer ${KEY}` };
+const headers = { apikey: KEY };
 
 const esc = (value = "") => String(value).replace(/[&<>"']/g, c => ({
   "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;"
