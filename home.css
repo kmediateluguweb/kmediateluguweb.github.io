@@ -62,3 +62,21 @@ footer{background:#101114}
 .news-card img{display:block}
 button,a,input{touch-action:manipulation}
 @media(max-width:560px){.video-categories{grid-template-columns:1fr;gap:10px}.video-category-card{padding:16px}.video-category-card h2{font-size:18px}.video-panel{gap:12px}.video-frame{min-height:190px}}
+
+
+/* K Media Telugu premium promotions banner */
+.kmt-promo-hero{position:relative;isolation:isolate;overflow:hidden;margin:20px 0 8px;padding:clamp(18px,3vw,34px);border-radius:22px;color:#fff;background:radial-gradient(ellipse at 12% 10%,#6d2528 0,transparent 35%),radial-gradient(ellipse at 90% 85%,#8b4a13 0,transparent 35%),linear-gradient(120deg,#090b10,#20242c 48%,#380e14);border:1px solid #9c7771;box-shadow:0 16px 38px #10111430}
+.kmt-promo-hero:before{content:"";position:absolute;inset:9px;border:1px solid #e6b96b80;border-radius:16px;pointer-events:none;z-index:-1}
+.kmt-promo-top{display:flex;align-items:center;justify-content:center;gap:14px;flex-wrap:wrap;text-align:center}
+.kmt-promo-kicker{font-size:clamp(22px,3vw,34px);font-weight:900;letter-spacing:2px;color:#fff}
+.kmt-promo-sub{font-size:11px;letter-spacing:3px;color:#e8c58b;font-weight:800}
+.kmt-promo-headline{display:flex;flex-direction:column;align-items:center;text-align:center;gap:3px;margin:20px 0;padding:17px 8px;border-top:1px solid #d9a75d;border-bottom:1px solid #d9a75d;background:linear-gradient(90deg,transparent,#b51e25a8,transparent)}
+.kmt-promo-headline span{font-size:clamp(17px,2.5vw,26px);font-weight:800}.kmt-promo-headline strong{font-size:clamp(29px,5vw,54px);line-height:1.2;color:#ffd779;text-shadow:0 3px 15px #000}
+.kmt-promo-services{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin:18px 0}
+.kmt-promo-services>div{min-height:112px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;text-align:center;border:1px solid #c99c5d;border-radius:13px;background:linear-gradient(145deg,#ffffff12,#0008);box-shadow:inset 0 0 22px #e6b96b12}
+.kmt-promo-services b{font-size:27px}.kmt-promo-services strong{font-size:clamp(13px,2vw,20px);letter-spacing:1px}.kmt-promo-services span{font-size:11px;color:#ffd779;font-weight:900;letter-spacing:1.5px}
+.kmt-promo-features{display:flex;justify-content:center;gap:10px 20px;flex-wrap:wrap;padding:13px 4px;border-top:1px solid #ffffff35;border-bottom:1px solid #ffffff35;color:#f4e9d8;font-size:11px;font-weight:700}
+.kmt-promo-cta{display:flex;align-items:center;justify-content:center;gap:13px;margin:18px auto 0;padding:13px 18px;max-width:700px;border-radius:14px;background:linear-gradient(100deg,#e13b68,#8e1557);border:1px solid #ffb7c9;color:#fff;box-shadow:0 8px 25px #e13b6840}
+.kmt-ig{font-size:32px}.kmt-promo-cta span:nth-child(2){display:flex;flex-direction:column;gap:4px;flex:1}.kmt-promo-cta small{font-size:9px;letter-spacing:1.3px;color:#ffe1eb}.kmt-promo-cta strong{font-size:clamp(12px,2vw,17px)}.kmt-promo-cta>b{font-size:11px;white-space:nowrap;background:#fff;color:#a3174f;border-radius:20px;padding:9px 12px}
+.kmt-promo-cta:hover{filter:brightness(1.1);transform:translateY(-2px)}
+@media(max-width:560px){.kmt-promo-hero{padding:16px 12px;border-radius:16px}.kmt-promo-services{gap:6px}.kmt-promo-services>div{min-height:90px}.kmt-promo-services b{font-size:22px}.kmt-promo-services strong{font-size:11px}.kmt-promo-services span{font-size:9px}.kmt-promo-features{gap:8px 12px;font-size:9px}.kmt-promo-cta{gap:8px;padding:11px 10px}.kmt-promo-cta>b{font-size:9px;padding:8px}.kmt-promo-cta strong{font-size:11px}}
