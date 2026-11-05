@@ -33,8 +33,7 @@ out_dir.mkdir(parents=True)
 used = set()
 for article in articles:
     article_id = str(article.get("id", ""))
-    slug = slugify(article.get("slug") or article.get("title"), "news")
-    slug = f"{slug}-{article_id[:8]}"
+    slug = "news-" + re.sub(r"[^a-zA-Z0-9]", "", article_id)[:8]
     if slug in used:
         slug = f"{slug}-{len(used)}"
     used.add(slug)
