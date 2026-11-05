@@ -1,0 +1,24 @@
+{
+  "name": "K Media Telugu",
+  "short_name": "K Media",
+  "description": "తాజా తెలుగు వార్తలు, Bigg Boss, సినిమా, రాజకీయాలు మరియు Public Talk",
+  "lang": "te-IN",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#101114",
+  "theme_color": "#d71920",
+  "categories": [
+    "news",
+    "entertainment"
+  ],
+  "icons": [
+    {
+      "src": "/K%20Media%20Logo.jpg",
+      "sizes": "any",
+      "type": "image/jpeg",
+      "purpose": "any"
+    }
+  ]
+}
