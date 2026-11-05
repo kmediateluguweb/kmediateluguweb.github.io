@@ -68,7 +68,7 @@ textarea{min-height:110px}
 <label>Password</label>
 <input id="password" type="password" placeholder="Password">
 <button class="primary" id="loginBtn">Login</button>
-<div id="message"></div>
+<div id="loginMessage" role="status" aria-live="polite"></div>
 </section>
 
 <section id="dashboard" style="display:none">
@@ -116,7 +116,7 @@ textarea{min-height:110px}
 <button class="primary" id="saveBtn">Save News</button>
 <button class="secondary" id="cancelBtn" style="display:none">Cancel Edit</button>
 </div>
-<div id="message"></div>
+<div id="dashboardMessage" role="status" aria-live="polite"></div>
 </div>
 
 <div class="panel">
@@ -134,9 +134,11 @@ const SUPABASE_KEY = "sb_publishable_-ee5Pt9U0ZvZuUkipLcq-Q_KBXKsEDa";
 const db = window.supabase.createClient(SUPABASE_URL,SUPABASE_KEY);
 const $ = id => document.getElementById(id);
 
-function message(text,color="#087c55"){
-  $("message").textContent=text;
-  $("message").style.color=color;
+function message(text,color="#087c55",target="dashboardMessage"){
+  const el=$(target);
+  if(!el)return;
+  el.textContent=text;
+  el.style.color=color;
 }
 
 async function checkAdmin(user){
@@ -174,18 +176,18 @@ async function showDashboard(user){
     await loadCategories();
     await loadNews();
   }catch(error){
-    message(error.message,"#dc3545");
+    message(error.message,"#dc3545","loginMessage");
     await db.auth.signOut();
   }
 }
 
 $("loginBtn").onclick=async()=>{
-  message("Logging in...");
+  message("Logging in...","#087c55","loginMessage");
   const {data,error}=await db.auth.signInWithPassword({
     email:$("email").value.trim(),
     password:$("password").value
   });
-  if(error){message(error.message,"#dc3545");return;}
+  if(error){message(error.message,"#dc3545","loginMessage");return;}
   await showDashboard(data.user);
 };
 
