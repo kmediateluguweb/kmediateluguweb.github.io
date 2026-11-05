@@ -6,7 +6,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>K Media Telugu | News</title>
 <meta name="description" content="K Media Telugu తాజా తెలుగు వార్తలు">
-<meta name="robots" content="index,follow,max-image-preview:large">
+<meta name="robots" content="noindex,follow">
 <meta property="og:site_name" content="K Media Telugu">
 <meta property="og:type" content="article">
 <meta property="og:locale" content="te_IN">
@@ -75,6 +75,7 @@ return;
 }
 
 const seoTitle=data.seo_title||data.title;
+const staticArticleUrl = "https://kmediatelugu.rweb.site/articles/news-"+String(id).replace(/[^a-zA-Z0-9]/g,"").slice(0,8)+"/";
 const metaDescription=data.meta_description||data.summary||data.title;
 
 
@@ -85,7 +86,7 @@ const articleSchema = {
   "description": metaDescription,
   "mainEntityOfPage": {
     "@type": "WebPage",
-    "@id": location.href
+    "@id": staticArticleUrl
   },
   "publisher": {
     "@type": "NewsMediaOrganization",
@@ -102,7 +103,7 @@ const articleSchema = {
   },
   "inLanguage": "te-IN",
   ...(data.featured_image ? {"image": [data.featured_image]} : {}),
-  ...(data.published_at ? {"datePublished": data.published_at, "dateModified": data.published_at} : {})
+  ...(data.published_at ? {"datePublished": data.published_at, "dateModified": data.published_at} : {}), "url": staticArticleUrl
 };
 const schemaScript = document.createElement('script');
 schemaScript.type = 'application/ld+json';
@@ -131,7 +132,7 @@ const socialMeta = (attr, key, value) => {
 };
 socialMeta('property','og:type','article');
 socialMeta('property','og:image',data.featured_image || 'https://kmediatelugu.rweb.site/K%20Media%20Logo.jpg');
-socialMeta('property','og:url',location.href);
+socialMeta('property','og:url',staticArticleUrl);
 socialMeta('name','twitter:card','summary_large_image');
 socialMeta('name','twitter:title',seoTitle);
 socialMeta('name','twitter:description',metaDescription);
@@ -139,7 +140,7 @@ socialMeta('name','twitter:image',data.featured_image || 'https://kmediatelugu.r
 
 let canonical=document.querySelector('link[rel="canonical"]');
 if (!canonical) { canonical=document.createElement('link'); canonical.setAttribute('rel','canonical'); document.head.appendChild(canonical); }
-canonical.setAttribute('href',location.href);
+canonical.setAttribute('href',staticArticleUrl);
 socialMeta('property','og:site_name','K Media Telugu');
 socialMeta('property','og:locale','te_IN');
 
