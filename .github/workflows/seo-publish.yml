@@ -1,0 +1,33 @@
+name: Publish SEO article pages and sitemaps
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: "*/30 * * * *"
+permissions:
+  contents: write
+concurrency:
+  group: seo-static-publishing
+  cancel-in-progress: false
+jobs:
+  generate:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - name: Generate static article pages and sitemaps
+        run: node scripts/generate-seo-pages.mjs
+      - name: Commit generated SEO pages
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add articles sitemap.xml news-sitemap.xml
+          if git diff --cached --quiet; then
+            echo "No SEO page changes."
+          else
+            git commit -m "Update published news SEO pages and sitemaps"
+            git push
+          fi
