@@ -7,7 +7,7 @@ from datetime import datetime, timedelta, timezone
 from pathlib import Path
 from xml.etree.ElementTree import Element, SubElement, ElementTree, register_namespace
 
-BASE = "https://kmediatelugu.rweb.site/"
+BASE = "https://kmediatelugu.com/"
 SITEMAP_NS = "http://www.sitemaps.org/schemas/sitemap/0.9"
 NEWS_NS = "http://www.google.com/schemas/sitemap-news/0.9"
 register_namespace("", SITEMAP_NS)
