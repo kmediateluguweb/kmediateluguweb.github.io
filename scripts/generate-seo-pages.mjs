@@ -1,4 +1,4 @@
-const SITE = "https://kmediatelugu.rweb.site";
+const SITE = "https://kmediatelugu.com";
 const API = "https://mewyojxgsuceppsauesh.supabase.co";
 const KEY = "sb_publishable_-ee5Pt9U0ZvZuUkipLcq-Q_KBXKsEDa";
 const headers = { apikey: KEY };
