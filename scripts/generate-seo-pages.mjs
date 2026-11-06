@@ -28,6 +28,19 @@ const feed = articles.filter(item => item.id && item.title).map(item => ({
   category_slug: categoryMap.get(String(item.category_id))?.slug || ""
 }));
 await fs.writeFile("news-feed.json", JSON.stringify(feed));
+const homeFeed = feed.slice(0, 40).map(item => ({
+  id: item.id,
+  title: item.title,
+  slug: item.slug,
+  summary: item.summary || "",
+  featured_image: item.featured_image || "",
+  published_at: item.published_at || "",
+  category_id: item.category_id,
+  category_name: item.category_name,
+  category_slug: item.category_slug
+}));
+await fs.writeFile("home-feed.json", JSON.stringify(homeFeed));
+
 
 
 for (const item of articles) {
