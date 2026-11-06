@@ -1,5 +1,5 @@
-const CACHE_NAME = "k-media-telugu-v9";
-const APP_SHELL = ["/", "/index.html", "/home.css", "/style.css", "/manifest.webmanifest"];
+const CACHE_NAME = "k-media-telugu-v10";
+const APP_SHELL = ["/", "/index.html", "/home.css?v=20261106-7", "/style.css", "/manifest.webmanifest", "/news-feed.json"];
 
 self.addEventListener("install", event => {
   event.waitUntil(caches.open(CACHE_NAME).then(cache => cache.addAll(APP_SHELL)).then(() => self.skipWaiting()));
@@ -18,17 +18,23 @@ self.addEventListener("fetch", event => {
   const url = new URL(request.url);
   if (request.method !== "GET" || url.origin !== self.location.origin) return;
 
-  const freshAsset = request.mode === "navigate" || /\.(css|js|json)$/.test(url.pathname);
-  if (freshAsset) {
-    event.respondWith(
-      fetch(request, { cache: "no-store" }).then(response => {
+  const isPageOrData = request.mode === "navigate" || /\\.(css|js|json)$/.test(url.pathname);
+  if (isPageOrData) {
+    event.respondWith((async () => {
+      const cached = await caches.match(request);
+      const refresh = fetch(request).then(response => {
         if (response && response.ok) {
           const copy = response.clone();
           caches.open(CACHE_NAME).then(cache => cache.put(request, copy));
         }
         return response;
-      }).catch(() => caches.match(request).then(cached => cached || (request.mode === "navigate" ? caches.match("/index.html") : Response.error())))
-    );
+      });
+      if (cached) {
+        event.waitUntil(refresh.catch(() => {}));
+        return cached;
+      }
+      return refresh.catch(() => request.mode === "navigate" ? caches.match("/index.html") : Response.error());
+    })());
     return;
   }
 
