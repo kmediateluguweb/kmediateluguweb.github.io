@@ -200,7 +200,7 @@ $("logout").onclick=async()=>{
 async function loadNews(){
   $("newsList").textContent="Loading...";
   const {data,error}=await db.from("news_articles")
-    .select("id,title,slug,status,created_at,category_id,view_count")
+    .select("id,title,slug,status,created_at,category_id,view_count,featured_image")
     .order("created_at",{ascending:false});
 
   if(error){$("newsList").textContent=error.message;return;}
@@ -217,6 +217,16 @@ async function loadNews(){
 
     const title=document.createElement("h4");
     title.textContent=item.title;
+
+    if(item.featured_image){
+      const photo=document.createElement("img");
+      photo.src=item.featured_image;
+      photo.alt=item.title+" - News photo";
+      photo.loading="lazy";
+      photo.style.cssText="display:block;width:100%;max-width:240px;max-height:150px;object-fit:cover;border-radius:8px;margin:0 0 10px";
+      photo.onerror=()=>{photo.alt="News photo unavailable";photo.style.display="none";};
+      div.appendChild(photo);
+    }
 
     const info=document.createElement("p");
     info.className="small";
