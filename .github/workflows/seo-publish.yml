@@ -30,5 +30,6 @@ jobs:
             echo "No SEO page changes."
           else
             git commit -m "Update published news SEO pages and sitemaps"
+            git pull --rebase origin main
             git push
           fi
