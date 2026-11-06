@@ -53,7 +53,7 @@ for (const item of articles) {
   const category = categoryMap.get(String(item.category_id))?.name || "తాజా వార్తలు";
   const published = iso(item.published_at);
   const modified = iso(item.updated_at || item.published_at);
-  const cleanContent = String(item.content || "").split(/\r?\n/).filter(line => !/^\s*మూల వార్త\s*:/u.test(line) && !/^\s*https?:\/\/news\.google\.com\/rss\//i.test(line)).join("\n");
+  const cleanContent = String(item.content || "").split(/\r?\n/).filter(line => !/మూల వార్త\s*:/u.test(line) && !/https?:\/\/news\.google\.com\/rss\//i.test(line)).join("\n").replace(/మూల వార్త\s*:[\s\S]*$/u, "").trim();
   const body = cleanContent.split(/\r?\n/).filter(Boolean).map(line => `<p>${esc(line)}</p>`).join("\n");
   const html = `<!doctype html>
 <html lang="te"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
