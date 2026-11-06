@@ -414,3 +414,13 @@ button,a,input{touch-action:manipulation}
 .hero-panel>.hero-feature .hero-photo-link img{position:absolute!important;inset:0!important;width:100%!important;height:100%!important;object-fit:cover!important;z-index:0!important}
 .hero-panel>.hero-feature .hero-photo-link span,.hero-panel>.hero-feature .hero-photo-link strong{position:relative!important;z-index:1!important;color:#fff!important}
 @media(max-width:560px){.hero-panel>.hero-feature{height:210px!important;min-height:210px!important}.hero-panel>.hero-feature .hero-photo-link{padding:14px!important}}
+
+/* Remove any stray oversized logo image from the homepage hero; keep only the featured story image */
+.hero-panel{background:transparent!important}
+.hero-panel>img,.hero-panel>.hero-copy img,.hero-panel>.hero-feature>img{display:none!important}
+.hero-panel>.hero-feature{background:#17191f!important}
+.hero-panel>.hero-feature .hero-photo-link img{display:block!important}
+.side-brand img{width:92px!important;max-width:92px!important;height:92px!important;object-fit:contain!important;margin:0 auto 18px!important}
+.brand-logo{width:54px!important;height:54px!important;max-width:54px!important;object-fit:contain!important}
+.footer-brand .brand-logo{width:44px!important;height:44px!important}
+@media(max-width:700px){.side-brand img{width:60px!important;height:60px!important}.brand-logo{width:44px!important;height:44px!important}}
