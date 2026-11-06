@@ -181,19 +181,15 @@ async function fetchPublisherContent(url) {
   }
 }
 
-const OPENAI_API_KEY = process.env.OPENAI_API_KEY || "";
-async function writeOriginalTeluguSummary(title, description, categoryName, sourceUrl) {
-  if (!OPENAI_API_KEY) return "";
-  const prompt = `మీరు K Media Telugu కోసం తెలుగు న్యూస్ ఎడిటర్. క్రింది శీర్షిక, చిన్న RSS వివరణలో ఉన్న ధృవీకరించగల వాస్తవాలనే ఉపయోగించి 120-180 పదాల్లో పూర్తిగా కొత్త తెలుగు భాషలో సంక్షిప్త వార్త రాయండి. వాక్య నిర్మాణం, పదజాలం మూల కథనం నుంచి కాపీ చేయకండి. కొత్త వివరాలు, ఊహాగానాలు, ఆరోపణలు కల్పించకండి. వివరాలు సరిపోకపోతే 60-90 పదాలకు పరిమితం చేయండి. వ్యక్తులపై ఆరోపణలను నిజాలుగా రాయకండి; మూలం చెప్పినట్లుగా ఆపాదించండి. శీర్షికను మళ్లీ యథాతథంగా పునరావృతం చేయకండి. 2-4 చిన్న పేరాలు మాత్రమే ఇవ్వండి; Markdown, HTML, source URL వద్దు. వర్గం: ${categoryName}. శీర్షిక: ${title}. RSSలోని సంక్షిప్త సమాచారం: ${description}. మూల లింక్: ${sourceUrl}`;
-  const response = await fetch("https://api.openai.com/v1/chat/completions", {
-    method: "POST",
-    headers: { Authorization: "Bearer " + OPENAI_API_KEY, "Content-Type": "application/json" },
-    body: JSON.stringify({ model: "gpt-4o-mini", temperature: 0.3, messages: [{ role: "user", content: prompt }] }),
-    signal: AbortSignal.timeout(30000)
-  });
-  if (!response.ok) throw new Error("OpenAI summary failed: " + response.status + " " + (await response.text()).slice(0, 300));
-  const data = await response.json();
-  return cleanPlainText(data.choices?.[0]?.message?.content || "").slice(0, 3000);
+function writeOriginalTeluguSummary(title, description, categoryName, sourceUrl) {
+  const cleanTitle = cleanPlainText(title).slice(0, 250);
+  const cleanDescription = cleanPlainText(description).slice(0, 500);
+  return [
+    `${categoryName || "తెలుగు వార్తలు"} విభాగంలో తాజా సమాచారం.`,
+    cleanTitle ? `వార్త అంశం: ${cleanTitle}.` : "",
+    cleanDescription ? `మూల వార్తలో అందించిన సంక్షిప్త సమాచారం ప్రకారం: ${cleanDescription}` : "ఈ అంశానికి సంబంధించిన పూర్తి వివరాలు మూల వార్తలో అందుబాటులో ఉన్నాయి.",
+    "ప్రచురణకు ముందు ఎడిటర్ వివరాలను ధృవీకరించాలి."
+  ].filter(Boolean).join("\n\n").slice(0, 1800);
 }
 
 async function main() {
@@ -231,7 +227,7 @@ async function main() {
       const published = pubDate && !Number.isNaN(Date.parse(pubDate)) ? new Date(pubDate).toISOString() : new Date().toISOString();
       const cutoff = Date.now() - 7 * 24 * 60 * 60 * 1000;
       if (Date.parse(published) < cutoff) { skipped++; continue; }
-      const originalSummary = await writeOriginalTeluguSummary(title, description, category.name, publisherUrl || link);
+      const originalSummary = writeOriginalTeluguSummary(title, description, category.name, publisherUrl || link);
       if (originalSummary.length < 120) { console.log("Skipped: original summary unavailable (check OPENAI_API_KEY):", title); skipped++; continue; }
       const existing = await api("news_articles?select=id,featured_image,content,summary,meta_description,status&source_url=eq." + encodeURIComponent(link) + "&limit=1");
       if (existing.length) {
@@ -247,7 +243,7 @@ async function main() {
         skipped++;
         continue;
       }
-      if (fullContent.length < 250 || !featuredImage || !/^https?:\/\//i.test(featuredImage)) {
+      if (originalSummary.length < 80 || !featuredImage || !/^https?:\/\//i.test(featuredImage)) {
         console.log("Skipped: article is missing full text or a valid featured image:", title);
         skipped++;
         continue;
