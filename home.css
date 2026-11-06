@@ -396,3 +396,12 @@ button,a,input{touch-action:manipulation}
 /* Fast lightweight brand mark replaces the 579 KB raster logo on page load. */
 .brand-mark{display:grid;place-items:center;flex:0 0 65px;width:65px;height:65px;border-radius:15px;background:linear-gradient(135deg,#d71920,#15171d);color:#fff;font-size:42px;font-weight:900;letter-spacing:-4px;box-shadow:0 5px 14px #0002;}
 @media(max-width:560px){.brand-mark{width:52px;height:52px;flex-basis:52px;font-size:34px;border-radius:12px;}}
+
+/* Official K Media Telugu identity */
+.brand-logo{width:68px;height:68px;object-fit:contain;background:#fff;border-radius:12px;padding:2px;box-shadow:0 4px 14px #0003}
+.side-brand img{display:block;width:100%;max-width:150px;height:auto;object-fit:contain;margin:0 auto 22px;border-radius:12px;background:#fff}
+.news-card{position:relative}
+.news-card:before{content:"";position:absolute;z-index:2;top:94px;right:8px;width:43px;height:43px;background:#ffffffd9 url("/K%20Media%20Logo.jpg") center/contain no-repeat;border-radius:7px;opacity:.9;pointer-events:none}
+.trend-image-wrap{position:relative;display:block;width:74px;height:64px}
+.trend-image-wrap:after{content:"";position:absolute;right:2px;bottom:2px;width:23px;height:23px;background:#ffffffdf url("/K%20Media%20Logo.jpg") center/contain no-repeat;border-radius:4px}
+@media(max-width:700px){.brand-logo{width:48px;height:48px}.side-brand img{max-width:105px}}
