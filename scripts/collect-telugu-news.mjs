@@ -51,7 +51,7 @@ function cleanPlainText(value) {
     .replace(/\s+/g, " ").trim();
 }
 const tag = (xml, name) => {
-  const re = new RegExp("<" + name + "(?:\\s[^>]*)?>([\\s\\S]*?)<\\/" + name + ">", "i");
+  const re = new RegExp("<" + name + "(?:\s[^>]*)?>([\s\\S]*?)<\\/" + name + ">", "i");
   return decode(xml.match(re)?.[1] || "");
 };
 async function api(path, options = {}) {
@@ -183,12 +183,12 @@ async function fetchPublisherContent(url) {
 
 function cleanNewsTitle(value) {
   return cleanPlainText(value)
-    .replace(/\\s*[-|–—:]\\s*(?:NTV(?:\\s+Telugu)?|TV9(?:\\s+Telugu)?|ABN(?:\\s+Andhra\\s+Jyothy)?|ETV(?:\\s+Telangana)?|Sakshi(?:\\s+Post)?|Eenadu|Andhra\\s+Jyothy|The\\s+Hindu|Times\\s+of\\s+India|India\\s+Today|AP7AM|Samayam(?:\\s+Telugu)?|Greatandhra|123telugu|Idlebrain|Gulte)\\s*$/i, "")
+    .replace(/\s*[-|–—:]\s*(?:NTV(?:\s+Telugu)?|TV9(?:\s+Telugu)?|ABN(?:\s+Andhra\s+Jyothy)?|ETV(?:\s+Telangana)?|Sakshi(?:\s+Post)?|Eenadu|Andhra\s+Jyothy|The\s+Hindu|Times\s+of\s+India|India\s+Today|AP7AM|Samayam(?:\s+Telugu)?|Greatandhra|123telugu|Idlebrain|Gulte)\s*$/i, "")
     .trim();
 }
 function writeOriginalTeluguSummary(title, description, categoryName, sourceUrl) {
-  const cleanTitle = cleanPlainText(title).slice(0, 250);
-  const cleanDescription = cleanPlainText(description).slice(0, 500);
+  const cleanTitle = cleanNewsTitle(title).slice(0, 250);
+  const cleanDescription = cleanNewsTitle(description).slice(0, 500);
   return [
     `${categoryName || "తెలుగు వార్తలు"} విభాగంలో తాజా సమాచారం.`,
     cleanTitle ? `వార్త అంశం: ${cleanTitle}.` : "",
@@ -240,7 +240,11 @@ async function main() {
         const patch = { updated_at: new Date().toISOString() };
         if (featuredImage && (!existing[0].featured_image || isGoogleImage(existing[0].featured_image))) patch.featured_image = featuredImage;
         if (existing[0].status === "draft") {
-          if (!existing[0].content || existing[0].content.length < 250 || /news\.google\.com\/rss\/|<a\b|<font\b/i.test(existing[0].content)) { patch.content = originalSummary; patch.summary = originalSummary.slice(0, 500); patch.meta_description = originalSummary.slice(0, 160); }
+          patch.title = title.slice(0, 250);
+          patch.seo_title = title.slice(0, 70);
+          patch.content = originalSummary;
+          patch.summary = originalSummary.slice(0, 500);
+          patch.meta_description = originalSummary.slice(0, 160);
         }
         if (Object.keys(patch).length > 1) {
           await api("news_articles?id=eq." + encodeURIComponent(existing[0].id), { method: "PATCH", body: JSON.stringify(patch) });
