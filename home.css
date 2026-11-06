@@ -357,3 +357,14 @@ button,a,input{touch-action:manipulation}
   .mobile-bottom-nav a, .mobile-bottom-nav a small { color:#fff!important; }
   .mobile-bottom-nav a span { color:#ff646a!important; }
 }
+
+
+/* TOP STORY: always show readable headline, even if remote image fails */
+.hero-feature{background:linear-gradient(145deg,#111318 0%,#292d35 58%,#8d1018 100%)!important;color:#fff!important}
+.hero-feature .hero-photo-link{position:absolute;inset:0;display:flex;flex-direction:column;justify-content:flex-end;gap:9px;padding:20px;color:#fff;text-decoration:none;overflow:hidden}
+.hero-feature .hero-photo-link img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:.52}
+.hero-feature .hero-photo-link:after{content:"";position:absolute;inset:25% 0 0;background:linear-gradient(transparent,rgba(0,0,0,.88));pointer-events:none}
+.hero-feature .hero-photo-link span,.hero-feature .hero-photo-link strong{position:relative;z-index:2;color:#fff}
+.hero-feature .hero-photo-link span{align-self:flex-start;background:#d71920;padding:6px 10px;border-radius:4px;font-size:11px;font-weight:900;letter-spacing:.5px}
+.hero-feature .hero-photo-link strong{font-size:clamp(19px,4vw,27px);line-height:1.45;text-shadow:0 2px 5px #000}
+@media(max-width:600px){.hero-feature{background:linear-gradient(145deg,#111318,#292d35 60%,#8d1018)!important}.hero-feature .hero-photo-link{padding:18px}.hero-feature .hero-photo-link strong{font-size:clamp(18px,4.6vw,24px)}}
