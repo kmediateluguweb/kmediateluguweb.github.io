@@ -103,3 +103,9 @@ button,a,input{touch-action:manipulation}
 .hero-feature>img,.hero-feature .hero-photo-link{position:absolute;inset:0;width:100%;height:100%;display:block;}
 .hero-feature .hero-photo-link img{width:100%;height:100%;display:block;object-fit:cover;opacity:1;}
 .hero-feature .feature-orb{display:none;}
+
+/* Keep the homepage featured photo compact on desktop */
+.hero-panel{align-items:center;min-height:0;}
+.hero-feature{height:280px;min-height:280px;align-self:center;}
+@media(max-width:850px){.hero-feature{height:240px;min-height:240px;}}
+@media(max-width:560px){.hero-feature{height:190px;min-height:190px;}}
