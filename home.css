@@ -257,3 +257,68 @@ button,a,input{touch-action:manipulation}
   #latestNews .news-card p { font-size: 13px !important; line-height: 1.7 !important; }
   #heroFeature img { width: 100% !important; height: 100% !important; object-fit: cover !important; display: block !important; }
 }
+
+
+/* Eenadu-inspired mobile news experience — mobile only */
+.mobile-bottom-nav{display:none}
+@media(max-width:600px){
+  body{background:#f4f5f7!important;color:#15171b!important;padding-bottom:78px!important;overflow-x:hidden!important}
+  .topline{display:block!important;background:#111!important;color:#fff!important}
+  .top-inner{width:100%!important;padding:0 12px!important;min-height:34px!important}
+  .social-mini{display:none!important}
+  .trend{max-width:65vw;overflow:hidden;white-space:nowrap}
+  .site-header{background:#fff!important;color:#111!important;border-bottom:1px solid #e4e4e4!important}
+  .header-inner{width:100%!important;padding:10px 14px!important;display:grid!important;grid-template-columns:1fr!important;gap:8px!important}
+  .brand{justify-content:center!important;width:100%!important;gap:10px!important}
+  .brand img{width:58px!important;height:58px!important;object-fit:contain!important}
+  .brand strong{font-size:24px!important;color:#0876a9!important}
+  .brand strong em{color:#d71920!important}
+  .brand small{display:none!important}
+  .youtube-btn{display:none!important}
+  .search{width:100%!important;max-width:none!important;display:flex!important;border:1px solid #ddd!important;border-radius:24px!important;background:#f7f7f7!important;overflow:hidden!important}
+  .search input{min-width:0!important;font-size:14px!important;background:transparent!important;color:#222!important}
+  .search button{min-width:48px!important;background:#d71920!important}
+  .nav-bar{background:#075985!important;border:0!important;border-radius:0!important;box-shadow:none!important}
+  .main-nav{width:100%!important;padding:0 8px!important;display:flex!important;gap:0!important;overflow-x:auto!important;scrollbar-width:none!important}
+  .main-nav::-webkit-scrollbar{display:none}
+  .main-nav a{flex:0 0 auto!important;padding:13px 15px!important;color:#fff!important;font-size:14px!important;font-weight:800!important;border-right:1px solid #ffffff40!important;border-radius:0!important}
+  .main-nav a.active{background:#d71920!important}
+  .page-layout{width:100%!important;display:block!important;padding:10px 0 24px!important;margin:0!important}
+  .left-rail{display:none!important}
+  .main-column{width:100%!important;min-width:0!important}
+  .hero-panel{display:block!important;width:100%!important;margin:0 0 12px!important;padding:0!important;min-height:0!important;background:transparent!important;border:0!important;border-radius:0!important;box-shadow:none!important}
+  .hero-copy{display:none!important}
+  .hero-feature{display:block!important;position:relative!important;width:calc(100% - 24px)!important;margin:0 auto!important;height:auto!important;min-height:0!important;max-height:none!important;aspect-ratio:16/9!important;border:0!important;border-radius:12px!important;background:#ddd!important;overflow:hidden!important;box-shadow:0 2px 7px #0002!important}
+  .hero-feature .hero-photo-link{display:block!important;position:absolute!important;inset:0!important;width:100%!important;height:100%!important}
+  .hero-feature .hero-photo-link img{width:100%!important;height:100%!important;object-fit:cover!important}
+  .hero-feature .hero-photo-fallback{padding:18px!important}
+  .category-pills{display:flex!important;gap:8px!important;padding:8px 12px 14px!important;overflow-x:auto!important;white-space:nowrap!important}
+  .category-pills a{flex:0 0 auto!important;border:1px solid #e3e3e3!important;background:#fff!important;border-radius:7px!important;padding:9px 13px!important;font-size:13px!important;color:#222!important}
+  #latest{width:100%!important;padding:12px 12px 0!important;margin:0!important}
+  .section-title{margin-bottom:12px!important;border-bottom:2px solid #ddd!important;padding-bottom:9px!important}
+  .section-title h2{font-size:22px!important;color:#17191d!important}
+  .section-title>a{font-size:12px!important}
+  #latestNews{display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:10px!important;width:100%!important}
+  #latestNews .news-card{background:#fff!important;border:1px solid #e1e1e1!important;border-radius:10px!important;box-shadow:0 1px 4px #00000012!important}
+  #latestNews .news-card:first-child{grid-column:1/-1!important}
+  #latestNews .news-card-image,#latestNews .image-placeholder{width:100%!important;height:auto!important;aspect-ratio:16/9!important;object-fit:cover!important}
+  #latestNews .card-body{padding:9px!important}
+  #latestNews .news-card h3{font-size:15px!important;line-height:1.45!important;color:#17191d!important}
+  #latestNews .news-card p{font-size:12px!important;line-height:1.55!important;color:#62666b!important}
+  #latestNews .news-card a{font-size:12px!important}
+  .video-panel,.video-categories,.content-section:not(#latest),.shorts-panel{margin:18px 12px!important;border-radius:12px!important}
+  .video-panel{padding:14px!important}
+  .video-panel h2{font-size:20px!important}
+  .video-panel p{font-size:13px!important}
+  .video-frame{width:100%!important}
+  .video-categories{display:grid!important;grid-template-columns:1fr!important;gap:12px!important}
+  .content-section:not(#latest) .news-grid{display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:10px!important}
+  .content-section:not(#latest) .news-card-image,.content-section:not(#latest) .image-placeholder{height:auto!important;aspect-ratio:16/9!important}
+  .right-rail{display:none!important}
+  footer{padding-bottom:84px!important}
+  .mobile-bottom-nav{position:fixed!important;z-index:9999!important;left:0!important;right:0!important;bottom:0!important;display:grid!important;grid-template-columns:repeat(5,minmax(0,1fr))!important;background:#fff!important;border-top:1px solid #ddd!important;box-shadow:0 -2px 12px #00000012!important;padding:6px 2px calc(6px + env(safe-area-inset-bottom))!important}
+  .mobile-bottom-nav a{display:flex!important;flex-direction:column!important;align-items:center!important;justify-content:center!important;gap:2px!important;color:#4d535b!important;text-decoration:none!important;min-width:0!important}
+  .mobile-bottom-nav a span{font-size:25px!important;line-height:1.1!important;color:#087eb2!important;font-weight:900!important}
+  .mobile-bottom-nav a small{font-size:10px!important;font-weight:800!important}
+  body{padding-bottom:calc(70px + env(safe-area-inset-bottom))!important}
+}
