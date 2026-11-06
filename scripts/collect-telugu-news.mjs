@@ -116,6 +116,47 @@ async function resolveFeaturedImage(item, articleUrl) {
   return null;
 }
 
+
+function htmlText(value) {
+  return decode(String(value || "").replace(/<br\s*\/?>/gi, "\n").replace(/<\/(?:p|div|h[1-6]|li|article|section)>/gi, "\n"));
+}
+function collectArticleBody(html) {
+  const bodies = [];
+  for (const match of html.matchAll(/<script\b[^>]*type=["']application\/ld\+json["'][^>]*>([\s\S]*?)<\/script>/gi)) {
+    try {
+      const parsed = JSON.parse(match[1]);
+      const visit = value => {
+        if (!value || typeof value !== "object") return;
+        if (Array.isArray(value)) return value.forEach(visit);
+        if (typeof value.articleBody === "string") bodies.push(htmlText(value.articleBody));
+        if (value["@graph"]) visit(value["@graph"]);
+        if (value.mainEntity) visit(value.mainEntity);
+      };
+      visit(parsed);
+    } catch {}
+  }
+  for (const match of html.matchAll(/<(?:article|main)\b[^>]*>([\s\S]*?)<\/(?:article|main)>/gi)) {
+    const paragraphs = [...match[1].matchAll(/<p\b[^>]*>([\s\S]*?)<\/p>/gi)]
+      .map(m => htmlText(m[1])).filter(p => p.length > 35);
+    if (paragraphs.length) bodies.push(paragraphs.join("\n\n"));
+  }
+  return [...new Set(bodies)].sort((x,y) => y.length-x.length)[0] || "";
+}
+async function fetchPublisherContent(url) {
+  if (!url || !/^https?:\/\//i.test(url)) return "";
+  try {
+    const response = await fetch(url, {
+      headers: { "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 Chrome/130 Safari/537.36", "Accept": "text/html,application/xhtml+xml" },
+      redirect: "follow", signal: AbortSignal.timeout(12000)
+    });
+    if (!response.ok) return "";
+    return collectArticleBody((await response.text()).slice(0, 1800000)).slice(0, 12000);
+  } catch (error) {
+    console.warn("Could not extract publisher article:", url, error.message);
+    return "";
+  }
+}
+
 async function main() {
   const cats = await api("categories?select=id,name,slug&order=id");
   if (!cats?.length) throw new Error("No categories found in Supabase.");
@@ -132,22 +173,31 @@ async function main() {
       const title = tag(item, "title");
       const link = tag(item, "link");
       const description = tag(item, "description").replace(/https?:\/\/\S+/g, "").slice(0, 700);
-      const featuredImage = await resolveFeaturedImage(item, link);
+      const publisherUrl = await resolvePublisherUrl(link);
+      const [featuredImage, fullContent] = await Promise.all([
+        resolveFeaturedImage(item, link),
+        fetchPublisherContent(publisherUrl)
+      ]);
       const pubDate = tag(item, "pubDate");
       if (!title || !link || !/^https?:\/\//i.test(link) || seen.has(link)) { skipped++; continue; }
       seen.add(link);
       const published = pubDate && !Number.isNaN(Date.parse(pubDate)) ? new Date(pubDate).toISOString() : new Date().toISOString();
       const cutoff = Date.now() - 7 * 24 * 60 * 60 * 1000;
       if (Date.parse(published) < cutoff) { skipped++; continue; }
-      const existing = await api("news_articles?select=id,featured_image&source_url=eq." + encodeURIComponent(link) + "&limit=1");
+      const existing = await api("news_articles?select=id,featured_image,content&source_url=eq." + encodeURIComponent(link) + "&limit=1");
       if (existing.length) {
-        if (featuredImage && (!existing[0].featured_image || isGoogleImage(existing[0].featured_image))) {
-          await api("news_articles?id=eq." + encodeURIComponent(existing[0].id), {
-            method: "PATCH",
-            body: JSON.stringify({ featured_image: featuredImage, updated_at: new Date().toISOString() })
-          });
-          console.log("Added missing featured image to existing draft:", title);
+        const patch = { updated_at: new Date().toISOString() };
+        if (featuredImage && (!existing[0].featured_image || isGoogleImage(existing[0].featured_image))) patch.featured_image = featuredImage;
+        if (fullContent.length >= 250 && (!existing[0].content || existing[0].content.length < 250 || /news\.google\.com\/rss\//i.test(existing[0].content))) patch.content = fullContent;
+        if (Object.keys(patch).length > 1) {
+          await api("news_articles?id=eq." + encodeURIComponent(existing[0].id), { method: "PATCH", body: JSON.stringify(patch) });
+          console.log("Repaired existing article:", title);
         }
+        skipped++;
+        continue;
+      }
+      if (fullContent.length < 250) {
+        console.log("Skipped: publisher did not provide enough article text:", title);
         skipped++;
         continue;
       }
@@ -156,10 +206,10 @@ async function main() {
       const payload = {
         title: title.slice(0, 250),
         slug: safeSlug + "-" + shortHash,
-        summary: (description || title).slice(0, 500),
+        summary: (description || fullContent).slice(0, 500),
         seo_title: title.slice(0, 70),
-        meta_description: (description || title).slice(0, 160),
-        content: description || title,
+        meta_description: (description || fullContent).slice(0, 160),
+        content: fullContent,
         source_url: link,
         featured_image: featuredImage,
         category_id: category.id,
