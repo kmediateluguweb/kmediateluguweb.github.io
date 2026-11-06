@@ -11,7 +11,7 @@
 <meta property="og:type" content="article">
 <meta property="og:locale" content="te_IN">
 <meta name="twitter:card" content="summary_large_image">
-<link rel="canonical" href="https://kmediatelugu.rweb.site/article.html">
+<link rel="canonical" href="https://kmediatelugu.com/article.html">
 <link rel="icon" href="K%20Media%20Logo.jpg" type="image/jpeg">
 <link rel="stylesheet" href="style.css">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -75,7 +75,7 @@ return;
 }
 
 const seoTitle=data.seo_title||data.title;
-const staticArticleUrl = "https://kmediatelugu.rweb.site/articles/news-"+String(id).replace(/[^a-zA-Z0-9]/g,"").slice(0,8)+"/";
+const staticArticleUrl = "https://kmediatelugu.com/articles/news-"+String(id).replace(/[^a-zA-Z0-9]/g,"").slice(0,8)+"/";
 const metaDescription=data.meta_description||data.summary||data.title;
 
 
@@ -90,11 +90,11 @@ const articleSchema = {
   },
   "publisher": {
     "@type": "NewsMediaOrganization",
-    "@id": "https://kmediatelugu.rweb.site/#organization",
+    "@id": "https://kmediatelugu.com/#organization",
     "name": "K Media Telugu",
     "logo": {
       "@type": "ImageObject",
-      "url": "https://kmediatelugu.rweb.site/K%20Media%20Logo.jpg"
+      "url": "https://kmediatelugu.com/K%20Media%20Logo.jpg"
     }
   },
   "author": {
@@ -131,12 +131,12 @@ const socialMeta = (attr, key, value) => {
   tag.setAttribute('content', value);
 };
 socialMeta('property','og:type','article');
-socialMeta('property','og:image',data.featured_image || 'https://kmediatelugu.rweb.site/K%20Media%20Logo.jpg');
+socialMeta('property','og:image',data.featured_image || 'https://kmediatelugu.com/K%20Media%20Logo.jpg');
 socialMeta('property','og:url',staticArticleUrl);
 socialMeta('name','twitter:card','summary_large_image');
 socialMeta('name','twitter:title',seoTitle);
 socialMeta('name','twitter:description',metaDescription);
-socialMeta('name','twitter:image',data.featured_image || 'https://kmediatelugu.rweb.site/K%20Media%20Logo.jpg');
+socialMeta('name','twitter:image',data.featured_image || 'https://kmediatelugu.com/K%20Media%20Logo.jpg');
 
 let canonical=document.querySelector('link[rel="canonical"]');
 if (!canonical) { canonical=document.createElement('link'); canonical.setAttribute('rel','canonical'); document.head.appendChild(canonical); }
