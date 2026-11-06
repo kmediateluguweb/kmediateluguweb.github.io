@@ -4,10 +4,17 @@ const SUPABASE_URL = (process.env.SUPABASE_URL || "https://mewyojxgsuceppsauesh.
 const SERVICE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY;
 if (!SERVICE_KEY) throw new Error("Missing GitHub Actions secret: SUPABASE_SERVICE_ROLE_KEY");
 
+const makeFeed = (query, categoryKey) => ({
+  url: "https://news.google.com/rss/search?q=" + encodeURIComponent(query) + "&hl=te&gl=IN&ceid=IN:te",
+  categoryKey
+});
 const feeds = [
-  "https://news.google.com/rss/search?q=%E0%B0%A4%E0%B1%86%E0%B0%B2%E0%B1%81%E0%B0%97%E0%B1%81+%E0%B0%B8%E0%B0%BF%E0%B0%A8%E0%B0%BF%E0%B0%AE%E0%B0%BE+OR+%E0%B0%9F%E0%B0%BE%E0%B0%B2%E0%B1%80%E0%B0%B5%E0%B1%81%E0%B0%A1%E0%B1%8D&hl=te&gl=IN&ceid=IN:te",
-  "https://news.google.com/rss/search?q=%E0%B0%A4%E0%B1%86%E0%B0%B2%E0%B1%81%E0%B0%97%E0%B1%81+%E0%B0%95%E0%B1%8A%E0%B0%A4%E0%B1%8D%E0%B0%A4+%E0%B0%B8%E0%B0%BF%E0%B0%A8%E0%B0%BF%E0%B0%AE%E0%B0%BE%E0%B0%B2%E0%B1%81+%E0%B0%85%E0%B0%AA%E0%B1%8D%E0%B0%A1%E0%B1%87%E0%B0%9F%E0%B1%8D%E0%B0%B8%E0%B1%8D&hl=te&gl=IN&ceid=IN:te",
-  "https://news.google.com/rss/search?q=%E0%B0%9F%E0%B0%BE%E0%B0%B2%E0%B1%80%E0%B0%B5%E0%B1%81%E0%B0%A1%E0%B1%8D+%E0%B0%A8%E0%B1%8D%E0%B0%AF%E0%B1%82%E0%B0%B8%E0%B1%8D&hl=te&gl=IN&ceid=IN:te"
+  makeFeed("తెలుగు సినిమా OR టాలీవుడ్ వార్తలు", "cinema"),
+  makeFeed("తెలుగు కొత్త సినిమాలు అప్‌డేట్స్", "cinema"),
+  makeFeed("Andhra Pradesh politics OR AP government OR ఆంధ్రప్రదేశ్ రాజకీయాలు OR ఏపీ ప్రభుత్వం", "ap"),
+  makeFeed("Telangana politics OR Telangana government OR తెలంగాణ రాజకీయాలు OR తెలంగాణ ప్రభుత్వం", "ts"),
+  makeFeed("Andhra Pradesh public issues OR AP assembly OR ఆంధ్రప్రదేశ్ ప్రజా సమస్యలు", "ap"),
+  makeFeed("Telangana public issues OR Telangana assembly OR తెలంగాణ ప్రజా సమస్యలు", "ts")
 ];
 const headers = {
   apikey: SERVICE_KEY,
@@ -177,16 +184,27 @@ async function fetchPublisherContent(url) {
 async function main() {
   const cats = await api("categories?select=id,name,slug&order=id");
   if (!cats?.length) throw new Error("No categories found in Supabase.");
-  const category = cats.find(c => /సినిమా|మూవీ|ఎంటర్|entertain|movie|cinema/i.test(c.name + " " + (c.slug || ""))) || cats[0];
+  const findCategory = key => {
+    const patterns = {
+      cinema: /సినిమా|మూవీ|ఎంటర్|entertain|movie|cinema/i,
+      ap: /ఆంధ్ర|ఏపీ|ap[- ]?politic|andhra|రాజకీయ|politic/i,
+      ts: /తెలంగాణ|టీఎస్|telangana|రాజకీయ|politic/i
+    };
+    return cats.find(c => patterns[key]?.test(c.name + " " + (c.slug || "")));
+  };
   const seen = new Set();
+  const addedByCategory = { cinema: 0, ap: 0, ts: 0 };
   let added = 0, skipped = 0;
-  for (const feedUrl of feeds) {
-    const response = await fetch(feedUrl, { headers: { "User-Agent": "KMediaTeluguNewsBot/1.0" } });
+  for (const feed of feeds) {
+    const category = findCategory(feed.categoryKey);
+    if (!category) { console.warn("Missing category for feed:", feed.categoryKey); continue; }
+    if (addedByCategory[feed.categoryKey] >= 6) continue;
+    const response = await fetch(feed.url, { headers: { "User-Agent": "KMediaTeluguNewsBot/1.0" } });
     if (!response.ok) { console.warn("RSS unavailable:", response.status, feedUrl); continue; }
     const xml = await response.text();
     const items = [...xml.matchAll(/<item(?:\s[^>]*)?>([\s\S]*?)<\/item>/gi)].map(m => m[1]);
     for (const item of items) {
-      if (added >= 15) break;
+      if (addedByCategory[feed.categoryKey] >= 6) break;
       const title = tag(item, "title");
       const link = tag(item, "link");
       const description = cleanPlainText(tag(item, "description")).slice(0, 700);
@@ -240,8 +258,9 @@ async function main() {
       };
       await api("news_articles", { method: "POST", body: JSON.stringify(payload) });
       added++;
+      addedByCategory[feed.categoryKey]++;
     }
   }
-  console.log(`Collector complete: ${added} draft(s) added, ${skipped} item(s) skipped. Category: ${category.name}`);
+  console.log(`Collector complete: ${added} draft(s) added, ${skipped} item(s) skipped. By category: ${JSON.stringify(addedByCategory)}`);
 }
 main().catch(error => { console.error(error); process.exit(1); });
