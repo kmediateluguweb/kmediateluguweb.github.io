@@ -201,11 +201,15 @@ async function main() {
       const published = pubDate && !Number.isNaN(Date.parse(pubDate)) ? new Date(pubDate).toISOString() : new Date().toISOString();
       const cutoff = Date.now() - 7 * 24 * 60 * 60 * 1000;
       if (Date.parse(published) < cutoff) { skipped++; continue; }
-      const existing = await api("news_articles?select=id,featured_image,content&source_url=eq." + encodeURIComponent(link) + "&limit=1");
+      const existing = await api("news_articles?select=id,featured_image,content,summary,meta_description,status&source_url=eq." + encodeURIComponent(link) + "&limit=1");
       if (existing.length) {
         const patch = { updated_at: new Date().toISOString() };
         if (featuredImage && (!existing[0].featured_image || isGoogleImage(existing[0].featured_image))) patch.featured_image = featuredImage;
-        if (fullContent.length >= 250 && (!existing[0].content || existing[0].content.length < 250 || /news\.google\.com\/rss\//i.test(existing[0].content))) patch.content = fullContent;
+        if (existing[0].status === "draft") {
+          if (description && /<a\b|<font\b|news\.google\.com\/rss\//i.test(existing[0].summary || "")) patch.summary = cleanPlainText(description).slice(0, 500);
+          if (description && /<a\b|<font\b|news\.google\.com\/rss\//i.test(existing[0].meta_description || "")) patch.meta_description = cleanPlainText(description).slice(0, 160);
+          if (fullContent.length >= 250 && (!existing[0].content || existing[0].content.length < 250 || /news\.google\.com\/rss\/|<a\b|<font\b/i.test(existing[0].content))) patch.content = cleanPlainText(fullContent);
+        }
         if (Object.keys(patch).length > 1) {
           await api("news_articles?id=eq." + encodeURIComponent(existing[0].id), { method: "PATCH", body: JSON.stringify(patch) });
           console.log("Repaired existing article:", title);
