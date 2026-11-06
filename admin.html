@@ -200,7 +200,7 @@ $("logout").onclick=async()=>{
 async function loadNews(){
   $("newsList").textContent="Loading...";
   const {data,error}=await db.from("news_articles")
-    .select("id,title,slug,status,created_at,category_id")
+    .select("id,title,slug,status,created_at,category_id,view_count")
     .order("created_at",{ascending:false});
 
   if(error){$("newsList").textContent=error.message;return;}
@@ -220,7 +220,7 @@ async function loadNews(){
 
     const info=document.createElement("p");
     info.className="small";
-    info.textContent="Status: "+item.status+" | "+new Date(item.created_at).toLocaleString();
+    info.textContent="Status: "+item.status+" | 👁 "+Number(item.view_count||0).toLocaleString("en-IN")+" Views | "+new Date(item.created_at).toLocaleString();
 
     const edit=document.createElement("button");
     edit.className="secondary";
