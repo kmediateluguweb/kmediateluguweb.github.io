@@ -1,48 +1,33 @@
-const CACHE_NAME = "k-media-telugu-v12";
-const APP_SHELL = ["/", "/index.html", "/home.css?v=20261106-8", "/manifest.webmanifest", "/home-feed.json"];
-
+const CACHE_NAME = "k-media-telugu-v13";
+const APP_SHELL = ["/", "/index.html", "/home.css?v=20261106-9", "/manifest.webmanifest", "/home-feed.json", "/logo-mark.svg"];
 self.addEventListener("install", event => {
-  event.waitUntil(
-    caches.open(CACHE_NAME)
-      .then(cache => cache.addAll(APP_SHELL))
-      .then(() => self.skipWaiting())
-  );
+  event.waitUntil(caches.open(CACHE_NAME).then(cache => cache.addAll(APP_SHELL)).then(() => self.skipWaiting()));
 });
-
 self.addEventListener("activate", event => {
-  event.waitUntil(
-    caches.keys()
-      .then(keys => Promise.all(keys.filter(key => key.startsWith("k-media-telugu-") && key !== CACHE_NAME).map(key => caches.delete(key))))
-      .then(() => self.clients.claim())
-  );
+  event.waitUntil(caches.keys().then(keys => Promise.all(keys.filter(key => key.startsWith("k-media-telugu-") && key !== CACHE_NAME).map(key => caches.delete(key)))).then(() => self.clients.claim()));
 });
-
 self.addEventListener("fetch", event => {
   const request = event.request;
   const url = new URL(request.url);
   if (request.method !== "GET" || url.origin !== self.location.origin) return;
-
-  const pageOrStatic = request.mode === "navigate" || /\.(?:css|js|json|webmanifest)$/.test(url.pathname);
-  if (!pageOrStatic) return;
-
-  const cachedResponse = caches.match(request);
-  const networkResponse = fetch(request).then(response => {
+  const staticAsset = request.mode === "navigate" || /\.(?:css|js|json|svg|webmanifest)$/.test(url.pathname);
+  if (!staticAsset) return;
+  const cachedPromise = caches.match(request);
+  const networkPromise = fetch(request).then(response => {
     if (response && response.ok) {
       const copy = response.clone();
       caches.open(CACHE_NAME).then(cache => cache.put(request, copy));
     }
     return response;
   });
-
   event.respondWith((async () => {
-    const cached = await cachedResponse;
+    const cached = await cachedPromise;
     if (cached) {
-      event.waitUntil(networkResponse.catch(() => {}));
+      event.waitUntil(networkPromise.catch(() => {}));
       return cached;
     }
-    try {
-      return await networkResponse;
-    } catch (error) {
+    try { return await networkPromise; }
+    catch (error) {
       if (request.mode === "navigate") return (await caches.match("/index.html")) || Response.error();
       throw error;
     }
