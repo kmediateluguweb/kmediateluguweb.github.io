@@ -234,7 +234,6 @@ async function main() {
       const cutoff = Date.now() - 7 * 24 * 60 * 60 * 1000;
       if (Date.parse(published) < cutoff) { skipped++; continue; }
       const originalSummary = writeOriginalTeluguSummary(title, description, category.name, publisherUrl || link);
-      if (originalSummary.length < 80) { console.log("Skipped: RSS summary is too short:", title); skipped++; continue; }
       const existing = await api("news_articles?select=id,featured_image,content,summary,meta_description,status&source_url=eq." + encodeURIComponent(link) + "&limit=1");
       if (existing.length) {
         const patch = { updated_at: new Date().toISOString() };
@@ -253,11 +252,6 @@ async function main() {
         skipped++;
         continue;
       }
-      if (originalSummary.length < 80 || !featuredImage || !/^https?:\/\//i.test(featuredImage)) {
-        console.log("Skipped: article is missing full text or a valid featured image:", title);
-        skipped++;
-        continue;
-      }
       const shortHash = crypto.createHash("sha1").update(link).digest("hex").slice(0, 8);
       const safeSlug = title.toLowerCase().replace(/[^\p{L}\p{N}]+/gu, "-").replace(/^-|-$/g, "").slice(0, 75) || "telugu-cinema-news";
       const payload = {
@@ -268,13 +262,15 @@ async function main() {
         meta_description: originalSummary.slice(0, 160),
         content: originalSummary,
         source_url: link,
-        featured_image: featuredImage,
+        featured_image: featuredImage && /^https?:\/\//i.test(featuredImage) ? featuredImage : null,
         category_id: category.id,
         status: "draft",
         updated_at: new Date().toISOString(),
         published_at: null
       };
       await api("news_articles", { method: "POST", body: JSON.stringify(payload) });
+      if (originalSummary.length < 180) console.log("Draft created with limited RSS details; editor verification needed:", title);
+      if (!featuredImage) console.log("Draft created without image; editor can add a licensed image:", title);
       added++;
       addedByCategory[feed.categoryKey]++;
     }
