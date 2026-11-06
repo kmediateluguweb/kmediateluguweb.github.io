@@ -44,7 +44,7 @@ async function main() {
     const response = await fetch(feedUrl, { headers: { "User-Agent": "KMediaTeluguNewsBot/1.0" } });
     if (!response.ok) { console.warn("RSS unavailable:", response.status, feedUrl); continue; }
     const xml = await response.text();
-    const items = [...xml.matchAll(/<item(?:\\s[^>]*)?>([\\s\\S]*?)<\\/item>/gi)].map(m => m[1]);
+    const items = [...xml.matchAll(/<item(?:\s[^>]*)?>([\s\S]*?)<\/item>/gi)].map(m => m[1]);
     for (const item of items) {
       if (added >= 15) break;
       const title = tag(item, "title");
