@@ -181,6 +181,11 @@ async function fetchPublisherContent(url) {
   }
 }
 
+function cleanNewsTitle(value) {
+  return cleanPlainText(value)
+    .replace(/\\s*[-|–—:]\\s*(?:NTV(?:\\s+Telugu)?|TV9(?:\\s+Telugu)?|ABN(?:\\s+Andhra\\s+Jyothy)?|ETV(?:\\s+Telangana)?|Sakshi(?:\\s+Post)?|Eenadu|Andhra\\s+Jyothy|The\\s+Hindu|Times\\s+of\\s+India|India\\s+Today|AP7AM|Samayam(?:\\s+Telugu)?|Greatandhra|123telugu|Idlebrain|Gulte)\\s*$/i, "")
+    .trim();
+}
 function writeOriginalTeluguSummary(title, description, categoryName, sourceUrl) {
   const cleanTitle = cleanPlainText(title).slice(0, 250);
   const cleanDescription = cleanPlainText(description).slice(0, 500);
@@ -198,8 +203,8 @@ async function main() {
   const findCategory = key => {
     const patterns = {
       cinema: /సినిమా|మూవీ|ఎంటర్|entertain|movie|cinema/i,
-      ap: /ఆంధ్ర|ఏపీ|ap[- ]?politic|andhra|రాజకీయ|politic/i,
-      ts: /తెలంగాణ|టీఎస్|telangana|రాజకీయ|politic/i
+      ap: /ఆంధ్ర|ఏపీ|ap[- ]?politic|andhra/i,
+      ts: /తెలంగాణ|టీఎస్|telangana/i
     };
     return cats.find(c => patterns[key]?.test(c.name + " " + (c.slug || "")));
   };
@@ -216,7 +221,8 @@ async function main() {
     const items = [...xml.matchAll(/<item(?:\s[^>]*)?>([\s\S]*?)<\/item>/gi)].map(m => m[1]);
     for (const item of items) {
       if (addedByCategory[feed.categoryKey] >= 6) break;
-      const title = tag(item, "title");
+      const rawTitle = tag(item, "title");
+      const title = cleanNewsTitle(rawTitle);
       const link = tag(item, "link");
       const description = cleanPlainText(tag(item, "description")).slice(0, 700);
       const publisherUrl = await resolvePublisherUrl(link);
