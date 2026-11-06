@@ -53,33 +53,66 @@ function imageFromItem(item) {
   }
   return null;
 }
+function isGoogleImage(value) {
+  try { const host = new URL(value).hostname.toLowerCase(); return host === 'google.com' || host.endsWith('.google.com') || host === 'gstatic.com' || host.endsWith('.gstatic.com') || host === 'googleusercontent.com' || host.endsWith('.googleusercontent.com'); } catch { return true; }
+}
+async function resolvePublisherUrl(articleUrl) {
+  if (!/^https?:\/\/news\.google\.com\//i.test(articleUrl || '')) return articleUrl;
+  const id = articleUrl.match(/\/(?:rss\/)?articles\/([\w-]+)/i)?.[1];
+  if (!id) return null;
+  try {
+    const page = await fetch(`https://news.google.com/rss/articles/${id}`, { headers: { 'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 Chrome/130 Safari/537.36' }, signal: AbortSignal.timeout(10000) });
+    if (!page.ok) return null;
+    const html = await page.text();
+    const sg = html.match(/data-n-a-sg="([^"]+)"/)?.[1];
+    const ts = Number(html.match(/data-n-a-ts="([^"]+)"/)?.[1]);
+    if (!sg || !ts) return null;
+    const inner = JSON.stringify(['garturlreq', [['X', 'X', ['X', 'X'], null, null, 1, 1, 'IN:te', null, 1, null, null, null, null, null, 0, 1], 'X', 'X', 1, [1, 1, 1], 1, 1, null, 0, 0, null, 0], id, ts, sg]);
+    const body = 'f.req=' + encodeURIComponent(JSON.stringify([[['Fbv4je', inner, null, 'generic']]]));
+    const decoded = await fetch('https://news.google.com/_/DotsSplashUi/data/batchexecute', { method: 'POST', headers: { 'User-Agent': 'Mozilla/5.0', 'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8' }, body, signal: AbortSignal.timeout(10000) });
+    if (!decoded.ok) return null;
+    const text = await decoded.text();
+    for (const line of text.split('\n')) {
+      if (!line.startsWith('[[')) continue;
+      try { const rows = JSON.parse(line); for (const row of rows) { if (row[1] === 'Fbv4je' && typeof row[2] === 'string') { const url = JSON.parse(row[2])?.[1]; if (typeof url === 'string' && /^https?:\/\//i.test(url) && !/news\.google\.com/i.test(url)) return url; } } } catch {}
+    }
+  } catch (error) { console.warn('Could not decode Google News article URL:', error.message); }
+  return null;
+}
 async function resolveFeaturedImage(item, articleUrl) {
   const fromFeed = imageFromItem(item);
-  if (fromFeed) return fromFeed;
-
+  if (fromFeed && !isGoogleImage(fromFeed)) return fromFeed;
+  const publisherUrl = await resolvePublisherUrl(articleUrl);
+  if (!publisherUrl || isGoogleImage(publisherUrl)) return null;
   try {
-    const response = await fetch(articleUrl, {
-      headers: { "User-Agent": "Mozilla/5.0 (compatible; KMediaTeluguNewsBot/1.0)" },
-      redirect: "follow",
-      signal: AbortSignal.timeout(12000)
+    const response = await fetch(publisherUrl, {
+      headers: { 'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 Chrome/130 Safari/537.36', 'Accept': 'text/html,application/xhtml+xml' },
+      redirect: 'follow', signal: AbortSignal.timeout(10000)
     });
     if (!response.ok) return null;
-    const html = (await response.text()).slice(0, 1000000);
-    const patterns = [
-      /<meta\b[^>]*(?:property|name)=["']og:image["'][^>]*content=["']([^"']+)["']/i,
-      /<meta\b[^>]*content=["']([^"']+)["'][^>]*(?:property|name)=["']og:image["']/i,
-      /<meta\b[^>]*(?:name|property)=["']twitter:image(?::src)?["'][^>]*content=["']([^"']+)["']/i,
-      /<meta\b[^>]*content=["']([^"']+)["'][^>]*(?:name|property)=["']twitter:image(?::src)?["']/i
-    ];
-    for (const pattern of patterns) {
-      const candidate = html.match(pattern)?.[1]?.replace(/&amp;/g, "&").trim();
-      if (!candidate) continue;
-      const absolute = new URL(candidate, response.url || articleUrl).href;
-      if (/^https?:\/\//i.test(absolute)) return absolute;
+    const html = (await response.text()).slice(0, 1200000);
+    const metas = [...html.matchAll(/<meta\\b[^>]*>/gi)].map(m => m[0]);
+    for (const meta of metas) {
+      const key = meta.match(/(?:property|name)=[\"']([^\"']+)[\"']/i)?.[1]?.toLowerCase();
+      const value = meta.match(/content=[\"']([^\"']+)[\"']/i)?.[1]?.replace(/&amp;/g, '&').trim();
+      if (value && /^(og:image|og:image:url|twitter:image|twitter:image:src|image)$/i.test(key || '')) {
+        const absolute = new URL(value, response.url || publisherUrl).href;
+        if (/^https?:\\/\\//i.test(absolute) && !isGoogleImage(absolute)) return absolute;
+      }
     }
-  } catch (error) {
-    console.warn("Could not fetch article image:", articleUrl, error.message);
-  }
+    const jsonLd = [...html.matchAll(/<script\\b[^>]*type=[\"']application\\/ld\\+json[\"'][^>]*>([\\s\\S]*?)<\\/script>/gi)];
+    for (const match of jsonLd) {
+      try {
+        const data = JSON.parse(match[1]);
+        const nodes = Array.isArray(data) ? data : [data, ...(data['@graph'] || [])];
+        for (const node of nodes) {
+          const raw = node?.image?.url || node?.image?.[0]?.url || node?.image?.[0] || node?.image;
+          const candidate = typeof raw === 'string' ? raw : raw?.url;
+          if (candidate) { const absolute = new URL(candidate, response.url || publisherUrl).href; if (/^https?:\\/\\//i.test(absolute) && !isGoogleImage(absolute)) return absolute; }
+        }
+      } catch {}
+    }
+  } catch (error) { console.warn('Could not fetch publisher image:', publisherUrl, error.message); }
   return null;
 }
 
@@ -108,7 +141,7 @@ async function main() {
       if (Date.parse(published) < cutoff) { skipped++; continue; }
       const existing = await api("news_articles?select=id,featured_image&source_url=eq." + encodeURIComponent(link) + "&limit=1");
       if (existing.length) {
-        if (featuredImage && !existing[0].featured_image) {
+        if (featuredImage && (!existing[0].featured_image || isGoogleImage(existing[0].featured_image))) {
           await api("news_articles?id=eq." + encodeURIComponent(existing[0].id), {
             method: "PATCH",
             body: JSON.stringify({ featured_image: featuredImage, updated_at: new Date().toISOString() })
