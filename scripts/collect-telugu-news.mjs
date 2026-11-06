@@ -53,6 +53,36 @@ function imageFromItem(item) {
   }
   return null;
 }
+async function resolveFeaturedImage(item, articleUrl) {
+  const fromFeed = imageFromItem(item);
+  if (fromFeed) return fromFeed;
+
+  try {
+    const response = await fetch(articleUrl, {
+      headers: { "User-Agent": "Mozilla/5.0 (compatible; KMediaTeluguNewsBot/1.0)" },
+      redirect: "follow",
+      signal: AbortSignal.timeout(12000)
+    });
+    if (!response.ok) return null;
+    const html = (await response.text()).slice(0, 1000000);
+    const patterns = [
+      /<meta\b[^>]*(?:property|name)=["']og:image["'][^>]*content=["']([^"']+)["']/i,
+      /<meta\b[^>]*content=["']([^"']+)["'][^>]*(?:property|name)=["']og:image["']/i,
+      /<meta\b[^>]*(?:name|property)=["']twitter:image(?::src)?["'][^>]*content=["']([^"']+)["']/i,
+      /<meta\b[^>]*content=["']([^"']+)["'][^>]*(?:name|property)=["']twitter:image(?::src)?["']/i
+    ];
+    for (const pattern of patterns) {
+      const candidate = html.match(pattern)?.[1]?.replace(/&amp;/g, "&").trim();
+      if (!candidate) continue;
+      const absolute = new URL(candidate, response.url || articleUrl).href;
+      if (/^https?:\/\//i.test(absolute)) return absolute;
+    }
+  } catch (error) {
+    console.warn("Could not fetch article image:", articleUrl, error.message);
+  }
+  return null;
+}
+
 async function main() {
   const cats = await api("categories?select=id,name,slug&order=id");
   if (!cats?.length) throw new Error("No categories found in Supabase.");
@@ -69,7 +99,7 @@ async function main() {
       const title = tag(item, "title");
       const link = tag(item, "link");
       const description = tag(item, "description").replace(/https?:\/\/\S+/g, "").slice(0, 700);
-      const featuredImage = imageFromItem(item);
+      const featuredImage = await resolveFeaturedImage(item, link);
       const pubDate = tag(item, "pubDate");
       if (!title || !link || !/^https?:\/\//i.test(link) || seen.has(link)) { skipped++; continue; }
       seen.add(link);
