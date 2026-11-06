@@ -32,7 +32,10 @@ async function api(path, options = {}) {
   const res = await fetch(SUPABASE_URL + "/rest/v1/" + path, { ...options, headers: { ...headers, ...(options.headers || {}) } });
   if (!res.ok) throw new Error("Supabase " + res.status + ": " + (await res.text()).slice(0, 500));
   if (res.status === 204) return null;
-  return res.json();
+  const responseText = await res.text();
+  if (!responseText.trim()) return null;
+  try { return JSON.parse(responseText); }
+  catch { throw new Error("Supabase returned a non-JSON response: " + responseText.slice(0, 300)); }
 }
 async function main() {
   const cats = await api("categories?select=id,name,slug&order=id");
