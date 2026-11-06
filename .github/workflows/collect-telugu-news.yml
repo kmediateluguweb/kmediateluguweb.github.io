@@ -23,5 +23,4 @@ jobs:
         env:
           SUPABASE_URL: https://mewyojxgsuceppsauesh.supabase.co
           SUPABASE_SERVICE_ROLE_KEY: "${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}"
-          OPENAI_API_KEY: "${{ secrets.OPENAI_API_KEY }}"
         run: node scripts/collect-telugu-news.mjs
