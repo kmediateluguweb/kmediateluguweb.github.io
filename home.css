@@ -385,3 +385,9 @@ button,a,input{touch-action:manipulation}
   .mobile-bottom-nav a,.mobile-bottom-nav a small{color:#fff!important}
   .mobile-bottom-nav a span{color:#ff646a!important}
 }
+
+
+/* Mobile performance: keep failed news images compact and prevent broken-image alt text from expanding cards. */
+.news-card-image{display:block!important;width:100%!important;height:clamp(145px,42vw,210px)!important;min-height:145px!important;max-height:210px!important;aspect-ratio:auto!important;object-fit:cover!important;}
+.image-placeholder{display:grid!important;width:100%!important;height:clamp(145px,42vw,210px)!important;min-height:145px!important;max-height:210px!important;aspect-ratio:auto!important;place-items:center!important;}
+@media(max-width:560px){.news-card-image,.image-placeholder{height:155px!important;min-height:155px!important;max-height:155px!important;}}
