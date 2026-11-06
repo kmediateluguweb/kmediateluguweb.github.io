@@ -368,3 +368,20 @@ button,a,input{touch-action:manipulation}
 .hero-feature .hero-photo-link span{align-self:flex-start;background:#d71920;padding:6px 10px;border-radius:4px;font-size:11px;font-weight:900;letter-spacing:.5px}
 .hero-feature .hero-photo-link strong{font-size:clamp(19px,4vw,27px);line-height:1.45;text-shadow:0 2px 5px #000}
 @media(max-width:600px){.hero-feature{background:linear-gradient(145deg,#111318,#292d35 60%,#8d1018)!important}.hero-feature .hero-photo-link{padding:18px}.hero-feature .hero-photo-link strong{font-size:clamp(18px,4.6vw,24px)}}
+
+
+/* FINAL MOBILE OVERRIDES — keep the K Media red/black brand visible */
+@media(max-width:900px){
+  .site-header{background:#101114!important;color:#fff!important;border-bottom:3px solid #d71920!important}
+  .brand strong{color:#fff!important}.brand strong em{color:#ff646a!important}.brand small{color:#e4e6eb!important}
+  .nav-bar{background:#101114!important;border-bottom:2px solid #d71920!important}
+  .main-nav a{background:#101114!important;color:#fff!important}
+  .main-nav a.active,.main-nav a:hover{background:#d71920!important;color:#fff!important}
+  .hero-feature{background:linear-gradient(145deg,#111318,#292d35 60%,#8d1018)!important;color:#fff!important}
+  .hero-feature .hero-photo-fallback{background:transparent!important;color:#fff!important}
+  .hero-feature .hero-photo-link span{background:#d71920!important;color:#fff!important}
+  .hero-feature .hero-photo-link strong{color:#fff!important}
+  .mobile-bottom-nav{background:#101114!important;border-top:2px solid #d71920!important}
+  .mobile-bottom-nav a,.mobile-bottom-nav a small{color:#fff!important}
+  .mobile-bottom-nav a span{color:#ff646a!important}
+}
