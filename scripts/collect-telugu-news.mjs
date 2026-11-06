@@ -221,6 +221,7 @@ async function main() {
     if (!response.ok) { console.warn("RSS unavailable:", response.status, feed.url); continue; }
     const xml = await response.text();
     const items = [...xml.matchAll(/<item(?:\s[^>]*)?>([\s\S]*?)<\/item>/gi)].map(m => m[1]);
+    feedStats[feed.categoryKey] = (feedStats[feed.categoryKey] || 0) + items.length;
     for (const item of items) {
       if (addedByCategory[feed.categoryKey] >= 6) break;
       const rawTitle = tag(item, "title");
@@ -230,7 +231,7 @@ async function main() {
       const publisherUrl = await resolvePublisherUrl(link);
       const featuredImage = await resolveFeaturedImage(item, link);
       const pubDate = tag(item, "pubDate");
-      if (!title || !link || !/^https?:\/\//i.test(link) || seen.has(link)) { skipped++; continue; }
+      if (!title || !link || !/^https?:\/\//i.test(link) || seen.has(link)) { skipped++; skipReasons.invalid++; continue; }
       seen.add(link);
       const published = pubDate && !Number.isNaN(Date.parse(pubDate)) ? new Date(pubDate).toISOString() : new Date().toISOString();
       const cutoff = Date.now() - 7 * 24 * 60 * 60 * 1000;
