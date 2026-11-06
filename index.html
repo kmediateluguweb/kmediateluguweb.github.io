@@ -3,7 +3,7 @@
 <title>K Media Telugu | Telugu Trending News & Latest Telugu News</title>
 <meta name="description" content="Telugu Trending News కోసం K Media Teluguను చూడండి. తెలంగాణ, ఆంధ్రప్రదేశ్ తాజా వార్తలు, రాజకీయాలు, సినిమా, Bigg Boss Telugu, పబ్లిక్ టాక్ మరియు ప్రత్యేక ఇంటర్వ్యూలు.">
 <meta name="keywords" content="K Media Telugu, Telugu Trending News, Latest Telugu News, Telugu News Today, Telangana News, Andhra Pradesh News, AP Politics, Bigg Boss Telugu, Telugu Cinema, Public Talk"><meta name="robots" content="index,follow,max-image-preview:large">
-<link rel="canonical" href="https://kmediatelugu.com/"><link rel="manifest" href="/manifest.webmanifest"><meta name="theme-color" content="#d71920"><link rel="apple-touch-icon" href="/K%20Media%20Logo.jpg"><link rel="stylesheet" href="home.css?v=20261106-3"><link rel="icon" href="K%20Media%20Logo.jpg">
+<link rel="canonical" href="https://kmediatelugu.com/"><link rel="manifest" href="/manifest.webmanifest"><meta name="theme-color" content="#d71920"><link rel="apple-touch-icon" href="/K%20Media%20Logo.jpg"><link rel="stylesheet" href="home.css?v=20261106-4"><link rel="icon" href="K%20Media%20Logo.jpg">
 <meta property="og:locale" content="te_IN"><meta property="og:site_name" content="K Media Telugu"><meta property="og:title" content="K Media Telugu | తెలుగు వార్తలు & ప్రజల మాట"><meta property="og:description" content="తాజా తెలుగు వార్తలు, Bigg Boss, సినిమా, రాజకీయాలు మరియు Public Talk."><meta property="og:image" content="https://kmediatelugu.com/K%20Media%20Logo.jpg"><meta property="og:url" content="https://kmediatelugu.com/"><meta property="og:type" content="website"><meta name="twitter:card" content="summary_large_image"><meta name="twitter:title" content="K Media Telugu | తెలుగు వార్తలు & ప్రజల మాట"><meta name="twitter:description" content="తాజా తెలుగు వార్తలు, Bigg Boss, సినిమా, రాజకీయాలు మరియు Public Talk."><meta name="twitter:image" content="https://kmediatelugu.com/K%20Media%20Logo.jpg">
 <script type="application/ld+json">
 {"@context":"https://schema.org","@graph":[
@@ -57,33 +57,42 @@ function renderLoadedNews(){
   }
 }
 async function loadNews(){
+  // Render the local, prebuilt feed first so mobile visitors never wait for Supabase.
+  let backupReady=false;
+  try{
+    const backup=await fetch("/news-feed.json",{cache:"force-cache"});
+    if(!backup.ok)throw new Error("Static news backup HTTP "+backup.status);
+    const rows=await backup.json();
+    if(Array.isArray(rows)&&rows.length){
+      articles=rows;
+      renderLoadedNews();
+      backupReady=true;
+    }
+  }catch(backupError){
+    console.warn("Static news backup unavailable.",backupError);
+  }
+
+  // Refresh from Supabase in the background; a slow connection must not block the page.
   try{
     if(!db)throw new Error("Supabase client library did not load");
-    const n=await db.from("news_articles").select("*").eq("status","published").order("published_at",{ascending:false}).limit(40);
-    if(n.error)throw n.error;
-    const c=await db.from("categories").select("id,name,slug").order("id");
-    if(c.error)throw c.error;
-    const cats=new Map((c.data||[]).map(x=>[String(x.id),x]));
-    articles=(n.data||[]).map(a=>({...a,category_name:cats.get(String(a.category_id))?.name||"తాజా వార్తలు",category_slug:cats.get(String(a.category_id))?.slug||""}));
+    const live=await Promise.race([
+      (async()=>{
+        const n=await db.from("news_articles").select("*").eq("status","published").order("published_at",{ascending:false}).limit(40);
+        if(n.error)throw n.error;
+        const c=await db.from("categories").select("id,name,slug").order("id");
+        if(c.error)throw c.error;
+        const cats=new Map((c.data||[]).map(x=>[String(x.id),x]));
+        return (n.data||[]).map(a=>({...a,category_name:cats.get(String(a.category_id))?.name||"తాజా వార్తలు",category_slug:cats.get(String(a.category_id))?.slug||""}));
+      })(),
+      new Promise((_,reject)=>setTimeout(()=>reject(new Error("News server timed out")),5000))
+    ]);
+    articles=live;
     renderLoadedNews();
   }catch(e){
-    console.warn("Live news database unavailable; trying static backup.",e);
-    try{
-      const backup=await fetch("/news-feed.json?ts="+Date.now(),{cache:"no-store"});
-      if(!backup.ok)throw new Error("Static news backup HTTP "+backup.status);
-      articles=await backup.json();
-      renderLoadedNews();
-      const grid=document.getElementById("latestNews");
-      const note=document.createElement("p");
-      note.className="news-backup-note";
-      note.textContent="Live update connection తాత్కాలికంగా అందుబాటులో లేదు. అందుబాటులో ఉన్న తాజా వార్తలు చూపిస్తున్నాం.";
-      grid.prepend(note);
-    }catch(fallbackError){
-      console.error("Static news backup unavailable.",fallbackError);
-      document.getElementById("latestNews").innerHTML='<div class="empty-state">వార్తలు లోడ్ కాలేదు: '+esc(e.message||e)+'</div>';
+    console.warn("Live news refresh unavailable; keeping the instant news feed.",e);
+    if(!backupReady){
+      document.getElementById("latestNews").innerHTML='<div class="empty-state">వార్తలు ప్రస్తుతం అందుబాటులో లేవు. కొద్దిసేపటి తర్వాత మళ్లీ ప్రయత్నించండి.</div>';
       document.getElementById("trendingList").textContent="వార్తలు అందుబాటులో లేవు.";
-      const h=document.getElementById("heroFeature");
-      h.innerHTML='<a class="hero-photo-link hero-photo-fallback" href="#latest"><span>TOP STORY</span><strong>వార్తలు కనెక్ట్ కావడం లేదు. దయచేసి కొద్దిసేపటి తర్వాత ప్రయత్నించండి.</strong></a>';
     }
   }
 }
