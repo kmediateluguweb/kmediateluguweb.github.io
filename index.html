@@ -63,7 +63,7 @@ function renderLoadedNews(){
 }
 async function loadNews(){
   try{
-    const response=await fetch("/home-feed.json",{cache:"no-cache"});
+    const response=await fetch("/home-feed.json?v=20261106-11",{cache:"no-store"});
     if(!response.ok)throw new Error("Homepage news feed unavailable");
     const rows=await response.json();
     articles=Array.isArray(rows)?rows:[];
