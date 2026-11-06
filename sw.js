@@ -18,7 +18,7 @@ self.addEventListener("fetch", event => {
   const url = new URL(request.url);
   if (request.method !== "GET" || url.origin !== self.location.origin) return;
 
-  const freshAsset = request.mode === "navigate" || /\\.(css|js)$/.test(url.pathname);
+  const freshAsset = request.mode === "navigate" || /\.(css|js|json)$/.test(url.pathname);
   if (freshAsset) {
     event.respondWith(
       fetch(request, { cache: "no-store" }).then(response => {
