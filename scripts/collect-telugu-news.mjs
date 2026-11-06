@@ -17,7 +17,7 @@ const headers = {
 };
 const decode = value => String(value || "")
   .replace(/<!\[CDATA\[([\s\S]*?)\]\]>/g, "$1")
-  .replace(/&amp;/g, "&").replace(/&quot;/g, '"')
+  .replace(/&amp;/g, "&").replace(/&nbsp;/gi, " ").replace(/&quot;/g, '"')
   .replace(/&#39;/g, "'").replace(/&apos;/g, "'")
   .replace(/&lt;/g, "<").replace(/&gt;/g, ">")
   .replace(/&#(\d+);/g, (_, n) => String.fromCodePoint(Number(n)))
