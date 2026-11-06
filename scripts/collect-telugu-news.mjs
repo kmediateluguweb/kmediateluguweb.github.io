@@ -211,6 +211,8 @@ async function main() {
   const seen = new Set();
   const addedByCategory = { cinema: 0, ap: 0, ts: 0 };
   let added = 0, skipped = 0;
+  const skipReasons = { invalid: 0, old: 0, duplicate: 0 };
+  const feedStats = {};
   for (const feed of feeds) {
     const category = findCategory(feed.categoryKey);
     if (!category) { console.warn("Missing category for feed:", feed.categoryKey); continue; }
@@ -232,7 +234,7 @@ async function main() {
       seen.add(link);
       const published = pubDate && !Number.isNaN(Date.parse(pubDate)) ? new Date(pubDate).toISOString() : new Date().toISOString();
       const cutoff = Date.now() - 7 * 24 * 60 * 60 * 1000;
-      if (Date.parse(published) < cutoff) { skipped++; continue; }
+      if (Date.parse(published) < cutoff) { skipped++; skipReasons.old++; continue; }
       const originalSummary = writeOriginalTeluguSummary(title, description, category.name, publisherUrl || link);
       const existing = await api("news_articles?select=id,featured_image,content,summary,meta_description,status&source_url=eq." + encodeURIComponent(link) + "&limit=1");
       if (existing.length) {
@@ -250,6 +252,7 @@ async function main() {
           console.log("Repaired existing article:", title);
         }
         skipped++;
+        skipReasons.duplicate++;
         continue;
       }
       const shortHash = crypto.createHash("sha1").update(link).digest("hex").slice(0, 8);
@@ -275,6 +278,6 @@ async function main() {
       addedByCategory[feed.categoryKey]++;
     }
   }
-  console.log(`Collector complete: ${added} draft(s) added, ${skipped} item(s) skipped. By category: ${JSON.stringify(addedByCategory)}`);
+  console.log(`Collector complete: ${added} draft(s) added, ${skipped} item(s) skipped. By category: ${JSON.stringify(addedByCategory)}. Feed items: ${JSON.stringify(feedStats)}. Skip reasons: ${JSON.stringify(skipReasons)}`);
 }
 main().catch(error => { console.error(error); process.exit(1); });
