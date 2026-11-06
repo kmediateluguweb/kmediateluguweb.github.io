@@ -1,46 +1,15 @@
-name: Update News Sitemap and Static Articles
-# Regenerate static article URLs whenever this workflow definition is refreshed.
-
+name: Legacy Sitemap Generator (manual only)
+# The seo-publish.yml workflow is the single automatic publisher.
+# Keep this workflow manual-only to prevent competing scheduled commits.
 on:
   workflow_dispatch:
-  push:
-    paths:
-      - "scripts/generate_static_articles.py"
-      - ".github/workflows/update-sitemap.yml"
-  schedule:
-    - cron: "17 */6 * * *"
 
 permissions:
   contents: write
 
 jobs:
-  update-sitemap:
+  legacy-generator:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
-
-      - name: Fetch published articles and generate static pages
-        env:
-          SUPABASE_URL: https://mewyojxgsuceppsauesh.supabase.co
-          SUPABASE_KEY: sb_publishable_-ee5Pt9U0ZvZuUkipLcq-Q_KBXKsEDa
-        run: |
-          curl --fail --silent --show-error --get \
-            "$SUPABASE_URL/rest/v1/news_articles" \
-            --data-urlencode "select=id,title,slug,summary,content,featured_image,seo_title,meta_description,updated_at,published_at" \
-            --data-urlencode "status=eq.published" \
-            --data-urlencode "order=published_at.desc" \
-            -H "apikey: $SUPABASE_KEY" \
-            -o /tmp/news.json
-          python3 scripts/generate_static_articles.py
-
-      - name: Commit generated pages and sitemaps
-        run: |
-          git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add sitemap.xml news-sitemap.xml articles/
-          if ! git diff --cached --quiet; then
-            git commit -m "Generate static SEO article pages and sitemaps"
-            git pull --rebase
-            git push
-          fi
+      - name: Explain replacement
+        run: echo "Automatic SEO pages and sitemaps are handled by seo-publish.yml."
