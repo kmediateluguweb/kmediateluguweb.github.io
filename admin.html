@@ -121,7 +121,11 @@ textarea{min-height:110px}
 
 <div class="panel">
 <h3>Published & Draft News</h3>
+<div class="row" style="margin:10px 0">
 <button class="secondary" id="refreshBtn">Refresh News</button>
+<button class="danger" id="deleteDraftsBtn" type="button">Delete All Drafts</button>
+</div>
+<p class="small">ఈ బటన్ Draft వార్తలను మాత్రమే తొలగిస్తుంది. Published వార్తలకు ఎలాంటి మార్పు ఉండదు.</p>
 <div id="newsList">Loading...</div>
 </div>
 </section>
@@ -365,6 +369,31 @@ async function deleteNews(id){
   await loadNews();
 }
 
+async function deleteAllDrafts(){
+  const button=$("deleteDraftsBtn");
+  if(button.disabled)return;
+  button.disabled=true;
+  try{
+    const {data:drafts,error:countError}=await db.from("news_articles")
+      .select("id").eq("status","draft");
+    if(countError)throw countError;
+    const count=(drafts||[]).length;
+    if(!count){
+      message("Delete చేయడానికి Draft వార్తలు లేవు.");
+      return;
+    }
+    if(!confirm("మొత్తం "+count+" Draft వార్తలను శాశ్వతంగా Delete చేయాలా? Published వార్తలు Delete కావు."))return;
+    const {error}=await db.from("news_articles").delete().eq("status","draft");
+    if(error)throw error;
+    message(count+" Draft వార్తలు Delete అయ్యాయి. Published వార్తలు అలాగే ఉన్నాయి.");
+    await loadNews();
+  }catch(error){
+    message("Drafts Delete కాలేదు: "+error.message,"#dc3545");
+  }finally{
+    button.disabled=false;
+  }
+}
+
 function resetForm(){
   currentPublishedAt=null;
   ["editId","title","summary","seoTitle","metaDescription","content","image","source","imageFile"].forEach(id=>$(id).value="");
@@ -379,6 +408,7 @@ function resetForm(){
 
 $("cancelBtn").onclick=resetForm;
 $("refreshBtn").onclick=loadNews;
+$("deleteDraftsBtn").onclick=deleteAllDrafts;
 
 (async()=>{
   const {data}=await db.auth.getSession();
