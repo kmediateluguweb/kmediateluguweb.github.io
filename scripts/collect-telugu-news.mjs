@@ -91,16 +91,16 @@ async function resolveFeaturedImage(item, articleUrl) {
     });
     if (!response.ok) return null;
     const html = (await response.text()).slice(0, 1200000);
-    const metas = [...html.matchAll(/<meta\\b[^>]*>/gi)].map(m => m[0]);
+    const metas = [...html.matchAll(/<meta\b[^>]*>/gi)].map(m => m[0]);
     for (const meta of metas) {
-      const key = meta.match(/(?:property|name)=[\"']([^\"']+)[\"']/i)?.[1]?.toLowerCase();
-      const value = meta.match(/content=[\"']([^\"']+)[\"']/i)?.[1]?.replace(/&amp;/g, '&').trim();
+      const key = meta.match(/(?:property|name)=["']([^"']+)["']/i)?.[1]?.toLowerCase();
+      const value = meta.match(/content=["']([^"']+)["']/i)?.[1]?.replace(/&amp;/g, '&').trim();
       if (value && /^(og:image|og:image:url|twitter:image|twitter:image:src|image)$/i.test(key || '')) {
         const absolute = new URL(value, response.url || publisherUrl).href;
-        if (/^https?:\\/\\//i.test(absolute) && !isGoogleImage(absolute)) return absolute;
+        if (/^https?:\/\//i.test(absolute) && !isGoogleImage(absolute)) return absolute;
       }
     }
-    const jsonLd = [...html.matchAll(/<script\\b[^>]*type=[\"']application\\/ld\\+json[\"'][^>]*>([\\s\\S]*?)<\\/script>/gi)];
+    const jsonLd = [...html.matchAll(/<script\b[^>]*type=["']application\/ld\+json["'][^>]*>([\s\S]*?)<\/script>/gi)];
     for (const match of jsonLd) {
       try {
         const data = JSON.parse(match[1]);
@@ -108,7 +108,7 @@ async function resolveFeaturedImage(item, articleUrl) {
         for (const node of nodes) {
           const raw = node?.image?.url || node?.image?.[0]?.url || node?.image?.[0] || node?.image;
           const candidate = typeof raw === 'string' ? raw : raw?.url;
-          if (candidate) { const absolute = new URL(candidate, response.url || publisherUrl).href; if (/^https?:\\/\\//i.test(absolute) && !isGoogleImage(absolute)) return absolute; }
+          if (candidate) { const absolute = new URL(candidate, response.url || publisherUrl).href; if (/^https?:\/\//i.test(absolute) && !isGoogleImage(absolute)) return absolute; }
         }
       } catch {}
     }
