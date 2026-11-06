@@ -1,4 +1,4 @@
-const CACHE_NAME = "k-media-telugu-v11";
+const CACHE_NAME = "k-media-telugu-v12";
 const APP_SHELL = ["/", "/index.html", "/home.css?v=20261106-8", "/manifest.webmanifest", "/home-feed.json"];
 
 self.addEventListener("install", event => {
@@ -22,24 +22,27 @@ self.addEventListener("fetch", event => {
   const url = new URL(request.url);
   if (request.method !== "GET" || url.origin !== self.location.origin) return;
 
-  const pageOrStatic = request.mode === "navigate" || /\\.(?:css|js|json|webmanifest)$/.test(url.pathname);
+  const pageOrStatic = request.mode === "navigate" || /\.(?:css|js|json|webmanifest)$/.test(url.pathname);
   if (!pageOrStatic) return;
 
+  const cachedResponse = caches.match(request);
+  const networkResponse = fetch(request).then(response => {
+    if (response && response.ok) {
+      const copy = response.clone();
+      caches.open(CACHE_NAME).then(cache => cache.put(request, copy));
+    }
+    return response;
+  });
+
   event.respondWith((async () => {
-    const cached = await caches.match(request);
-    const network = fetch(request).then(response => {
-      if (response && response.ok) {
-        const copy = response.clone();
-        caches.open(CACHE_NAME).then(cache => cache.put(request, copy));
-      }
-      return response;
-    });
+    const cached = await cachedResponse;
     if (cached) {
-      event.waitUntil(network.catch(() => {}));
+      event.waitUntil(networkResponse.catch(() => {}));
       return cached;
     }
-    try { return await network; }
-    catch (error) {
+    try {
+      return await networkResponse;
+    } catch (error) {
       if (request.mode === "navigate") return (await caches.match("/index.html")) || Response.error();
       throw error;
     }
