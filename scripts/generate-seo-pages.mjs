@@ -67,8 +67,8 @@ for (const item of articles) {
 <body><header class="top"><div class="container nav"><a class="logo" href="/">K MEDIA <span>TELUGU</span></a><nav><a href="/">హోమ్</a><a href="/#latest">తాజా వార్తలు</a><a href="/about.html">మా గురించి</a><a href="/editorial-policy.html">సంపాదకీయ విధానం</a></nav></div></header>
 <main class="container"><article class="article-wrap"><p class="eyebrow">K MEDIA TELUGU · ${esc(category)}</p><h1>${esc(item.title)}</h1><p class="article-meta">${esc(dateText(item.published_at))} · K Media Telugu</p><img src="${esc(image)}" alt="${esc(item.title)}" fetchpriority="high"><div class="article-content">${body}</div><p><a href="/">← హోమ్‌కు తిరిగి వెళ్లండి</a></p></article></main>
 <footer><div class="copyright">© 2026 K Media Telugu. All rights reserved. | <a href="/privacy-policy.html">Privacy Policy</a> | <a href="/contact.html">Contact</a> | <a href="/editorial-policy.html">Editorial Policy</a></div></footer></body></html>`;
-  await import("node:fs/promises").then(fs => fs.mkdir(`.${dir}`, { recursive: true }));
-  await import("node:fs/promises").then(fs => fs.writeFile(`.${dir}/index.html`, html));
+  await import("node:fs/promises").then(fs => fs.mkdir(dir, { recursive: true }));
+  await import("node:fs/promises").then(fs => fs.writeFile(`${dir}/index.html`, html));
   urls.push({ url, published, modified, title: item.title });
 }
 
