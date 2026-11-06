@@ -28,6 +28,13 @@ const tag = (xml, name) => {
   const re = new RegExp("<" + name + "(?:\\s[^>]*)?>([\\s\\S]*?)<\\/" + name + ">", "i");
   return decode(xml.match(re)?.[1] || "");
 };
+const imageFromItem = item => {
+  const candidates = [
+    ...item.matchAll(/<(?:media:content|media:thumbnail|enclosure)\\b[^>]*\\burl=["']([^"']+)["'][^>]*>/gi),
+    ...item.matchAll(/<img\\b[^>]*\\bsrc=["']([^"']+)["'][^>]*>/gi)
+  ].map(match => decode(match[1]).replace(/&amp;/g, "&").trim());
+  return candidates.find(url => /^https?:\\/\\//i.test(url)) || null;
+};
 async function api(path, options = {}) {
   const res = await fetch(SUPABASE_URL + "/rest/v1/" + path, { ...options, headers: { ...headers, ...(options.headers || {}) } });
   if (!res.ok) throw new Error("Supabase " + res.status + ": " + (await res.text()).slice(0, 500));
@@ -53,14 +60,25 @@ async function main() {
       const title = tag(item, "title");
       const link = tag(item, "link");
       const description = tag(item, "description").slice(0, 700);
+      const featuredImage = imageFromItem(item);
       const pubDate = tag(item, "pubDate");
       if (!title || !link || !/^https?:\/\//i.test(link) || seen.has(link)) { skipped++; continue; }
       seen.add(link);
       const published = pubDate && !Number.isNaN(Date.parse(pubDate)) ? new Date(pubDate).toISOString() : new Date().toISOString();
       const cutoff = Date.now() - 7 * 24 * 60 * 60 * 1000;
       if (Date.parse(published) < cutoff) { skipped++; continue; }
-      const existing = await api("news_articles?select=id&source_url=eq." + encodeURIComponent(link) + "&limit=1");
-      if (existing.length) { skipped++; continue; }
+      const existing = await api("news_articles?select=id,featured_image&source_url=eq." + encodeURIComponent(link) + "&limit=1");
+      if (existing.length) {
+        if (featuredImage && !existing[0].featured_image) {
+          await api("news_articles?id=eq." + encodeURIComponent(existing[0].id), {
+            method: "PATCH",
+            body: JSON.stringify({ featured_image: featuredImage, updated_at: new Date().toISOString() })
+          });
+          console.log("Added missing featured image to existing draft:", title);
+        }
+        skipped++;
+        continue;
+      }
       const shortHash = crypto.createHash("sha1").update(link).digest("hex").slice(0, 8);
       const safeSlug = title.toLowerCase().replace(/[^\p{L}\p{N}]+/gu, "-").replace(/^-|-$/g, "").slice(0, 75) || "telugu-cinema-news";
       const payload = {
@@ -71,6 +89,7 @@ async function main() {
         meta_description: (description || title).slice(0, 160),
         content: (description || title) + "\n\nమూల వార్త చదవండి: " + link + "\n\nగమనిక: ఇది వార్తా మూలం ఆధారంగా సేకరించిన Draft. ప్రచురించే ముందు K Media Telugu బృందం ధృవీకరించాలి.",
         source_url: link,
+        featured_image: featuredImage,
         category_id: category.id,
         status: "draft",
         updated_at: new Date().toISOString(),
