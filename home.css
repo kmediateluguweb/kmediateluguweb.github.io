@@ -322,3 +322,22 @@ button,a,input{touch-action:manipulation}
   .mobile-bottom-nav a small{font-size:10px!important;font-weight:800!important}
   body{padding-bottom:calc(70px + env(safe-area-inset-bottom))!important}
 }
+
+/* Premium K Media Telugu black & red theme restore */
+@media (max-width: 900px) {
+  .topline { background:#090909!important; color:#fff!important; }
+  .site-header { background:#fff!important; color:#111!important; border-bottom:2px solid #d71920!important; }
+  .brand strong { color:#111!important; }
+  .brand strong em { color:#d71920!important; }
+  .search button { background:#d71920!important; }
+  .nav-bar { background:#090909!important; }
+  .main-nav a { color:#fff!important; }
+  .main-nav a.active, .main-nav a:hover { background:#d71920!important; border-color:#d71920!important; }
+  .hero-feature { background:#151515!important; color:#fff!important; }
+  .hero-feature .feature-label, .hero-feature .live-tag { background:#d71920!important; color:#fff!important; }
+  .section-title, .section-heading, .section-head { border-color:#d71920!important; }
+  .section-title:before, .section-heading:before { background:#d71920!important; }
+  .mobile-bottom-nav { background:#090909!important; border-top:2px solid #d71920!important; }
+  .mobile-bottom-nav a, .mobile-bottom-nav a small { color:#fff!important; }
+  .mobile-bottom-nav a span { color:#d71920!important; }
+}
