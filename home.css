@@ -405,3 +405,12 @@ button,a,input{touch-action:manipulation}
 .trend-image-wrap{position:relative;display:block;width:74px;height:64px}
 .trend-image-wrap:after{content:"";position:absolute;right:2px;bottom:2px;width:23px;height:23px;background:#ffffffdf url("/K%20Media%20Logo.jpg") center/contain no-repeat;border-radius:4px}
 @media(max-width:700px){.brand-logo{width:48px;height:48px}.side-brand img{max-width:105px}}
+
+/* Homepage hero cleanup: show one real Top Story card, never a giant brand image */
+.hero-panel{display:block!important;grid-template-columns:minmax(0,1fr)!important;min-height:0!important;padding:0!important;background:transparent!important;border:0!important;box-shadow:none!important}
+.hero-panel>.hero-copy{display:none!important}
+.hero-panel>.hero-feature{display:block!important;width:100%!important;height:320px!important;min-height:320px!important;margin:0!important;border-radius:18px!important;overflow:hidden!important;background:linear-gradient(135deg,#17191f,#4a171c)!important}
+.hero-panel>.hero-feature .hero-photo-link{position:absolute!important;inset:0!important;width:100%!important;height:100%!important;display:flex!important;flex-direction:column!important;justify-content:flex-end!important;align-items:flex-start!important;gap:10px!important;padding:22px!important;background:linear-gradient(180deg,transparent 25%,#090b12dd 100%)!important;color:#fff!important}
+.hero-panel>.hero-feature .hero-photo-link img{position:absolute!important;inset:0!important;width:100%!important;height:100%!important;object-fit:cover!important;z-index:0!important}
+.hero-panel>.hero-feature .hero-photo-link span,.hero-panel>.hero-feature .hero-photo-link strong{position:relative!important;z-index:1!important;color:#fff!important}
+@media(max-width:560px){.hero-panel>.hero-feature{height:210px!important;min-height:210px!important}.hero-panel>.hero-feature .hero-photo-link{padding:14px!important}}
