@@ -109,3 +109,10 @@ button,a,input{touch-action:manipulation}
 .hero-feature{height:280px;min-height:280px;align-self:center;}
 @media(max-width:850px){.hero-feature{height:240px;min-height:240px;}}
 @media(max-width:560px){.hero-feature{height:190px;min-height:190px;}}
+
+/* Strong compact sizing override for the featured image */
+.hero-panel{min-height:0!important;align-items:center!important;}
+.hero-feature{height:190px!important;min-height:190px!important;max-height:190px!important;align-self:center!important;overflow:hidden!important;}
+.hero-feature .hero-photo-link{height:100%!important;max-height:100%!important;}
+@media(max-width:850px){.hero-feature{height:170px!important;min-height:170px!important;max-height:170px!important;}}
+@media(max-width:560px){.hero-feature{height:150px!important;min-height:150px!important;max-height:150px!important;}}
