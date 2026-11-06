@@ -26,6 +26,23 @@ const decode = value => String(value || "")
   .replace(/<style\b[^>]*>[\s\S]*?<\/style>/gi, " ")
   .replace(/<[^>]*>/g, " ")
   .replace(/\s+/g, " ").trim();
+function cleanPlainText(value) {
+  let text = String(value || "");
+  for (let i = 0; i < 3; i++) {
+    text = text
+      .replace(/&amp;/gi, "&").replace(/&nbsp;/gi, " ")
+      .replace(/&quot;/gi, '"').replace(/&#39;|&apos;/gi, "'")
+      .replace(/&lt;/gi, "<").replace(/&gt;/gi, ">");
+  }
+  return text
+    .replace(/<script\b[^>]*>[\s\S]*?<\/script>/gi, " ")
+    .replace(/<style\b[^>]*>[\s\S]*?<\/style>/gi, " ")
+    .replace(/<a\b[^>]*>[\s\S]*?<\/a>/gi, " ")
+    .replace(/<[^>]*>/g, " ")
+    .replace(/https?:\/\/\S+/gi, " ")
+    .replace(/\b(?:BBC|Google News)\s*$/i, "")
+    .replace(/\s+/g, " ").trim();
+}
 const tag = (xml, name) => {
   const re = new RegExp("<" + name + "(?:\\s[^>]*)?>([\\s\\S]*?)<\\/" + name + ">", "i");
   return decode(xml.match(re)?.[1] || "");
@@ -172,7 +189,7 @@ async function main() {
       if (added >= 15) break;
       const title = tag(item, "title");
       const link = tag(item, "link");
-      const description = tag(item, "description").replace(/https?:\/\/\S+/g, "").slice(0, 700);
+      const description = cleanPlainText(tag(item, "description")).slice(0, 700);
       const publisherUrl = await resolvePublisherUrl(link);
       const [featuredImage, fullContent] = await Promise.all([
         resolveFeaturedImage(item, link),
@@ -206,10 +223,10 @@ async function main() {
       const payload = {
         title: title.slice(0, 250),
         slug: safeSlug + "-" + shortHash,
-        summary: (description || fullContent).slice(0, 500),
+        summary: cleanPlainText(description || fullContent).slice(0, 500),
         seo_title: title.slice(0, 70),
-        meta_description: (description || fullContent).slice(0, 160),
-        content: fullContent,
+        meta_description: cleanPlainText(description || fullContent).slice(0, 160),
+        content: cleanPlainText(fullContent),
         source_url: link,
         featured_image: featuredImage,
         category_id: category.id,
