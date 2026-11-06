@@ -224,7 +224,7 @@ async function main() {
       const rawTitle = tag(item, "title");
       const title = cleanNewsTitle(rawTitle);
       const link = tag(item, "link");
-      const description = cleanPlainText(tag(item, "description")).slice(0, 700);
+      const description = cleanNewsTitle(cleanPlainText(tag(item, "description"))).slice(0, 700);
       const publisherUrl = await resolvePublisherUrl(link);
       const featuredImage = await resolveFeaturedImage(item, link);
       const pubDate = tag(item, "pubDate");
