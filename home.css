@@ -244,3 +244,16 @@ button,a,input{touch-action:manipulation}
 }
 .hero-feature .hero-photo-fallback span { color: #ff8b90; font-size: 11px; font-weight: 900; }
 .hero-feature .hero-photo-fallback strong { color: #fff; font-size: clamp(18px,4vw,26px); line-height: 1.4; }
+
+
+/* Mobile news feed layout */
+@media (max-width: 560px) {
+  #latest { width: calc(100% - 28px) !important; margin-left: auto !important; margin-right: auto !important; }
+  #latestNews { display: grid !important; grid-template-columns: minmax(0,1fr) !important; gap: 14px !important; width: 100% !important; }
+  #latestNews .news-card { width: 100% !important; min-width: 0 !important; }
+  #latestNews .news-card-image, #latestNews .image-placeholder { width: 100% !important; height: auto !important; aspect-ratio: 16 / 9 !important; object-fit: cover !important; }
+  #latestNews .card-body { padding: 14px !important; }
+  #latestNews .news-card h3 { font-size: 17px !important; line-height: 1.55 !important; }
+  #latestNews .news-card p { font-size: 13px !important; line-height: 1.7 !important; }
+  #heroFeature img { width: 100% !important; height: 100% !important; object-fit: cover !important; display: block !important; }
+}
