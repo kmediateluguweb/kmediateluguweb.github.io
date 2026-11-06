@@ -21,6 +21,14 @@ const [articles, categories] = await Promise.all([
 ]);
 const categoryMap = new Map(categories.map(c => [String(c.id), c]));
 const urls = [];
+const fs = await import("node:fs/promises");
+const feed = articles.filter(item => item.id && item.title).map(item => ({
+  ...item,
+  category_name: categoryMap.get(String(item.category_id))?.name || "తాజా వార్తలు",
+  category_slug: categoryMap.get(String(item.category_id))?.slug || ""
+}));
+await fs.writeFile("news-feed.json", JSON.stringify(feed));
+
 
 for (const item of articles) {
   if (!item.id || !item.title) continue;
@@ -51,7 +59,6 @@ for (const item of articles) {
   urls.push({ url, published, modified, title: item.title });
 }
 
-const fs = await import("node:fs/promises");
 const fixed = ["", "about.html", "contact.html", "privacy-policy.html", "editorial-policy.html"];
 const sitemapEntries = [
   ...fixed.map(path => `<url><loc>${SITE}/${path}</loc></url>`),
