@@ -62,16 +62,27 @@ function renderLoadedNews(){
   }
 }
 async function loadNews(){
+  const SUPABASE_URL="https://mewyojxgsuceppsauesh.supabase.co";
+  const SUPABASE_KEY="sb_publishable_-ee5Pt9U0ZvZuUkipLcq-Q_KBXKsEDa";
+  const headers={apikey:SUPABASE_KEY,Authorization:"Bearer "+SUPABASE_KEY};
   try{
-    const response=await fetch("/home-feed.json?v=20261106-11",{cache:"no-store"});
-    if(!response.ok)throw new Error("Homepage news feed unavailable");
-    const rows=await response.json();
-    articles=Array.isArray(rows)?rows:[];
+    const [newsResponse,categoriesResponse]=await Promise.all([
+      fetch(SUPABASE_URL+"/rest/v1/news_articles?select=id,title,summary,content,featured_image,published_at,category_id,status&status=eq.published&order=published_at.desc&limit=30",{headers,cache:"no-store"}),
+      fetch(SUPABASE_URL+"/rest/v1/categories?select=id,name,slug",{headers,cache:"no-store"})
+    ]);
+    if(!newsResponse.ok)throw new Error("News API "+newsResponse.status+": "+(await newsResponse.text()).slice(0,220));
+    if(!categoriesResponse.ok)throw new Error("Category API "+categoriesResponse.status+": "+(await categoriesResponse.text()).slice(0,220));
+    const [newsRows,categoryRows]=await Promise.all([newsResponse.json(),categoriesResponse.json()]);
+    const categories=new Map((Array.isArray(categoryRows)?categoryRows:[]).map(c=>[String(c.id),c]));
+    articles=(Array.isArray(newsRows)?newsRows:[]).map(a=>{
+      const category=categories.get(String(a.category_id))||{};
+      return {...a,category_name:category.name||"తాజా వార్తలు",category_slug:category.slug||""};
+    });
     renderLoadedNews();
   }catch(error){
-    console.warn("Fast news feed unavailable.",error);
-    document.getElementById("latestNews").innerHTML='<div class="empty-state">వార్తలు ప్రస్తుతం అందుబాటులో లేవు. కొద్దిసేపటి తర్వాత మళ్లీ ప్రయత్నించండి.</div>';
-    document.getElementById("trendingList").textContent="వార్తలు అందుబాటులో లేవు.";
+    console.error("Live Supabase news feed failed:",error);
+    document.getElementById("latestNews").innerHTML='<div class="empty-state">వార్తలు లోడ్ కాలేదు: '+esc(error.message)+' </div>';
+    document.getElementById("trendingList").textContent="వార్తలు లోడ్ కాలేదు.";
   }
 }
 function clock(){const d=new Date(),date=new Intl.DateTimeFormat("te-IN",{timeZone:"Asia/Kolkata",day:"2-digit",month:"long",year:"numeric"}).format(d),time=new Intl.DateTimeFormat("en-IN",{timeZone:"Asia/Kolkata",hour:"2-digit",minute:"2-digit",hour12:true}).format(d);document.getElementById("siteDateTime").textContent=date+" · "+time+" IST";}
