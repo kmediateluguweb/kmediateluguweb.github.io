@@ -228,7 +228,7 @@ async function main() {
       const cutoff = Date.now() - 7 * 24 * 60 * 60 * 1000;
       if (Date.parse(published) < cutoff) { skipped++; continue; }
       const originalSummary = writeOriginalTeluguSummary(title, description, category.name, publisherUrl || link);
-      if (originalSummary.length < 120) { console.log("Skipped: original summary unavailable (check OPENAI_API_KEY):", title); skipped++; continue; }
+      if (originalSummary.length < 80) { console.log("Skipped: RSS summary is too short:", title); skipped++; continue; }
       const existing = await api("news_articles?select=id,featured_image,content,summary,meta_description,status&source_url=eq." + encodeURIComponent(link) + "&limit=1");
       if (existing.length) {
         const patch = { updated_at: new Date().toISOString() };
