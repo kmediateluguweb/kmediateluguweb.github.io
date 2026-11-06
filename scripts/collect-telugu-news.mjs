@@ -41,15 +41,15 @@ async function api(path, options = {}) {
 }
 function imageFromItem(item) {
   const candidates = [
-    item.match(/<enclosure\\b[^>]*\\burl=["']([^"']+)["']/i)?.[1],
-    item.match(/<media:content\\b[^>]*\\burl=["']([^"']+)["']/i)?.[1],
-    item.match(/<media:thumbnail\\b[^>]*\\burl=["']([^"']+)["']/i)?.[1],
-    item.match(/<img\\b[^>]*\\bsrc=["']([^"']+)["']/i)?.[1]
+    item.match(/<enclosure\b[^>]*\burl=["']([^"']+)["']/i)?.[1],
+    item.match(/<media:content\b[^>]*\burl=["']([^"']+)["']/i)?.[1],
+    item.match(/<media:thumbnail\b[^>]*\burl=["']([^"']+)["']/i)?.[1],
+    item.match(/<img\b[^>]*\bsrc=["']([^"']+)["']/i)?.[1]
   ];
   for (const candidate of candidates) {
     if (!candidate) continue;
     const url = candidate.replace(/&amp;/g, "&").trim();
-    if (/^https?:\\/\\//i.test(url)) return url;
+    if (/^https?:\/\//i.test(url)) return url;
   }
   return null;
 }
@@ -68,7 +68,7 @@ async function main() {
       if (added >= 15) break;
       const title = tag(item, "title");
       const link = tag(item, "link");
-      const description = tag(item, "description").replace(new RegExp("https?://\\S+", "g"), "").slice(0, 700);
+      const description = tag(item, "description").replace(/https?:\/\/\S+/g, "").slice(0, 700);
       const featuredImage = imageFromItem(item);
       const pubDate = tag(item, "pubDate");
       if (!title || !link || !/^https?:\/\//i.test(link) || seen.has(link)) { skipped++; continue; }
