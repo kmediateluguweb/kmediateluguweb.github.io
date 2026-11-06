@@ -1,4 +1,4 @@
-const CACHE_NAME = "k-media-telugu-v16";
+const CACHE_NAME = "k-media-telugu-v17";
 const APP_SHELL = ["/", "/index.html", "/home.css?v=20261106-10", "/manifest.webmanifest", "/home-feed.json?v=20261106-11", "/logo-mark.svg"];
 self.addEventListener("install", event => {
   event.waitUntil(caches.open(CACHE_NAME).then(cache => cache.addAll(APP_SHELL)).then(() => self.skipWaiting()));
