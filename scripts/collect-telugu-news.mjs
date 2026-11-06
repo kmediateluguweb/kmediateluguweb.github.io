@@ -39,6 +39,20 @@ async function api(path, options = {}) {
   try { return JSON.parse(responseText); }
   catch { throw new Error("Supabase returned a non-JSON response: " + responseText.slice(0, 300)); }
 }
+function imageFromItem(item) {
+  const candidates = [
+    item.match(/<enclosure\\b[^>]*\\burl=["']([^"']+)["']/i)?.[1],
+    item.match(/<media:content\\b[^>]*\\burl=["']([^"']+)["']/i)?.[1],
+    item.match(/<media:thumbnail\\b[^>]*\\burl=["']([^"']+)["']/i)?.[1],
+    item.match(/<img\\b[^>]*\\bsrc=["']([^"']+)["']/i)?.[1]
+  ];
+  for (const candidate of candidates) {
+    if (!candidate) continue;
+    const url = candidate.replace(/&amp;/g, "&").trim();
+    if (/^https?:\\/\\//i.test(url)) return url;
+  }
+  return null;
+}
 async function main() {
   const cats = await api("categories?select=id,name,slug&order=id");
   if (!cats?.length) throw new Error("No categories found in Supabase.");
