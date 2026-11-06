@@ -181,6 +181,21 @@ async function fetchPublisherContent(url) {
   }
 }
 
+const OPENAI_API_KEY = process.env.OPENAI_API_KEY || "";
+async function writeOriginalTeluguSummary(title, description, categoryName, sourceUrl) {
+  if (!OPENAI_API_KEY) return "";
+  const prompt = `మీరు K Media Telugu కోసం తెలుగు న్యూస్ ఎడిటర్. క్రింది శీర్షిక, చిన్న RSS వివరణలో ఉన్న ధృవీకరించగల వాస్తవాలనే ఉపయోగించి 120-180 పదాల్లో పూర్తిగా కొత్త తెలుగు భాషలో సంక్షిప్త వార్త రాయండి. వాక్య నిర్మాణం, పదజాలం మూల కథనం నుంచి కాపీ చేయకండి. కొత్త వివరాలు, ఊహాగానాలు, ఆరోపణలు కల్పించకండి. వివరాలు సరిపోకపోతే 60-90 పదాలకు పరిమితం చేయండి. వ్యక్తులపై ఆరోపణలను నిజాలుగా రాయకండి; మూలం చెప్పినట్లుగా ఆపాదించండి. శీర్షికను మళ్లీ యథాతథంగా పునరావృతం చేయకండి. 2-4 చిన్న పేరాలు మాత్రమే ఇవ్వండి; Markdown, HTML, source URL వద్దు. వర్గం: ${categoryName}. శీర్షిక: ${title}. RSSలోని సంక్షిప్త సమాచారం: ${description}. మూల లింక్: ${sourceUrl}`;
+  const response = await fetch("https://api.openai.com/v1/chat/completions", {
+    method: "POST",
+    headers: { Authorization: "Bearer " + OPENAI_API_KEY, "Content-Type": "application/json" },
+    body: JSON.stringify({ model: "gpt-4o-mini", temperature: 0.3, messages: [{ role: "user", content: prompt }] }),
+    signal: AbortSignal.timeout(30000)
+  });
+  if (!response.ok) throw new Error("OpenAI summary failed: " + response.status + " " + (await response.text()).slice(0, 300));
+  const data = await response.json();
+  return cleanPlainText(data.choices?.[0]?.message?.content || "").slice(0, 3000);
+}
+
 async function main() {
   const cats = await api("categories?select=id,name,slug&order=id");
   if (!cats?.length) throw new Error("No categories found in Supabase.");
@@ -200,7 +215,7 @@ async function main() {
     if (!category) { console.warn("Missing category for feed:", feed.categoryKey); continue; }
     if (addedByCategory[feed.categoryKey] >= 6) continue;
     const response = await fetch(feed.url, { headers: { "User-Agent": "KMediaTeluguNewsBot/1.0" } });
-    if (!response.ok) { console.warn("RSS unavailable:", response.status, feedUrl); continue; }
+    if (!response.ok) { console.warn("RSS unavailable:", response.status, feed.url); continue; }
     const xml = await response.text();
     const items = [...xml.matchAll(/<item(?:\s[^>]*)?>([\s\S]*?)<\/item>/gi)].map(m => m[1]);
     for (const item of items) {
@@ -209,10 +224,7 @@ async function main() {
       const link = tag(item, "link");
       const description = cleanPlainText(tag(item, "description")).slice(0, 700);
       const publisherUrl = await resolvePublisherUrl(link);
-      const [featuredImage, fullContent] = await Promise.all([
-        resolveFeaturedImage(item, link),
-        fetchPublisherContent(publisherUrl)
-      ]);
+      const featuredImage = await resolveFeaturedImage(item, link);
       const pubDate = tag(item, "pubDate");
       if (!title || !link || !/^https?:\/\//i.test(link) || seen.has(link)) { skipped++; continue; }
       seen.add(link);
@@ -245,10 +257,10 @@ async function main() {
       const payload = {
         title: title.slice(0, 250),
         slug: safeSlug + "-" + shortHash,
-        summary: cleanPlainText(description || fullContent).slice(0, 500),
+        summary: originalSummary.slice(0, 500),
         seo_title: title.slice(0, 70),
-        meta_description: cleanPlainText(description || fullContent).slice(0, 160),
-        content: cleanPlainText(fullContent),
+        meta_description: originalSummary.slice(0, 160),
+        content: originalSummary,
         source_url: link,
         featured_image: featuredImage,
         category_id: category.id,
