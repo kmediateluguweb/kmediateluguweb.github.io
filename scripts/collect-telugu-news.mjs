@@ -68,7 +68,7 @@ async function main() {
       if (added >= 15) break;
       const title = tag(item, "title");
       const link = tag(item, "link");
-      const description = tag(item, "description").replace(new RegExp("https?://\\\\S+", "g"), "").slice(0, 700);
+      const description = tag(item, "description").replace(new RegExp("https?://\\S+", "g"), "").slice(0, 700);
       const featuredImage = imageFromItem(item);
       const pubDate = tag(item, "pubDate");
       if (!title || !link || !/^https?:\/\//i.test(link) || seen.has(link)) { skipped++; continue; }
