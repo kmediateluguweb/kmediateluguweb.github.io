@@ -47,10 +47,11 @@ async function loadNews(){try{const n=await db.from("news_articles").select("*")
 function clock(){const d=new Date(),date=new Intl.DateTimeFormat("te-IN",{timeZone:"Asia/Kolkata",day:"2-digit",month:"long",year:"numeric"}).format(d),time=new Intl.DateTimeFormat("en-IN",{timeZone:"Asia/Kolkata",hour:"2-digit",minute:"2-digit",hour12:true}).format(d);document.getElementById("siteDateTime").textContent=date+" · "+time+" IST";}
 document.getElementById("searchForm").addEventListener("submit",e=>{e.preventDefault();const q=document.getElementById("searchInput").value.trim().toLowerCase();render("latestNews",articles.filter(a=>(a.title+" "+(a.summary||"")+" "+a.category_name).toLowerCase().includes(q)).slice(0,12),"ఈ పదానికి సంబంధించిన వార్తలు కనిపించలేదు.");document.getElementById("latest").scrollIntoView({behavior:"smooth"});});clock();setInterval(clock,30000);loadNews();
 if ("serviceWorker" in navigator) { window.addEventListener("load", () => navigator.serviceWorker.register("/sw.js").catch(err => console.warn("Service worker registration failed", err))); }
+</script>
 <nav class="mobile-bottom-nav" aria-label="Mobile quick navigation">
 <a href="#home"><span>⌂</span><small>Home</small></a>
 <a href="#latest"><span>▤</span><small>Latest</small></a>
 <a href="#mobile-menu" id="mobileMenuToggle"><span>▦</span><small>Menu</small></a>
 <a href="#trending"><span>↗</span><small>Trending</small></a>
 <a href="#videos"><span>▶</span><small>Videos</small></a>
-</nav></script></body></html>
+</nav></body></html>
