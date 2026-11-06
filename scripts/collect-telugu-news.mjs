@@ -17,6 +17,18 @@ const headers = {
 };
 const decode = value => String(value || "")
   .replace(/<!\[CDATA\[([\s\S]*?)\]\]>/g, "$1")
+  .replace(/&amp;/g, "&").replace(/&quot;/g, '"')
+  .replace(/&#39;/g, "'").replace(/&apos;/g, "'")
+  .replace(/&lt;/g, "<").replace(/&gt;/g, ">")
+  .replace(/&#(\d+);/g, (_, n) => String.fromCodePoint(Number(n)))
+  .replace(/&#x([\da-f]+);/gi, (_, n) => String.fromCodePoint(parseInt(n, 16)))
+  .replace(/<script\b[^>]*>[\s\S]*?<\/script>/gi, " ")
+  .replace(/<style\b[^>]*>[\s\S]*?<\/style>/gi, " ")
+  .replace(/<[^>]*>/g, " ")
+  .replace(/\s+/g, " ").trim();
+const tag = (xml, name) => {
+  const escapedName = name.replace(/[.*+?^\u0024{}()|[\]\\]/g, "\\const decode = value => String(value || "")
+  .replace(/<!\[CDATA\[([\s\S]*?)\]\]>/g, "$1")
   .replace(/<[^>]*>/g, " ")
   .replace(/&amp;/g, "&").replace(/&quot;/g, '"')
   .replace(/&#39;/g, "'").replace(/&apos;/g, "'")
@@ -26,6 +38,9 @@ const decode = value => String(value || "")
   .replace(/\s+/g, " ").trim();
 const tag = (xml, name) => {
   const re = new RegExp("<" + name + "(?:\s[^>]*)?>([\s\\S]*?)<\/" + name + ">", "i");
+  return decode(xml.match(re)?.[1] || "");
+};");
+  const re = new RegExp("<" + escapedName + "(?:\\s[^>]*)?>([\\s\\S]*?)<\\/" + escapedName + ">", "i");
   return decode(xml.match(re)?.[1] || "");
 };
 const imageFromItem = item => {
@@ -59,7 +74,7 @@ async function main() {
       if (added >= 15) break;
       const title = tag(item, "title");
       const link = tag(item, "link");
-      const description = tag(item, "description").slice(0, 700);
+      const description = tag(item, "description").replace(/https?:\\/\\/\\S+/g, "").slice(0, 700);
       const featuredImage = imageFromItem(item);
       const pubDate = tag(item, "pubDate");
       if (!title || !link || !/^https?:\/\//i.test(link) || seen.has(link)) { skipped++; continue; }
@@ -87,7 +102,7 @@ async function main() {
         summary: (description || title).slice(0, 500),
         seo_title: title.slice(0, 70),
         meta_description: (description || title).slice(0, 160),
-        content: (description || title) + "\n\nమూల వార్త చదవండి: " + link + "\n\nగమనిక: ఇది వార్తా మూలం ఆధారంగా సేకరించిన Draft. ప్రచురించే ముందు K Media Telugu బృందం ధృవీకరించాలి.",
+        content: (description || title) + "\n\nమూల వార్త: " + link + "\n\nగమనిక: ఇది RSS ద్వారా వచ్చిన వార్తా సారాంశం మాత్రమే. పూర్తి కథనాన్ని ప్రచురించే ముందు మూలాన్ని పరిశీలించి, స్వంతంగా ధృవీకరించిన వివరాలతో రాయాలి.",
         source_url: link,
         featured_image: featuredImage,
         category_id: category.id,
