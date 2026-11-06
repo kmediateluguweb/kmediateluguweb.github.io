@@ -80,3 +80,19 @@ button,a,input{touch-action:manipulation}
 .kmt-ig{font-size:32px}.kmt-promo-cta span:nth-child(2){display:flex;flex-direction:column;gap:4px;flex:1}.kmt-promo-cta small{font-size:9px;letter-spacing:1.3px;color:#ffe1eb}.kmt-promo-cta strong{font-size:clamp(12px,2vw,17px)}.kmt-promo-cta>b{font-size:11px;white-space:nowrap;background:#fff;color:#a3174f;border-radius:20px;padding:9px 12px}
 .kmt-promo-cta:hover{filter:brightness(1.1);transform:translateY(-2px)}
 @media(max-width:560px){.kmt-promo-hero{padding:16px 12px;border-radius:16px}.kmt-promo-services{gap:6px}.kmt-promo-services>div{min-height:90px}.kmt-promo-services b{font-size:22px}.kmt-promo-services strong{font-size:11px}.kmt-promo-services span{font-size:9px}.kmt-promo-features{gap:8px 12px;font-size:9px}.kmt-promo-cta{gap:8px;padding:11px 10px}.kmt-promo-cta>b{font-size:9px;padding:8px}.kmt-promo-cta strong{font-size:11px}}
+
+/* Compact promotions banner sizing */
+.kmt-promo-hero{margin:12px 0 6px;padding:16px 20px;border-radius:18px;box-shadow:0 10px 24px #10111424}
+.kmt-promo-hero:before{inset:7px;border-radius:13px}
+.kmt-promo-kicker{font-size:clamp(18px,2.3vw,26px)}
+.kmt-promo-headline{margin:11px 0;padding:9px 8px;gap:1px}
+.kmt-promo-headline span{font-size:clamp(14px,1.8vw,20px)}
+.kmt-promo-headline strong{font-size:clamp(24px,3.6vw,40px)}
+.kmt-promo-services{gap:9px;margin:11px 0}
+.kmt-promo-services>div{min-height:78px}
+.kmt-promo-services b{font-size:22px}
+.kmt-promo-services strong{font-size:clamp(12px,1.5vw,16px)}
+.kmt-promo-features{padding:8px 4px;gap:8px 15px}
+.kmt-promo-cta{margin:11px auto 0;padding:9px 14px;max-width:620px}
+.kmt-ig{font-size:26px}
+@media(max-width:560px){.kmt-promo-hero{padding:13px 10px}.kmt-promo-headline{margin:9px 0;padding:8px 5px}.kmt-promo-services{margin:9px 0;gap:5px}.kmt-promo-services>div{min-height:68px}.kmt-promo-features{padding:7px 2px}.kmt-promo-cta{margin-top:9px;padding:9px 8px}}
