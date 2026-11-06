@@ -16,7 +16,7 @@ async function get(path) {
   return response.json();
 }
 const [articles, categories] = await Promise.all([
-  get("news_articles?select=id,title,slug,summary,seo_title,meta_description,content,featured_image,published_at,updated_at,category_id&status=eq.published&order=published_at.desc&limit=1000"),
+  get("news_articles?select=id,title,slug,summary,seo_title,meta_description,content,featured_image,published_at,updated_at,category_id,view_count&status=eq.published&order=published_at.desc&limit=1000"),
   get("categories?select=id,name,slug")
 ]);
 const categoryMap = new Map(categories.map(c => [String(c.id), c]));
@@ -66,8 +66,24 @@ for (const item of articles) {
 <script type="application/ld+json">${JSON.stringify({"@context":"https://schema.org","@type":"NewsArticle","headline":title,"description":description,"image":[image],"datePublished":published,"dateModified":modified,"dateCreated":published,"articleSection":category,"inLanguage":"te-IN","isAccessibleForFree":true,"mainEntityOfPage":{"@type":"WebPage","@id":url},"author":{"@type":"Organization","name":"K Media Telugu"},"publisher":{"@type":"NewsMediaOrganization","name":"K Media Telugu","logo":{"@type":"ImageObject","url":`${SITE}/K%20Media%20Logo.jpg`}}})}</script>
 <style>.article-wrap{max-width:850px;margin:40px auto;background:#fff;padding:28px;border-radius:14px}.article-photo-wrap{display:block;position:relative}.article-photo-wrap>img:first-child{width:100%;max-height:480px;object-fit:cover;border-radius:10px}.article-photo-wrap .article-watermark{position:absolute;right:12px;bottom:12px;width:64px;height:64px;object-fit:contain;background:#ffffffdf;padding:3px;border-radius:8px}.article-content{font-size:18px;line-height:1.9;overflow-wrap:anywhere}.article-meta{color:#777;font-size:14px}@media(max-width:700px){.article-wrap{margin:18px auto;padding:18px}}</style></head>
 <body><header class="top"><div class="container nav"><a class="logo" href="/"><img src="/K%20Media%20Logo.jpg" alt="K Media Telugu logo" style="width:46px;height:46px;object-fit:contain;background:#fff;border-radius:8px;vertical-align:middle"> K MEDIA <span>TELUGU</span></a><nav><a href="/">హోమ్</a><a href="/#latest">తాజా వార్తలు</a><a href="/about.html">మా గురించి</a><a href="/editorial-policy.html">సంపాదకీయ విధానం</a></nav></div></header>
-<main class="container"><article class="article-wrap"><p class="eyebrow">K MEDIA TELUGU · ${esc(category)}</p><h1>${esc(item.title)}</h1><p class="article-meta">${esc(dateText(item.published_at))} · K Media Telugu</p><span class="article-photo-wrap"><img src="${esc(image)}" alt="${esc(item.title)}" fetchpriority="high"><img class="article-watermark" src="/K%20Media%20Logo.jpg" alt="K Media Telugu watermark"></span><div class="article-content">${body}</div><p><a href="/">← హోమ్‌కు తిరిగి వెళ్లండి</a></p></article></main>
-<footer><div class="copyright">© 2026 K Media Telugu. All rights reserved. | <a href="/privacy-policy.html">Privacy Policy</a> | <a href="/contact.html">Contact</a> | <a href="/editorial-policy.html">Editorial Policy</a></div></footer></body></html>`;
+<main class="container"><article class="article-wrap"><p class="eyebrow">K MEDIA TELUGU · ${esc(category)}</p><h1>${esc(item.title)}</h1><p class="article-meta">${esc(dateText(item.published_at))} · K Media Telugu</p><div class="article-views" style="display:flex;align-items:center;gap:7px;color:#64748b;font-size:14px;margin:8px 0 18px">👁 <strong id="articleViewCount">${Number(item.view_count||0).toLocaleString("en-IN")} Views</strong></div><span class="article-photo-wrap"><img src="${esc(image)}" alt="${esc(item.title)}" fetchpriority="high"><img class="article-watermark" src="/K%20Media%20Logo.jpg" alt="K Media Telugu watermark"></span><div class="article-content">${body}</div><p><a href="/">← హోమ్‌కు తిరిగి వెళ్లండి</a></p></article></main>
+<footer><div class="copyright">© 2026 K Media Telugu. All rights reserved. | <a href="/privacy-policy.html">Privacy Policy</a> | <a href="/contact.html">Contact</a> | <a href="/editorial-policy.html">Editorial Policy</a></div></footer>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+(async()=>{
+ const id=${JSON.stringify(item.id)};
+ const db=window.supabase.createClient("https://mewyojxgsuceppsauesh.supabase.co","sb_publishable_-ee5Pt9U0ZvZuUkipLcq-Q_KBXKsEDa");
+ const el=document.getElementById("articleViewCount");
+ try{
+  const key="kmt-viewed-"+id;
+  if(!sessionStorage.getItem(key)){
+   const {data:count,error}=await db.rpc("increment_article_view",{p_article_id:String(id)});
+   if(!error && count!==null && el)el.textContent=Number(count).toLocaleString("en-IN")+" Views";
+   if(!error)sessionStorage.setItem(key,"1");
+  }
+ }catch(e){console.warn("View counter unavailable",e);}
+})();
+</script></body></html>`;
   await import("node:fs/promises").then(fs => fs.mkdir(dir, { recursive: true }));
   await import("node:fs/promises").then(fs => fs.writeFile(`${dir}/index.html`, html));
   urls.push({ url, published, modified, title: item.title });
