@@ -196,8 +196,8 @@ async function main() {
         skipped++;
         continue;
       }
-      if (fullContent.length < 250) {
-        console.log("Skipped: publisher did not provide enough article text:", title);
+      if (fullContent.length < 250 || !featuredImage || !/^https?:\/\//i.test(featuredImage)) {
+        console.log("Skipped: article is missing full text or a valid featured image:", title);
         skipped++;
         continue;
       }
