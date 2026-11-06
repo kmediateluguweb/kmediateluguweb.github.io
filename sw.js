@@ -1,4 +1,4 @@
-const CACHE_NAME = "k-media-telugu-v8";
+const CACHE_NAME = "k-media-telugu-v9";
 const APP_SHELL = ["/", "/index.html", "/home.css", "/style.css", "/manifest.webmanifest"];
 
 self.addEventListener("install", event => {
