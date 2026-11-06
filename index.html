@@ -70,8 +70,8 @@ async function loadNews(){
       fetch(SUPABASE_URL+"/rest/v1/news_articles?select=id,title,summary,content,featured_image,published_at,category_id,status&status=eq.published&order=published_at.desc&limit=30",{headers,cache:"no-store"}),
       fetch(SUPABASE_URL+"/rest/v1/categories?select=id,name,slug",{headers,cache:"no-store"})
     ]);
-    if(!newsResponse.ok)throw new Error("News API "+newsResponse.status+": "+(await newsResponse.text()).slice(0,220));
-    if(!categoriesResponse.ok)throw new Error("Category API "+categoriesResponse.status+": "+(await categoriesResponse.text()).slice(0,220));
+    if(!newsResponse.ok)throw new Error("News API "+newsResponse.status);
+    if(!categoriesResponse.ok)throw new Error("Category API "+categoriesResponse.status);
     const [newsRows,categoryRows]=await Promise.all([newsResponse.json(),categoriesResponse.json()]);
     const categories=new Map((Array.isArray(categoryRows)?categoryRows:[]).map(c=>[String(c.id),c]));
     articles=(Array.isArray(newsRows)?newsRows:[]).map(a=>{
@@ -80,9 +80,18 @@ async function loadNews(){
     });
     renderLoadedNews();
   }catch(error){
-    console.error("Live Supabase news feed failed:",error);
-    document.getElementById("latestNews").innerHTML='<div class="empty-state">వార్తలు లోడ్ కాలేదు: '+esc(error.message)+' </div>';
-    document.getElementById("trendingList").textContent="వార్తలు లోడ్ కాలేదు.";
+    console.warn("Live Supabase feed unavailable; using published feed fallback.",error);
+    try{
+      const fallback=await fetch("/home-feed.json?v=20261106-12",{cache:"no-store"});
+      if(!fallback.ok)throw new Error("Fallback feed HTTP "+fallback.status);
+      const rows=await fallback.json();
+      articles=Array.isArray(rows)?rows:[];
+      renderLoadedNews();
+    }catch(fallbackError){
+      console.error("Both live and fallback feeds failed:",fallbackError);
+      document.getElementById("latestNews").innerHTML='<div class="empty-state">వార్తలు లోడ్ కాలేదు. దయచేసి కొద్దిసేపటి తర్వాత ప్రయత్నించండి.</div>';
+      document.getElementById("trendingList").textContent="వార్తలు లోడ్ కాలేదు.";
+    }
   }
 }
 function clock(){const d=new Date(),date=new Intl.DateTimeFormat("te-IN",{timeZone:"Asia/Kolkata",day:"2-digit",month:"long",year:"numeric"}).format(d),time=new Intl.DateTimeFormat("en-IN",{timeZone:"Asia/Kolkata",hour:"2-digit",minute:"2-digit",hour12:true}).format(d);document.getElementById("siteDateTime").textContent=date+" · "+time+" IST";}
