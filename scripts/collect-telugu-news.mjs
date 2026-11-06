@@ -5,9 +5,9 @@ const SERVICE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY;
 if (!SERVICE_KEY) throw new Error("Missing GitHub Actions secret: SUPABASE_SERVICE_ROLE_KEY");
 
 const feeds = [
-  "https://news.google.com/rss/search?q=Telugu+cinema+OR+Tollywood&hl=en-IN&gl=IN&ceid=IN:en",
-  "https://news.google.com/rss/search?q=Telugu+movies+upcoming+film+updates&hl=en-IN&gl=IN&ceid=IN:en",
-  "https://news.google.com/rss/search?q=Telugu+film+industry+actors+movie+news&hl=en-IN&gl=IN&ceid=IN:en"
+  "https://news.google.com/rss/search?q=%E0%B0%A4%E0%B1%86%E0%B0%B2%E0%B1%81%E0%B0%97%E0%B1%81+%E0%B0%B8%E0%B0%BF%E0%B0%A8%E0%B0%BF%E0%B0%AE%E0%B0%BE+OR+%E0%B0%9F%E0%B0%BE%E0%B0%B2%E0%B1%80%E0%B0%B5%E0%B1%81%E0%B0%A1%E0%B1%8D&hl=te&gl=IN&ceid=IN:te",
+  "https://news.google.com/rss/search?q=%E0%B0%A4%E0%B1%86%E0%B0%B2%E0%B1%81%E0%B0%97%E0%B1%81+%E0%B0%95%E0%B1%8A%E0%B0%A4%E0%B1%8D%E0%B0%A4+%E0%B0%B8%E0%B0%BF%E0%B0%A8%E0%B0%BF%E0%B0%AE%E0%B0%BE%E0%B0%B2%E0%B1%81+%E0%B0%85%E0%B0%AA%E0%B1%8D%E0%B0%A1%E0%B1%87%E0%B0%9F%E0%B1%8D%E0%B0%B8%E0%B1%8D&hl=te&gl=IN&ceid=IN:te",
+  "https://news.google.com/rss/search?q=%E0%B0%9F%E0%B0%BE%E0%B0%B2%E0%B1%80%E0%B0%B5%E0%B1%81%E0%B0%A1%E0%B1%8D+%E0%B0%A8%E0%B1%8D%E0%B0%AF%E0%B1%82%E0%B0%B8%E0%B1%8D&hl=te&gl=IN&ceid=IN:te"
 ];
 const headers = {
   apikey: SERVICE_KEY,
