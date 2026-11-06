@@ -64,8 +64,20 @@ function renderLoadedNews(){
 async function loadNews(){
   const SUPABASE_URL="https://mewyojxgsuceppsauesh.supabase.co";
   const SUPABASE_KEY="sb_publishable_-ee5Pt9U0ZvZuUkipLcq-Q_KBXKsEDa";
-  const headers={apikey:SUPABASE_KEY,Authorization:"Bearer "+SUPABASE_KEY};
+  // Render the static published feed first so the homepage never waits for Supabase.
   try{
+    const fallback=await fetch("/home-feed.json?v=20261106-13",{cache:"no-store"});
+    if(!fallback.ok)throw new Error("Fallback feed HTTP "+fallback.status);
+    const rows=await fallback.json();
+    articles=Array.isArray(rows)?rows:[];
+    renderLoadedNews();
+  }catch(fallbackError){
+    console.warn("Static news feed unavailable:",fallbackError);
+    document.getElementById("latestNews").innerHTML='<div class="empty-state">వార్తలు లోడ్ అవుతున్నాయి...</div>';
+  }
+  // Refresh from Supabase in the background; keep the static feed if live data is empty or unavailable.
+  try{
+    const headers={apikey:SUPABASE_KEY,Authorization:"Bearer "+SUPABASE_KEY};
     const [newsResponse,categoriesResponse]=await Promise.all([
       fetch(SUPABASE_URL+"/rest/v1/news_articles?select=id,title,summary,content,featured_image,published_at,category_id,status&status=eq.published&order=published_at.desc&limit=30",{headers,cache:"no-store"}),
       fetch(SUPABASE_URL+"/rest/v1/categories?select=id,name,slug",{headers,cache:"no-store"})
@@ -73,25 +85,18 @@ async function loadNews(){
     if(!newsResponse.ok)throw new Error("News API "+newsResponse.status);
     if(!categoriesResponse.ok)throw new Error("Category API "+categoriesResponse.status);
     const [newsRows,categoryRows]=await Promise.all([newsResponse.json(),categoriesResponse.json()]);
+    if(!Array.isArray(newsRows)||newsRows.length===0){
+      console.warn("Supabase returned no published news; retaining static feed.");
+      return;
+    }
     const categories=new Map((Array.isArray(categoryRows)?categoryRows:[]).map(c=>[String(c.id),c]));
-    articles=(Array.isArray(newsRows)?newsRows:[]).map(a=>{
+    articles=newsRows.map(a=>{
       const category=categories.get(String(a.category_id))||{};
       return {...a,category_name:category.name||"తాజా వార్తలు",category_slug:category.slug||""};
     });
     renderLoadedNews();
   }catch(error){
-    console.warn("Live Supabase feed unavailable; using published feed fallback.",error);
-    try{
-      const fallback=await fetch("/home-feed.json?v=20261106-12",{cache:"no-store"});
-      if(!fallback.ok)throw new Error("Fallback feed HTTP "+fallback.status);
-      const rows=await fallback.json();
-      articles=Array.isArray(rows)?rows:[];
-      renderLoadedNews();
-    }catch(fallbackError){
-      console.error("Both live and fallback feeds failed:",fallbackError);
-      document.getElementById("latestNews").innerHTML='<div class="empty-state">వార్తలు లోడ్ కాలేదు. దయచేసి కొద్దిసేపటి తర్వాత ప్రయత్నించండి.</div>';
-      document.getElementById("trendingList").textContent="వార్తలు లోడ్ కాలేదు.";
-    }
+    console.warn("Live Supabase feed unavailable; retaining static published feed.",error);
   }
 }
 function clock(){const d=new Date(),date=new Intl.DateTimeFormat("te-IN",{timeZone:"Asia/Kolkata",day:"2-digit",month:"long",year:"numeric"}).format(d),time=new Intl.DateTimeFormat("en-IN",{timeZone:"Asia/Kolkata",hour:"2-digit",minute:"2-digit",hour12:true}).format(d);document.getElementById("siteDateTime").textContent=date+" · "+time+" IST";}
