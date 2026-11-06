@@ -63,7 +63,7 @@ return;
 }
 
 const {data,error}=await db.from('news_articles')
-.select('title,seo_title,meta_description,summary,content,featured_image,published_at,status')
+.select('title,seo_title,meta_description,summary,content,featured_image,published_at,status,view_count')
 .eq('id',id)
 .eq('status','published')
 .maybeSingle();
@@ -149,10 +149,20 @@ ${data.featured_image?`<img src="${esc(data.featured_image)}" alt="${esc(data.ti
 <p class="eyebrow">K MEDIA TELUGU</p>
 <h1>${esc(data.title)}</h1>
 <p class="article-meta">${data.published_at?new Date(data.published_at).toLocaleString('te-IN'):''}</p>
+<div class="article-views" style="display:flex;align-items:center;gap:7px;color:#64748b;font-size:14px;margin:8px 0 18px"><span aria-hidden="true">👁</span><strong id="articleViewCount">${Number(data.view_count||0).toLocaleString('en-IN')} Views</strong></div>
 ${data.summary?`<p><strong>${esc(data.summary)}</strong></p>`:''}
 <div class="article-content">${esc(data.content)}</div>
 <p><a href="index.html">← హోమ్‌కు తిరిగి వెళ్లండి</a></p>
 `;
+// Count one view per browser tab/session; database RPC performs an atomic increment.
+try{
+  const viewedKey='kmt-viewed-'+id;
+  if(!sessionStorage.getItem(viewedKey)){
+    const {data:count,error:viewError}=await db.rpc('increment_article_view',{p_article_id:String(id)});
+    if(!viewError && count!==null) document.getElementById('articleViewCount').textContent=Number(count).toLocaleString('en-IN')+' Views';
+    sessionStorage.setItem(viewedKey,'1');
+  }
+}catch(viewError){console.warn('View counter unavailable:',viewError);}
 })();
 </script>
 </body>
