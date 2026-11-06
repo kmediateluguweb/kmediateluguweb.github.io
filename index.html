@@ -92,8 +92,10 @@ function renderLoadedNews(){
   document.getElementById("trendingList").innerHTML=articles.slice(0,5).map((a,i)=>'<a class="trend-item" href="'+url(a)+'"><b>'+String(i+1).padStart(2,"0")+'</b>'+(a.featured_image?'<img src="'+esc(a.featured_image)+'" alt="" loading="lazy">':'<span class="trend-placeholder">K</span>')+'<span><strong>'+esc(a.title)+'</strong><small>👁 '+Number(a.view_count||0).toLocaleString("en-IN")+' Views · '+(a.published_at?new Date(a.published_at).toLocaleDateString("te-IN"):"K Media Telugu")+'</small></span></a>').join("")||'<p class="empty-state">ట్రెండింగ్ వార్తలు త్వరలో...</p>';
   const h=document.getElementById("heroFeature");
   if(articles.length){
-    const a=articles.find(x=>x.featured_image)||articles[0];
-    h.innerHTML='<a class="hero-photo-link hero-photo-fallback" href="'+url(a)+'" aria-label="'+esc(a.title)+'">'+(a.featured_image?'<img src="'+esc(a.featured_image)+'" alt="'+esc(a.title)+'" loading="lazy" decoding="async" fetchpriority="low" onerror="this.remove()">':'')+'<span>TOP STORY</span><strong>'+esc(a.title)+'</strong></a>';
+    const a=articles.find(x=>x.featured_image && !/K(?:%20|\\s)Media(?:%20|\\s)Logo/i.test(x.featured_image))||articles[0];
+    const isLogo=!a.featured_image || /K(?:%20|\\s)Media(?:%20|\\s)Logo/i.test(a.featured_image);
+    const photo=isLogo?'':'<img src="'+esc(a.featured_image)+'" alt="'+esc(a.title)+'" loading="lazy" decoding="async" fetchpriority="low" onerror="this.remove()">';
+    h.innerHTML='<a class="hero-photo-link hero-photo-fallback" href="'+url(a)+'" aria-label="'+esc(a.title)+'">'+photo+'<span>TOP STORY</span><strong>'+esc(a.title)+'</strong></a>';
   }else{
     h.innerHTML='<a class="hero-photo-link hero-photo-fallback" href="#latest"><span>TOP STORY</span><strong>ప్రస్తుతం Published వార్తలు లేవు</strong></a>';
   }
