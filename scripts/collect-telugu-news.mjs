@@ -232,14 +232,13 @@ async function main() {
       const cutoff = Date.now() - 7 * 24 * 60 * 60 * 1000;
       if (Date.parse(published) < cutoff) { skipped++; continue; }
       const originalSummary = await writeOriginalTeluguSummary(title, description, category.name, publisherUrl || link);
-      if (originalSummary.length < 120) { console.log("Skipped: original summary unavailable (check OPENAI_API_KEY):", title); skipped++; continue; }\n      const existing = await api("news_articles?select=id,featured_image,content,summary,meta_description,status&source_url=eq." + encodeURIComponent(link) + "&limit=1");
+      if (originalSummary.length < 120) { console.log("Skipped: original summary unavailable (check OPENAI_API_KEY):", title); skipped++; continue; }
+      const existing = await api("news_articles?select=id,featured_image,content,summary,meta_description,status&source_url=eq." + encodeURIComponent(link) + "&limit=1");
       if (existing.length) {
         const patch = { updated_at: new Date().toISOString() };
         if (featuredImage && (!existing[0].featured_image || isGoogleImage(existing[0].featured_image))) patch.featured_image = featuredImage;
         if (existing[0].status === "draft") {
-          if (description && /<a\b|<font\b|news\.google\.com\/rss\//i.test(existing[0].summary || "")) patch.summary = cleanPlainText(description).slice(0, 500);
-          if (description && /<a\b|<font\b|news\.google\.com\/rss\//i.test(existing[0].meta_description || "")) patch.meta_description = cleanPlainText(description).slice(0, 160);
-          if (fullContent.length >= 250 && (!existing[0].content || existing[0].content.length < 250 || /news\.google\.com\/rss\/|<a\b|<font\b/i.test(existing[0].content))) patch.content = cleanPlainText(fullContent);
+          if (!existing[0].content || existing[0].content.length < 250 || /news\.google\.com\/rss\/|<a\b|<font\b/i.test(existing[0].content)) { patch.content = originalSummary; patch.summary = originalSummary.slice(0, 500); patch.meta_description = originalSummary.slice(0, 160); }
         }
         if (Object.keys(patch).length > 1) {
           await api("news_articles?id=eq." + encodeURIComponent(existing[0].id), { method: "PATCH", body: JSON.stringify(patch) });
