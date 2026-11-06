@@ -173,3 +173,38 @@ button,a,input{touch-action:manipulation}
   .news-card-image, .image-placeholder { height: 190px !important; }
   .hero-feature { aspect-ratio: 16 / 9 !important; }
 }
+
+
+/* FINAL MOBILE HEADER WIDTH FIX */
+@media (max-width: 850px) {
+  html, body { width: 100% !important; min-width: 0 !important; max-width: 100% !important; overflow-x: clip !important; }
+  .topline, .site-header, .nav-bar {
+    display: block !important;
+    width: 100% !important;
+    min-width: 100% !important;
+    max-width: 100% !important;
+    margin: 0 !important;
+    box-sizing: border-box !important;
+  }
+  .topline { background: #101114 !important; }
+  .site-header { background: linear-gradient(105deg,#111216 0%,#252830 72%,#17191e 100%) !important; }
+  .top-inner, .header-inner, .main-nav {
+    box-sizing: border-box !important;
+    max-width: none !important;
+    margin-left: auto !important;
+    margin-right: auto !important;
+  }
+  .top-inner { width: calc(100% - 24px) !important; }
+  .header-inner {
+    width: calc(100% - 24px) !important;
+    display: grid !important;
+    grid-template-columns: minmax(0, 1fr) auto !important;
+    justify-content: stretch !important;
+  }
+  .main-nav { width: calc(100% - 16px) !important; }
+}
+@media (max-width: 560px) {
+  .header-inner { grid-template-columns: minmax(0, 1fr) !important; }
+  .brand { width: 100% !important; }
+  .search { width: 100% !important; }
+}
