@@ -27,28 +27,8 @@ const decode = value => String(value || "")
   .replace(/<[^>]*>/g, " ")
   .replace(/\s+/g, " ").trim();
 const tag = (xml, name) => {
-  const escapedName = name.replace(/[.*+?^\u0024{}()|[\]\\]/g, "\\const decode = value => String(value || "")
-  .replace(/<!\[CDATA\[([\s\S]*?)\]\]>/g, "$1")
-  .replace(/<[^>]*>/g, " ")
-  .replace(/&amp;/g, "&").replace(/&quot;/g, '"')
-  .replace(/&#39;/g, "'").replace(/&apos;/g, "'")
-  .replace(/&lt;/g, "<").replace(/&gt;/g, ">")
-  .replace(/&#(\d+);/g, (_, n) => String.fromCodePoint(Number(n)))
-  .replace(/&#x([\da-f]+);/gi, (_, n) => String.fromCodePoint(parseInt(n, 16)))
-  .replace(/\s+/g, " ").trim();
-const tag = (xml, name) => {
-  const re = new RegExp("<" + name + "(?:\s[^>]*)?>([\s\\S]*?)<\/" + name + ">", "i");
+  const re = new RegExp("<" + name + "(?:\\s[^>]*)?>([\\s\\S]*?)<\\/" + name + ">", "i");
   return decode(xml.match(re)?.[1] || "");
-};");
-  const re = new RegExp("<" + escapedName + "(?:\\s[^>]*)?>([\\s\\S]*?)<\\/" + escapedName + ">", "i");
-  return decode(xml.match(re)?.[1] || "");
-};
-const imageFromItem = item => {
-  const candidates = [
-    ...item.matchAll(/<(?:media:content|media:thumbnail|enclosure)\b[^>]*\burl=["']([^"']+)["'][^>]*>/gi),
-    ...item.matchAll(/<img\b[^>]*\bsrc=["']([^"']+)["'][^>]*>/gi)
-  ].map(match => decode(match[1]).replace(/&amp;/g, "&").trim());
-  return candidates.find(url => /^https?:\/\//i.test(url)) || null;
 };
 async function api(path, options = {}) {
   const res = await fetch(SUPABASE_URL + "/rest/v1/" + path, { ...options, headers: { ...headers, ...(options.headers || {}) } });
