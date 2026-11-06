@@ -159,7 +159,7 @@ async function main() {
         summary: (description || title).slice(0, 500),
         seo_title: title.slice(0, 70),
         meta_description: (description || title).slice(0, 160),
-        content: (description || title) + "\n\nమూల వార్త: " + link + "\n\nగమనిక: ఇది RSS ద్వారా వచ్చిన వార్తా సారాంశం మాత్రమే. పూర్తి కథనాన్ని ప్రచురించే ముందు మూలాన్ని పరిశీలించి, స్వంతంగా ధృవీకరించిన వివరాలతో రాయాలి.",
+        content: description || title,
         source_url: link,
         featured_image: featuredImage,
         category_id: category.id,
