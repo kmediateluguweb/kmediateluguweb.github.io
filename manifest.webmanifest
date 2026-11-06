@@ -15,9 +15,9 @@
   ],
   "icons": [
     {
-      "src": "/K%20Media%20Logo.jpg",
+      "src": "/logo-mark.svg",
       "sizes": "any",
-      "type": "image/jpeg",
+      "type": "image/svg+xml",
       "purpose": "any"
     }
   ]
