@@ -375,11 +375,7 @@ $("refreshBtn").onclick=loadNews;
   if(data.session)await showDashboard(data.session.user);
 })();
 
-if ("serviceWorker" in navigator) {
-  window.addEventListener("load", () => {
-    navigator.serviceWorker.register("/service-worker.js").catch(() => {});
-  });
-}
+// The admin panel shares the main domain; do not register a second root-scope worker.
 let installPrompt = null;
 const installButton = document.getElementById("installBtn");
 window.addEventListener("beforeinstallprompt", (event) => {
