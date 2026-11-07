@@ -16,11 +16,41 @@
 <link rel="stylesheet" href="/style.css?v=20261108-1">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
-.article-wrap{max-width:850px;margin:45px auto;background:#fff;padding:28px;border-radius:14px}
-.article-wrap img{width:100%;max-height:480px;object-fit:cover;border-radius:10px}
-.article-wrap h1{margin:8px 0 10px!important;line-height:1.35!important}.article-meta{margin:4px 0 8px!important;padding:0 0 8px!important}.article-wrap>p{margin:8px 0 10px!important;line-height:1.55!important}.article-content{font-size:18px;line-height:1.45;white-space:normal;color:#252932;margin:6px 0 0!important}.article-content .news-body-text{white-space:normal!important;line-height:1.55!important;margin:0!important;padding:0!important;overflow-wrap:anywhere}
-.article-meta{color:#777}.article-wrap .article-summary{margin:5px 0 5px!important;padding:0!important;line-height:1.5!important}.article-wrap .article-content{margin:4px 0 0!important;padding:0!important;line-height:1.5!important}.article-wrap .article-content .news-body-text{display:block!important;margin:0!important;padding:0!important;white-space:normal!important;line-height:1.55!important;font-size:18px!important}.article-wrap .article-content .news-body-text p{display:block!important;margin:0 0 9px!important;padding:0!important;line-height:1.55!important}.article-wrap .article-content .news-body-text h2{font-size:20px!important;font-weight:800!important;line-height:1.4!important;margin:12px 0 5px!important;padding:0!important;color:#202638}.article-wrap .article-content .news-body-text h2:first-child{margin-top:0!important}
-@media(max-width:700px){.article-wrap{margin:20px auto;padding:18px}}
+:root{color-scheme:light}
+body{background:#fff8fc!important;color:#242033;font-family:Arial,"Noto Sans Telugu",sans-serif}
+.top{background:#fff!important;border-bottom:1px solid #f0e4ed;box-shadow:none!important}
+.top .container.nav{max-width:720px;min-height:54px;padding:8px 16px;display:flex;align-items:center;justify-content:space-between}
+.top .logo{font-size:18px;font-weight:800;letter-spacing:.2px;color:#21172b;text-decoration:none}
+.top .logo span{color:#ed174c}
+.top nav{display:flex;gap:16px}.top nav a{font-size:13px;color:#42374a;text-decoration:none}
+main.container{max-width:720px!important;padding:18px 14px 32px!important}
+.article-wrap{max-width:640px;margin:0 auto!important;background:#fff;padding:20px!important;border:1px solid #f0e1eb;border-radius:12px;box-shadow:0 5px 22px rgba(75,35,65,.06)}
+.article-wrap .eyebrow{font-size:10px!important;font-weight:800;letter-spacing:1.3px;color:#ed174c;margin:0 0 7px!important}
+.article-wrap h1{font-size:clamp(22px,4vw,32px)!important;line-height:1.32!important;font-weight:800!important;color:#20172a;margin:0 0 9px!important}
+.article-meta{font-size:11px!important;color:#85808a!important;border-bottom:1px solid #eee5ed;margin:0 0 8px!important;padding:0 0 9px!important}
+.article-views{font-size:11px!important;margin:0 0 12px!important}
+.article-wrap>img{display:block;width:100%;height:auto;max-height:390px;object-fit:cover;border-radius:8px;margin:0 0 14px!important}
+.article-wrap .article-summary{font-size:15px;line-height:1.65;margin:0 0 12px!important;color:#37313e}
+.article-content{font-size:16px!important;line-height:1.7!important;color:#332d39;margin:0!important}
+.article-content .news-body-text{white-space:normal!important;line-height:1.7!important;overflow-wrap:anywhere}
+.article-content .news-body-text p{margin:0 0 10px!important;padding:0!important;line-height:1.7!important}
+.article-content .news-body-text h2{font-size:17px!important;line-height:1.45!important;font-weight:800!important;color:#21172b;margin:12px 0 5px!important;padding:0!important}
+.article-content .news-body-text h2:first-child{margin-top:0!important}
+.article-wrap>p:last-child{font-size:13px;margin:16px 0 0!important}
+.article-wrap>p:last-child a{color:#e51c55;text-decoration:none;font-weight:700}
+footer{margin-top:12px}
+@media(max-width:600px){
+ main.container{padding:10px 9px 24px!important}
+ .article-wrap{padding:14px!important;border-radius:9px}
+ .top .container.nav{padding:7px 12px;min-height:46px}
+ .top .logo{font-size:16px}
+ .top nav{gap:10px}.top nav a{font-size:11px}
+ .article-wrap h1{font-size:22px!important;line-height:1.32!important}
+ .article-content{font-size:14px!important;line-height:1.72!important}
+ .article-content .news-body-text p{margin-bottom:9px!important}
+ .article-content .news-body-text h2{font-size:15px!important}
+ .article-wrap>img{max-height:none;margin-bottom:12px!important}
+}
 </style>
 </head>
 <body>
@@ -148,12 +178,12 @@ socialMeta('property','og:site_name','K Media Telugu');
 socialMeta('property','og:locale','te_IN');
 
 box.innerHTML=`
-${data.featured_image?`<img src="${esc(data.featured_image)}" alt="${esc(data.title)}">`:''}
-<p class="eyebrow">K MEDIA TELUGU</p>
+<p class="eyebrow">K MEDIA TELUGU · వార్తలు</p>
 <h1>${esc(data.title)}</h1>
-<p class="article-meta">${data.published_at?new Date(data.published_at).toLocaleString('te-IN'):''}</p>
-<div class="article-views" style="display:flex;align-items:center;gap:7px;color:#64748b;font-size:14px;margin:4px 0 6px!important"><span aria-hidden="true">👁</span><strong id="articleViewCount">${Number(data.view_count||0).toLocaleString('en-IN')} Views</strong></div>
-${data.summary?`<p><strong>${esc(data.summary)}</strong></p>`:''}
+<p class="article-meta">${data.published_at?new Date(data.published_at).toLocaleString('te-IN'):''} · K Media Telugu</p>
+<div class="article-views" style="display:flex;align-items:center;gap:7px;color:#64748b;font-size:12px;margin:0 0 12px!important"><span aria-hidden="true">👁</span><strong id="articleViewCount">${Number(data.view_count||0).toLocaleString('en-IN')} Views</strong></div>
+${data.featured_image?`<img src="${esc(data.featured_image)}" alt="${esc(data.title)}">`:''}
+${data.summary?`<p class="article-summary">${esc(data.summary)}</p>`:''}
 <div class="article-content">${formatNewsContent(data.content)}</div>
 <p><a href="/">← హోమ్‌కు తిరిగి వెళ్లండి</a></p>
 `;
