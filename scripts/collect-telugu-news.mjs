@@ -188,13 +188,15 @@ function cleanNewsTitle(value) {
 }
 function writeOriginalTeluguSummary(title, description, categoryName, sourceUrl) {
   const cleanTitle = cleanNewsTitle(title).slice(0, 250);
-  const cleanDescription = cleanNewsTitle(description).slice(0, 500);
+  let cleanDescription = cleanNewsTitle(description).slice(0, 500);
+  if (cleanTitle && cleanDescription.toLowerCase().startsWith(cleanTitle.toLowerCase())) {
+    cleanDescription = cleanDescription.slice(cleanTitle.length).replace(/^\\s*[-|:–—.]+\\s*/, "").trim();
+  }
   return [
-    `${categoryName || "తెలుగు వార్తలు"} విభాగంలో తాజా సమాచారం.`,
-    cleanTitle ? `వార్త అంశం: ${cleanTitle}.` : "",
-    cleanDescription ? `మూల వార్తలో అందించిన సంక్షిప్త సమాచారం ప్రకారం: ${cleanDescription}` : "ఈ అంశానికి సంబంధించిన పూర్తి వివరాలు మూల వార్తలో అందుబాటులో ఉన్నాయి.",
-    "ప్రచురణకు ముందు ఎడిటర్ వివరాలను ధృవీకరించాలి."
-  ].filter(Boolean).join("\n\n").slice(0, 1800);
+    cleanTitle ? "వార్త: " + cleanTitle + "." : (categoryName || "తెలుగు వార్తలు") + " విభాగంలో తాజా సమాచారం.",
+    cleanDescription ? "అందుబాటులో ఉన్న సమాచారం: " + cleanDescription : "ఈ వార్తకు సంబంధించిన పూర్తి వివరాలను ప్రచురణకు ముందు ఎడిటర్ ధృవీకరించాలి.",
+    "గమనిక: ఇది RSSలో లభించిన సమాచారం ఆధారంగా రూపొందించిన ప్రాథమిక డ్రాఫ్ట్. ప్రచురణకు ముందు వాస్తవాలు, తేదీలు, వివరాలు తనిఖీ చేయాలి."
+  ].filter(Boolean).join("\\n\\n").slice(0, 1200);
 }
 
 async function main() {
