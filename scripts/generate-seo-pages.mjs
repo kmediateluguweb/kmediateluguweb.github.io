@@ -74,7 +74,7 @@ for (const item of articles) {
       '</ul></section>'
     : "";
   const html = `<!doctype html>
-<html lang="te"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<html lang="te"><head><script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-5378557048937438" crossorigin="anonymous"></script><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>${esc(title)} | K Media Telugu</title><meta name="description" content="${esc(description)}">
 <meta name="robots" content="index,follow,max-image-preview:large"><link rel="canonical" href="${url}">
 <meta property="og:site_name" content="K Media Telugu"><meta property="og:type" content="article"><meta property="og:locale" content="te_IN">
