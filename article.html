@@ -18,7 +18,7 @@
 <style>
 .article-wrap{max-width:850px;margin:45px auto;background:#fff;padding:28px;border-radius:14px}
 .article-wrap img{width:100%;max-height:480px;object-fit:cover;border-radius:10px}
-.article-content{font-size:18px;line-height:1.9;white-space:pre-wrap}
+.article-content{font-size:18px;line-height:1.85;white-space:normal;color:#252932}.article-content p{margin:0 0 18px}.article-content p:last-child{margin-bottom:0}
 .article-meta{color:#777}
 @media(max-width:700px){.article-wrap{margin:20px auto;padding:18px}}
 </style>
@@ -52,6 +52,9 @@ const db=window.supabase.createClient(
 const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({
 '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'
 }[c]));
+
+// Convert editor text into evenly spaced paragraphs; collapse excessive blank lines.
+const formatNewsContent=value=>String(value??'').trim().replace(/\r\n?/g,'\n').split(/\n\s*\n+/).map(part=>part.trim()).filter(Boolean).map(part=>`<p>${esc(part).replace(/\n/g,'<br>')}</p>`).join('');
 
 (async()=>{
 const id=new URLSearchParams(location.search).get('id');
@@ -151,7 +154,7 @@ ${data.featured_image?`<img src="${esc(data.featured_image)}" alt="${esc(data.ti
 <p class="article-meta">${data.published_at?new Date(data.published_at).toLocaleString('te-IN'):''}</p>
 <div class="article-views" style="display:flex;align-items:center;gap:7px;color:#64748b;font-size:14px;margin:8px 0 18px"><span aria-hidden="true">👁</span><strong id="articleViewCount">${Number(data.view_count||0).toLocaleString('en-IN')} Views</strong></div>
 ${data.summary?`<p><strong>${esc(data.summary)}</strong></p>`:''}
-<div class="article-content">${esc(data.content)}</div>
+<div class="article-content">${formatNewsContent(data.content)}</div>
 <p><a href="index.html">← హోమ్‌కు తిరిగి వెళ్లండి</a></p>
 `;
 // Count one view per browser tab/session; database RPC performs an atomic increment.
