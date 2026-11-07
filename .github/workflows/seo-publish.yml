@@ -33,3 +33,5 @@ jobs:
             git pull --rebase origin main
             git push
           fi
+
+# Trigger SEO page regeneration after published news updates.
