@@ -186,36 +186,37 @@ function cleanNewsTitle(value) {
     .replace(/\s*[-|–—:]\s*(?:NTV(?:\s+Telugu)?|TV9(?:\s+Telugu)?|ABN(?:\s+Andhra\s+Jyothy)?|ETV(?:\s+Telangana)?|Sakshi(?:\s+Post)?|Eenadu|Andhra\s+Jyothy|The\s+Hindu|Times\s+of\s+India|India\s+Today|AP7AM|Samayam(?:\s+Telugu)?|Greatandhra|123telugu|Idlebrain|Gulte)\s*$/i, "")
     .trim();
 }
-const OPENAI_API_KEY = process.env.OPENAI_API_KEY;
-const OPENAI_MODEL = process.env.OPENAI_MODEL || "gpt-4o-mini";
-if (!OPENAI_API_KEY) throw new Error("Missing GitHub Actions secret: OPENAI_API_KEY. Add it under Settings > Secrets and variables > Actions.");
+const GEMINI_API_KEY = process.env.GEMINI_API_KEY;
+const GEMINI_MODEL = process.env.GEMINI_MODEL || "gemini-2.5-flash";
+if (!GEMINI_API_KEY) throw new Error("Missing GitHub Actions secret: GEMINI_API_KEY. Add it under Settings > Secrets and variables > Actions.");
 
 async function generateTeluguNews({ title, description, articleBody, categoryName }) {
-  if (!OPENAI_API_KEY) throw new Error("Missing GitHub Actions secret: OPENAI_API_KEY");
-  const sourceText = [description, articleBody].filter(Boolean).join("\n\n").slice(0, 10000);
-  if (sourceText.replace(/\s/g, "").length < 120) return null;
-  const prompt = "మీరు K Media Telugu తెలుగు న్యూస్ ఎడిటర్. కింద ఇచ్చిన మూల సమాచారాన్ని మాత్రమే ఉపయోగించి స్వంత పదాలతో సహజమైన తెలుగు వార్తా డ్రాఫ్ట్ రాయండి. మూలంలో లేని పేర్లు, తేదీలు, సంఖ్యలు, కోట్స్ లేదా సంఘటనలు కల్పించవద్దు. ఇతర మీడియా సంస్థల పేర్లు, టెంప్లేట్ వాక్యాలు కంటెంట్‌లో పెట్టవద్దు. RSSలో ఉన్న వివరాలకంటే ఎక్కువ నిజాలు కల్పించవద్దు. JSON మాత్రమే ఇవ్వండి: title, summary (1-2 వాక్యాలు), seo_title (70 అక్షరాల లోపు), meta_description (160 అక్షరాల లోపు), content (మూలంలో తగిన వివరాలు ఉంటే 250+ తెలుగు పదాలు; సమాచారం తక్కువైతే నిజమైన వివరాలనే పరిమితంగా రాయండి).\nవిభాగం: " + categoryName + "\nశీర్షిక: " + title + "\nRSS వివరణ: " + description + "\nమూల కథనం టెక్స్ట్: " + (articleBody || "లభించలేదు");
-  const response = await fetch("https://api.openai.com/v1/chat/completions", {
+  if (!GEMINI_API_KEY) throw new Error("Missing GitHub Actions secret: GEMINI_API_KEY");
+  const sourceText = [description, articleBody].filter(Boolean).join("\\n\\n").slice(0, 10000);
+  if (sourceText.replace(/\\s/g, "").length < 120) return null;
+  const prompt = "మీరు K Media Telugu తెలుగు న్యూస్ ఎడిటర్. కింద ఇచ్చిన మూల సమాచారాన్ని మాత్రమే ఉపయోగించి స్వంత పదాలతో సహజమైన తెలుగు వార్తా డ్రాఫ్ట్ రాయండి. మూలంలో లేని పేర్లు, తేదీలు, సంఖ్యలు, కోట్స్ లేదా సంఘటనలు కల్పించవద్దు. RSS వివరణ లేదా మూల కథనంలో సమాచారం తక్కువగా ఉంటే వార్తను పొడిగించడానికి వివరాలు కల్పించకుండా పరిమితమైన డ్రాఫ్ట్ ఇవ్వండి. మూలంలో ఉన్న ప్రచురణ సంస్థ పేరును మీ స్వంత వార్తా కంటెంట్‌లో అవసరం లేకుండా పునరావృతం చేయవద్దు. JSON మాత్రమే ఇవ్వండి: title, summary (1-2 వాక్యాలు), seo_title (70 అక్షరాల లోపు), meta_description (160 అక్షరాల లోపు), content (సరిపడా మూల సమాచారం ఉంటే కనీసం 250 తెలుగు పదాలు; లేకపోతే లభ్యమైన నిజమైన వివరాలకే పరిమితం).\\nవిభాగం: " + categoryName + "\\nశీర్షిక: " + title + "\\nRSS వివరణ: " + description + "\\nమూల కథనం టెక్స్ట్: " + (articleBody || "లభించలేదు");
+  const response = await fetch("https://generativelanguage.googleapis.com/v1beta/models/" + encodeURIComponent(GEMINI_MODEL) + ":generateContent", {
     method: "POST",
-    headers: { "Content-Type": "application/json", "Authorization": "Bearer " + OPENAI_API_KEY },
+    headers: { "Content-Type": "application/json", "x-goog-api-key": GEMINI_API_KEY },
     body: JSON.stringify({
-      model: OPENAI_MODEL,
-      messages: [
-        { role: "system", content: "Return only valid JSON. Write accurate Telugu news based strictly on supplied source material. Never invent facts." },
-        { role: "user", content: prompt }
-      ],
-      temperature: 0.35,
-      max_tokens: 1800,
-      response_format: { type: "json_object" }
+      systemInstruction: { parts: [{ text: "Return only valid JSON. Write accurate Telugu news based strictly on supplied source material. Never invent facts or fill gaps with assumptions." }] },
+      contents: [{ role: "user", parts: [{ text: prompt }] }],
+      generationConfig: {
+        temperature: 0.35,
+        maxOutputTokens: 2200,
+        responseMimeType: "application/json"
+      }
     }),
-    signal: AbortSignal.timeout(45000)
+    signal: AbortSignal.timeout(60000)
   });
   const raw = await response.text();
-  if (!response.ok) throw new Error("OpenAI API " + response.status + ": " + raw.slice(0, 400));
+  if (!response.ok) throw new Error("Gemini API " + response.status + ": " + raw.slice(0, 500));
   const data = JSON.parse(raw);
-  const output = data.choices?.[0]?.message?.content?.trim();
-  if (!output) throw new Error("OpenAI returned empty content");
-  const item = JSON.parse(output);
+  const output = data.candidates?.[0]?.content?.parts?.map(part => part.text || "").join("").trim();
+  if (!output) throw new Error("Gemini returned empty content" + (data.promptFeedback?.blockReason ? ": " + data.promptFeedback.blockReason : ""));
+  let item;
+  try { item = JSON.parse(output); }
+  catch { throw new Error("Gemini returned invalid JSON: " + output.slice(0, 300)); }
   const result = {
     title: cleanNewsTitle(item.title || title).slice(0,250),
     summary: String(item.summary || "").trim().slice(0,500),
