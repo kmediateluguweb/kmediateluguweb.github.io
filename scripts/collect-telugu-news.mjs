@@ -186,6 +186,30 @@ function cleanNewsTitle(value) {
     .replace(/\s*[-|–—:]\s*(?:NTV(?:\s+Telugu)?|TV9(?:\s+Telugu)?|ABN(?:\s+Andhra\s+Jyothy)?|ETV(?:\s+Telangana)?|Sakshi(?:\s+Post)?|Eenadu|Andhra\s+Jyothy|The\s+Hindu|Times\s+of\s+India|India\s+Today|AP7AM|Samayam(?:\s+Telugu)?|Greatandhra|123telugu|Idlebrain|Gulte)\s*$/i, "")
     .trim();
 }
+const GEMINI_API_KEY = process.env.GEMINI_API_KEY;
+const GEMINI_MODEL = process.env.GEMINI_MODEL || "gemini-3.8-flash";
+
+async function generateTeluguNews({ title, description, articleBody, categoryName }) {
+  if (!GEMINI_API_KEY) throw new Error("Missing GitHub Actions secret: GEMINI_API_KEY");
+  const sourceText = [description, articleBody].filter(Boolean).join("\n\n").slice(0, 10000);
+  if (sourceText.replace(/\s/g, "").length < 120) return null;
+  const prompt = "మీరు K Media Telugu తెలుగు న్యూస్ ఎడిటర్. కింద ఇచ్చిన మూల సమాచారాన్ని మాత్రమే ఉపయోగించి స్వంత పదాలతో సహజమైన తెలుగు వార్తా డ్రాఫ్ట్ రాయండి. మూలంలో లేని పేర్లు, తేదీలు, సంఖ్యలు, కోట్స్ లేదా సంఘటనలు కల్పించవద్దు. ఇతర మీడియా సంస్థల పేర్లు, టెంప్లేట్ వాక్యాలు కంటెంట్‌లో పెట్టవద్దు. వివరాలు తక్కువైతే ఊహించి పొడిగించకుండా ఉన్న వాస్తవాలనే రాయండి. JSON మాత్రమే ఇవ్వండి: title, summary (1-2 వాక్యాలు), seo_title (70 అక్షరాల లోపు), meta_description (160 అక్షరాల లోపు), content (వాస్తవాల ఆధారంగా 250+ తెలుగు పదాలు సాధ్యమైతే; లేకపోతే అందుబాటులో ఉన్న వివరాలకే పరిమితం).\nవిభాగం: " + categoryName + "\nశీర్షిక: " + title + "\nRSS వివరణ: " + description + "\nమూల కథనం టెక్స్ట్: " + (articleBody || "లభించలేదు");
+  const response = await fetch("https://generativelanguage.googleapis.com/v1beta/models/" + GEMINI_MODEL + ":generateContent?key=" + encodeURIComponent(GEMINI_API_KEY), {
+    method: "POST", headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ contents: [{ role: "user", parts: [{ text: prompt }] }], generationConfig: { temperature: 0.35, maxOutputTokens: 1800, responseMimeType: "application/json" } }),
+    signal: AbortSignal.timeout(45000)
+  });
+  const raw = await response.text();
+  if (!response.ok) throw new Error("Gemini API " + response.status + ": " + raw.slice(0, 400));
+  const data = JSON.parse(raw);
+  const output = data.candidates?.[0]?.content?.parts?.map(p => p.text || "").join("").trim();
+  if (!output) throw new Error("Gemini returned empty content");
+  const item = JSON.parse(output.replace(/^\`\`\`json\s*/i, "").replace(/\s*\`\`\`$/, ""));
+  const result = { title: cleanNewsTitle(item.title || title).slice(0,250), summary: String(item.summary || "").trim().slice(0,500), seo_title: String(item.seo_title || item.title || title).trim().slice(0,70), meta_description: String(item.meta_description || item.summary || "").trim().slice(0,160), content: String(item.content || "").trim().slice(0,12000) };
+  if (result.content.length < 500 || result.summary.length < 30) return null;
+  return result;
+}
+
 function writeOriginalTeluguSummary(title, description, categoryName, sourceUrl) {
   const cleanTitle = cleanNewsTitle(title).slice(0, 250);
   let cleanDescription = cleanNewsTitle(description).slice(0, 500);
@@ -238,17 +262,22 @@ async function main() {
       const published = pubDate && !Number.isNaN(Date.parse(pubDate)) ? new Date(pubDate).toISOString() : new Date().toISOString();
       const cutoff = Date.now() - 7 * 24 * 60 * 60 * 1000;
       if (Date.parse(published) < cutoff) { skipped++; skipReasons.old++; continue; }
-      const originalSummary = writeOriginalTeluguSummary(title, description, category.name, publisherUrl || link);
+      const articleBody = await fetchPublisherContent(publisherUrl || link);
+      let generatedNews = null;
+      try { generatedNews = await generateTeluguNews({ title, description, articleBody, categoryName: category.name }); }
+      catch (error) { console.warn("Gemini generation failed:", error.message); }
+      if (!generatedNews) { console.warn("Skipping draft: insufficient source or Gemini content:", title); skipped++; skipReasons.invalid++; continue; }
+      const originalSummary = generatedNews.summary;
       const existing = await api("news_articles?select=id,featured_image,content,summary,meta_description,status&source_url=eq." + encodeURIComponent(link) + "&limit=1");
       if (existing.length) {
         const patch = { updated_at: new Date().toISOString() };
         if (featuredImage && (!existing[0].featured_image || isGoogleImage(existing[0].featured_image))) patch.featured_image = featuredImage;
         if (existing[0].status === "draft") {
-          patch.title = title.slice(0, 250);
-          patch.seo_title = title.slice(0, 70);
-          patch.content = originalSummary;
-          patch.summary = originalSummary.slice(0, 500);
-          patch.meta_description = originalSummary.slice(0, 160);
+          patch.title = generatedNews.title;
+          patch.seo_title = generatedNews.seo_title;
+          patch.content = generatedNews.content;
+          patch.summary = generatedNews.summary;
+          patch.meta_description = generatedNews.meta_description;
         }
         if (Object.keys(patch).length > 1) {
           await api("news_articles?id=eq." + encodeURIComponent(existing[0].id), { method: "PATCH", body: JSON.stringify(patch) });
@@ -261,12 +290,12 @@ async function main() {
       const shortHash = crypto.createHash("sha1").update(link).digest("hex").slice(0, 8);
       const safeSlug = title.toLowerCase().replace(/[^\p{L}\p{N}]+/gu, "-").replace(/^-|-$/g, "").slice(0, 75) || "telugu-cinema-news";
       const payload = {
-        title: title.slice(0, 250),
+        title: generatedNews.title,
         slug: safeSlug + "-" + shortHash,
-        summary: originalSummary.slice(0, 500),
-        seo_title: title.slice(0, 70),
-        meta_description: originalSummary.slice(0, 160),
-        content: originalSummary,
+        summary: generatedNews.summary,
+        seo_title: generatedNews.seo_title,
+        meta_description: generatedNews.meta_description,
+        content: generatedNews.content,
         source_url: link,
         featured_image: featuredImage && /^https?:\/\//i.test(featuredImage) ? featuredImage : null,
         category_id: category.id,
