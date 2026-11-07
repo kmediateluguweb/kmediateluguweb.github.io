@@ -73,18 +73,19 @@ textarea{min-height:110px}
 
 <section id="dashboard" style="display:none">
 <div class="panel">
-<h3 id="formTitle">Add New News</h3>
+<h3 id="formTitle">కొత్త వార్తను పోస్ట్ చేయండి</h3>
+<p class="small">సులభమైన విధానం: శీర్షిక, కేటగిరీ, వార్త వివరాలు ఇవ్వండి. SEO వివరాలు ఆటోమేటిక్‌గా నింపుకోవచ్చు. ముందుగా Draftగా సేవ్ చేసి చూసిన తర్వాత Publish చేయండి.</p>
 <input type="hidden" id="editId">
 
-<label>News Title</label>
+<label>వార్త శీర్షిక *</label>
 <input id="title" placeholder="వార్త శీర్షిక">
 
-<label>Category</label>
+<label>వార్త కేటగిరీ *</label>
 <select id="category">
 <option value="">Select Category</option>
 </select>
 
-<label>Short Summary</label>
+<label>చిన్న వివరణ</label>
 <textarea id="summary" placeholder="వార్త సంక్షిప్త వివరణ"></textarea>
 
 <label>SEO Title (Google Search)</label>
@@ -93,39 +94,42 @@ textarea{min-height:110px}
 <label>Meta Description (Google Search)</label>
 <textarea id="metaDescription" maxlength="160" placeholder="Googleలో కనిపించే చిన్న వివరణ"></textarea>
 
-<label>Full News Content</label>
+<label>పూర్తి వార్త వివరాలు *</label>
+<p class="small">ప్రతి పేరాగ్రాఫ్ తర్వాత ఒకసారి Enter నొక్కండి. ఎక్కువ ఖాళీ లైన్లు అవసరం లేదు.</p>
 <textarea id="content" placeholder="పూర్తి వార్త వివరాలు"></textarea>
 
 <label>News Photo (Phone Gallery నుంచి ఎంచుకోండి)</label>
 <input id="imageFile" type="file" accept="image/*">
-<p class="small">JPG, PNG లేదా WebP ఫోటో. గరిష్టంగా 5 MB.</p>
+<p class="small">ఫోన్ లేదా కంప్యూటర్ నుంచి ఫోటో ఎంచుకోండి. JPG, PNG లేదా WebP — గరిష్టంగా 5 MB.</p>
 <img id="imagePreview" alt="Selected news photo preview" style="display:none;width:100%;max-width:320px;max-height:200px;object-fit:contain;border-radius:8px;margin:4px 0 14px">
 <label>లేదా Featured Image URL</label>
 <input id="image" type="url" placeholder="https://example.com/image.jpg">
 
-<label>Source URL (Optional)</label>
+<label>వార్త మూలం లింక్ (ఐచ్ఛికం)</label>
 <input id="source" type="url" placeholder="News source link">
 
-<label>Publishing Status</label>
+<label>పోస్టింగ్ విధానం</label>
 <select id="status">
-<option value="draft">Save as Draft</option>
-<option value="published">Publish Now</option>
+<option value="draft">Draftగా సేవ్ చేయండి (ముందుగా ఇదే ఎంచుకోండి)</option>
+<option value="published">వెంటనే Publish చేయండి</option>
 </select>
 
 <div class="row">
-<button class="primary" id="saveBtn">Save News</button>
+<button class="secondary" id="seoBtn" type="button">SEO ఆటోమేటిక్‌గా నింపండి</button>
+<button class="primary" id="saveBtn">వార్త సేవ్ చేయండి</button>
 <button class="secondary" id="cancelBtn" style="display:none">Cancel Edit</button>
 </div>
 <div id="dashboardMessage" role="status" aria-live="polite"></div>
 </div>
 
 <div class="panel">
-<h3>Published & Draft News</h3>
+<h3>మీ వార్తలు — Draft & Published</h3>
 <div class="row" style="margin:10px 0">
-<button class="secondary" id="refreshBtn">Refresh News</button>
+<button class="secondary" id="refreshBtn">వార్తలను Refresh చేయండి</button>
+<button class="secondary" id="newNewsBtn" type="button">+ కొత్త వార్త</button>
 
 </div>
-<p class="small">Draft వార్తలను ఒక్కొక్కటిగా మాత్రమే నిర్వహించండి. అన్ని Draftలను ఒకేసారి తొలగించే బటన్ తీసివేయబడింది.</p>
+<p class="small">ఇక్కడ మీ వార్తలను చూడండి. Edit ద్వారా మార్చవచ్చు; Delete చేయడానికి ముందు నిర్ధారణ అడుగుతుంది.</p>
 <div id="newsList">Loading...</div>
 </div>
 </section>
@@ -322,7 +326,7 @@ $("saveBtn").onclick=async()=>{
 
     if(result.error) throw result.error;
 
-    message(id?"News Updated Successfully!":"News Saved Successfully!");
+    message(id?"వార్త విజయవంతంగా Update అయింది!":(payload.status==="published"?"వార్త Publish అయింది!":"వార్త Draftగా సేవ్ అయింది!"));
     resetForm();
     await loadNews();
   }catch(error){
@@ -353,8 +357,8 @@ async function editNews(id){
   $("source").value=data.source_url||"";
   $("status").value=data.status||"draft";
 
-  $("formTitle").textContent="Edit News";
-  $("saveBtn").textContent="Update News";
+  $("formTitle").textContent="వార్తను Edit చేయండి";
+  $("saveBtn").textContent="మార్పులు Update చేయండి";
   $("cancelBtn").style.display="inline-block";
   window.scrollTo({top:0,behavior:"smooth"});
 }
@@ -377,10 +381,23 @@ function resetForm(){
   $("imagePreview").removeAttribute("src");
   $("category").value="";
   $("status").value="draft";
-  $("formTitle").textContent="Add New News";
-  $("saveBtn").textContent="Save News";
+  $("formTitle").textContent="కొత్త వార్తను పోస్ట్ చేయండి";
+  $("saveBtn").textContent="వార్త సేవ్ చేయండి";
   $("cancelBtn").style.display="none";
 }
+
+
+function makeSeoText(){
+  const title=$("title").value.trim();
+  const summary=$("summary").value.trim();
+  if(!title){message("ముందుగా వార్త శీర్షిక ఇవ్వండి.","#dc3545");$("title").focus();return;}
+  $("seoTitle").value=(title+" | K Media Telugu").slice(0,70);
+  const description=summary||title;
+  $("metaDescription").value=(description.length>145?description.slice(0,142).trim()+"...":description).slice(0,160);
+  message("SEO Title, Meta Description ఆటోమేటిక్‌గా నింపబడ్డాయి.");
+}
+$("seoBtn").onclick=makeSeoText;
+$("newNewsBtn").onclick=()=>{resetForm();window.scrollTo({top:0,behavior:"smooth"});$("title").focus();};
 
 $("cancelBtn").onclick=resetForm;
 $("refreshBtn").onclick=loadNews;
