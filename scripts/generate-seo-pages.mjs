@@ -54,7 +54,8 @@ for (const item of articles) {
   const published = iso(item.published_at);
   const modified = iso(item.updated_at || item.published_at);
   const cleanContent = String(item.content || "").split(/\r?\n/).filter(line => !/మూల వార్త\s*:/u.test(line) && !/https?:\/\/news\.google\.com\/rss\//i.test(line)).join("\n").replace(/మూల వార్త\s*:[\s\S]*$/u, "").trim();
-  const contentLines = cleanContent.split(/\r?\n/).map(line => line.trim()).filter(Boolean);
+  const normalizedContent = cleanContent.replace(/\\\\n/g, "\n").replace(/\\n/g, "\n").replace(/\r\n?/g, "\n");
+  const contentLines = normalizedContent.split(/\n+/).map(line => line.trim()).filter(Boolean);
   const formatInline = line => esc(line.replace(/^[-*]\s+/, "")).replace(/\*\*(.+?)\*\*/g, "<strong>$1</strong>").replace(/__(.+?)__/g, "<strong>$1</strong>");
   const body = contentLines.map(line => {
     const heading = line.match(/^#{1,3}\s+(.+)$/) || line.match(/^\*\*(.+)\*\*$/);
