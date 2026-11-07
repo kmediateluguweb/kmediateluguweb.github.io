@@ -26,10 +26,13 @@ footer{text-align:center;color:#64748b;font-size:12px;padding:24px 16px}footer a
 <header><div class="inner"><a href="/">K MEDIA TELUGU</a><small>తెలుగు ఉపయోగకరమైన ఆన్‌లైన్ సాధనాలు</small></div></header>
 <main>
 <a class="back" href="/">← K Media Telugu హోమ్‌కు వెళ్లండి</a>
-<section class="hero"><h1>తెలుగు ఫాంట్ కన్వర్టర్</h1><p>యూనికోడ్ తెలుగు టెక్స్ట్‌ను అనూ 6 / అనూ 7 నాన్-యూనికోడ్ రూపంలోకి మార్చుకోండి.</p></section>
+<section class="hero"><h1>తెలుగు ఫాంట్ కన్వర్టర్</h1><p>యూనికోడ్ తెలుగు టెక్స్ట్‌ను అనూ 6 / అనూ 7 లోని 30 ఫాంట్ శైలులకు మార్చుకోండి.</p></section>
 <section class="panel">
 <div class="controls">
 <div class="field"><label for="version">అనూ వెర్షన్</label><select id="version"><option value="anu7">అనూ 7</option><option value="anu6">అనూ 6</option></select></div>
+<div class="field"><label for="fontFace">ఫాంట్ శైలి (30)</label><select id="fontFace">
+<option>Pallavi Thin</option><option>Pallavi Medium</option><option>Pallavi Bold</option><option>Dharani</option><option>Bapu Script</option><option>Bapu Bold</option><option>Bapu Brush</option><option>Pridhvi</option><option>Brahma</option><option>Anupama Thin</option><option>Anupama Medium</option><option>Anupama Bold</option><option>Anupama Ext. Bold</option><option>Pragathi</option><option>Pragathi Special</option><option>Pragathi Narrow</option><option>Pragathi Italic</option><option>Ramana Script</option><option>Ramana Script Med</option><option>Ramana Brush</option><option>Kranthi</option><option>Gowthami Thin</option><option>Gowthami Medium</option><option>Gowthami Narrow</option><option>Gowthami Bold</option><option>Gowthami Ext. Bold</option><option>Gowthami Black</option><option>Ajantha</option><option>Jyothi</option><option>Deepika</option>
+</select></div>
 <div class="field"><label>మార్పిడి విధానం</label><div style="padding:11px 14px;border:1px solid var(--line);border-radius:10px;background:#fff;font-weight:750">యూనికోడ్ → నాన్-యూనికోడ్</div></div><label style="display:flex;align-items:center;gap:7px;font-size:13px;font-weight:700"><input id="autoCopy" type="checkbox"> పేస్ట్ చేసిన వెంటనే కాపీ చేయి</label>
 </div>
 <div class="grid">
@@ -46,7 +49,7 @@ footer{text-align:center;color:#64748b;font-size:12px;padding:24px 16px}footer a
 (()=> {
  const DATA_URL='https://unicodetononunicode.com/data/anu-mapping.json';
  const source=document.getElementById('source'), result=document.getElementById('result');
- const version=document.getElementById('version'), status=document.getElementById('status');
+ const version=document.getElementById('version'), fontFace=document.getElementById('fontFace'), status=document.getElementById('status');
  const autoCopy=document.getElementById('autoCopy');
  let rows=[], ready=false, pairs=[];
  function buildMap(){
@@ -75,13 +78,13 @@ footer{text-align:center;color:#64748b;font-size:12px;padding:24px 16px}footer a
  }
  document.getElementById('convert').addEventListener('click',()=>convert(true));
  source.addEventListener('input',()=>{if(ready)convert(false);});
- version.addEventListener('change',()=>{buildMap();if(source.value)convert(false);});
+ version.addEventListener('change',()=>{buildMap();if(source.value)convert(false);});\n fontFace.addEventListener('change',()=>{if(source.value)convert(false);});
  document.getElementById('clear').addEventListener('click',()=>{source.value='';result.value='';status.textContent='టెక్స్ట్ క్లియర్ చేయబడింది.';source.focus();});
  document.getElementById('copy').addEventListener('click',copyResult);
  document.getElementById('sample').addEventListener('click',()=>{source.value='తెలుగు భాష మన అందరి గర్వం. క మీడియా తెలుగు.';convert(false);});
  fetch(DATA_URL,{mode:'cors',cache:'force-cache'})
  .then(r=>{if(!r.ok)throw new Error('HTTP '+r.status);return r.json();})
- .then(data=>{rows=Array.isArray(data)?data:(data.rows||[]);if(!rows.length)throw new Error('Mapping data is empty');ready=true;buildMap();status.textContent='సిద్ధంగా ఉంది · '+rows.length+' తెలుగు రూపాలు · అనూ '+(version.value==='anu7'?'7':'6');if(source.value)convert(false);})
+ .then(data=>{rows=Array.isArray(data)?data:(data.rows||[]);if(!rows.length)throw new Error('Mapping data is empty');ready=true;buildMap();status.textContent='సిద్ధంగా ఉంది · '+rows.length+' తెలుగు రూపాలు · అనూ '+(version.value==='anu7'?'7':'6')+' · '+fontFace.value;if(source.value)convert(false);})
  .catch(err=>{ready=false;status.textContent='మార్పిడి పట్టిక లోడ్ కాలేదు. దయచేసి మళ్లీ ప్రయత్నించండి.';console.error('KMT converter mapping error:',err);});
 })();
 </script>
