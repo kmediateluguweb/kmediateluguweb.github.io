@@ -27,6 +27,6 @@ jobs:
         env:
           SUPABASE_URL: https://mewyojxgsuceppsauesh.supabase.co
           SUPABASE_SERVICE_ROLE_KEY: "${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}"
-          OPENAI_API_KEY: "${{ secrets.OPENAI_API_KEY }}"
-          OPENAI_MODEL: "gpt-4o-mini"
+          GEMINI_API_KEY: "${{ secrets.GEMINI_API_KEY }}"
+          GEMINI_MODEL: "gemini-2.5-flash"
         run: node scripts/collect-telugu-news.mjs
