@@ -41,7 +41,7 @@ footer{text-align:center;color:#64748b;font-size:12px;padding:24px 16px}footer a
 <div class="note">గమనిక: అనూ ఫాంట్‌లో ఫలితాన్ని సరిగ్గా చూడటానికి మీ కంప్యూటర్‌లో సంబంధిత అనూ ఫాంట్ చట్టబద్ధంగా ఇన్‌స్టాల్ అయి ఉండాలి. ఫాంట్ ఫైళ్లను ఈ వెబ్‌సైట్ అందించదు. ముఖ్యమైన డాక్యుమెంట్లలో వాడే ముందు ఫలితాన్ని ఒకసారి పరిశీలించండి.</div>
 </section>
 </main>
-<footer>© K Media Telugu · <a href="/privacy-policy.html">గోప్యతా విధానం</a></footer>
+<footer>© K Media Telugu · <a href="/privacy-policy.html">గోప్యతా విధానం</a><br>అనూ మార్పిడి పట్టిక: <a href="https://unicodetononunicode.com/data/" target="_blank" rel="noopener">Unicode to Non Unicode</a> · CC BY 4.0</footer>
 <script>
 (()=> {
  const DATA_URL='https://unicodetononunicode.com/data/anu-mapping.json';
@@ -59,7 +59,7 @@ footer{text-align:center;color:#64748b;font-size:12px;padding:24px 16px}footer a
  toLegacy.addEventListener('click',()=>setDirection('encode'));toUnicode.addEventListener('click',()=>setDirection('decode'));
  version.addEventListener('change',()=>{if(source.value)convert();});
  document.getElementById('convert').addEventListener('click',convert);
- document.getElementById('swap').addEventListener('click',()=>{setDirection(direction==='encode'?'decode':'encode');source.value=result.value;result.value='';});
+ document.getElementById('swap').addEventListener('click',()=>{const previous=result.value;setDirection(direction==='encode'?'decode':'encode');source.value=previous;result.value='';});
  document.getElementById('clear').addEventListener('click',()=>{source.value='';result.value='';status.textContent='టెక్స్ట్ క్లియర్ చేయబడింది.';});
  document.getElementById('copy').addEventListener('click',async()=>{if(!result.value){status.textContent='ముందుగా టెక్స్ట్ మార్చండి.';return;}try{await navigator.clipboard.writeText(result.value);status.textContent='ఫలితం కాపీ అయింది.';}catch(e){result.select();status.textContent='ఫలితాన్ని సెలెక్ట్ చేశాం. Ctrl+C నొక్కి కాపీ చేయండి.';}});
  fetch(DATA_URL).then(r=>{if(!r.ok)throw new Error('Mapping unavailable');return r.json();}).then(data=>{rows=data.rows||[];if(!rows.length)throw new Error('Empty mapping');ready=true;status.textContent='సిద్ధంగా ఉంది · '+rows.length+' తెలుగు రూపాలు · మీ టెక్స్ట్ మీ బ్రౌజర్‌లోనే మారుతుంది.';}).catch(()=>{status.textContent='మార్పిడి పట్టికను పొందలేకపోయాం. ఇంటర్నెట్ కనెక్షన్‌ను పరిశీలించి పేజీని మళ్లీ తెరవండి.';});
