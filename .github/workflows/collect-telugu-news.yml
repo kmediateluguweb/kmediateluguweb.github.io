@@ -6,7 +6,7 @@ on:
       - ".github/workflows/collect-telugu-news.yml"
   workflow_dispatch:
   schedule:
-    - cron: "17 * * * *"
+    - cron: "17 0,8,16 * * *"
 permissions:
   contents: read
 concurrency:
@@ -28,5 +28,5 @@ jobs:
           SUPABASE_URL: https://mewyojxgsuceppsauesh.supabase.co
           SUPABASE_SERVICE_ROLE_KEY: "${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}"
           GEMINI_API_KEY: "${{ secrets.GEMINI_API_KEY }}"
-          GEMINI_MODEL: "gemini-3.8-flash"
+          GEMINI_MODEL: "gemini-2.5-flash-lite"
         run: node scripts/collect-telugu-news.mjs
