@@ -138,7 +138,37 @@ async function loadNews(){
     console.warn("Live Supabase feed unavailable; retaining static published feed.",error);
   }
 }
-function clock(){const d=new Date(),date=new Intl.DateTimeFormat("te-IN",{timeZone:"Asia/Kolkata",day:"2-digit",month:"long",year:"numeric"}).format(d),time=new Intl.DateTimeFormat("en-IN",{timeZone:"Asia/Kolkata",hour:"2-digit",minute:"2-digit",hour12:true}).format(d);document.getElementById("siteDateTime").textContent=date+" · "+time+" IST";}
+let istClockBase = null;
+let istClockPerfBase = 0;
+function renderISTClock(){
+  const d = istClockBase === null
+    ? new Date()
+    : new Date(istClockBase + (performance.now() - istClockPerfBase));
+  const date = new Intl.DateTimeFormat("te-IN", {
+    timeZone:"Asia/Kolkata", day:"2-digit", month:"long", year:"numeric"
+  }).format(d);
+  const time = new Intl.DateTimeFormat("en-IN", {
+    timeZone:"Asia/Kolkata", hour:"2-digit", minute:"2-digit", hour12:true
+  }).format(d);
+  const el = document.getElementById("siteDateTime");
+  if (el) el.textContent = date + " · " + time + " IST";
+}
+async function syncISTClock(){
+  try {
+    const response = await fetch("https://worldtimeapi.org/api/timezone/Asia/Kolkata", {
+      cache:"no-store"
+    });
+    if (!response.ok) throw new Error("IST time service HTTP " + response.status);
+    const data = await response.json();
+    if (!Number.isFinite(data.unixtime)) throw new Error("IST time response invalid");
+    istClockBase = data.unixtime * 1000;
+    istClockPerfBase = performance.now();
+    renderISTClock();
+  } catch (error) {
+    console.warn("IST time sync unavailable; using device clock temporarily.", error);
+    renderISTClock();
+  }
+}
 document.getElementById("searchForm").addEventListener("submit",e=>{e.preventDefault();const q=document.getElementById("searchInput").value.trim().toLowerCase();render("latestNews",articles.filter(a=>(a.title+" "+(a.summary||"")+" "+a.category_name).toLowerCase().includes(q)).slice(0,12),"ఈ పదానికి సంబంధించిన వార్తలు కనిపించలేదు.");document.getElementById("latest").scrollIntoView({behavior:"smooth"});});// Upcoming Telugu movie feed. Add a TMDB API Read Access Token in the config below to activate live results.
 const KMT_TMDB_TOKEN="ADD_TMDB_API_READ_ACCESS_TOKEN";
 async function loadUpcomingTeluguMovies(){
@@ -178,7 +208,7 @@ async function loadKmtWeather(){
   el.innerHTML='<div style="display:flex;align-items:center;gap:16px"><strong style="font-size:42px;color:#111827">'+temp+'°C</strong><div><b>'+((labels[c.weather_code])||"ప్రస్తుత వాతావరణం")+'</b><div style="font-size:13px;color:#64748b">అనిపించే ఉష్ణోగ్రత '+feels+'°C</div></div></div><div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:14px"><div style="background:#f8fafc;border-radius:10px;padding:10px"><small>గరిష్ఠం / కనిష్ఠం</small><b style="display:block">'+max+'° / '+min+'°</b></div><div style="background:#f8fafc;border-radius:10px;padding:10px"><small>తేమ</small><b style="display:block">'+c.relative_humidity_2m+'%</b></div><div style="background:#f8fafc;border-radius:10px;padding:10px"><small>గాలి వేగం</small><b style="display:block">'+Math.round(c.wind_speed_10m)+' km/h</b></div></div><p style="font-size:11px;color:#64748b;margin:10px 0 0">వర్ష సూచన: '+(d.precipitation_probability_max?.[0]??0)+'% · '+updated+' IST</p>';
  }catch(error){el.textContent="ప్రస్తుతం వాతావరణ సమాచారం అందుబాటులో లేదు. కొద్దిసేపటి తర్వాత మళ్లీ ప్రయత్నించండి.";}
 }
-clock();setInterval(clock,30000);loadNews();loadKmtWeather();setInterval(loadKmtWeather,30*60*1000);loadUpcomingTeluguMovies();setInterval(loadUpcomingTeluguMovies,6*60*60*1000);
+syncISTClock();setInterval(renderISTClock,1000);setInterval(syncISTClock,5*60*1000);loadNews();loadKmtWeather();setInterval(loadKmtWeather,30*60*1000);loadUpcomingTeluguMovies();setInterval(loadUpcomingTeluguMovies,6*60*60*1000);
 if ("serviceWorker" in navigator) { window.addEventListener("load", () => navigator.serviceWorker.register("/sw.js",{updateViaCache:"none"}).then(reg=>reg.update()).catch(err => console.warn("Service worker registration failed", err))); }
 </script>
 <nav class="mobile-bottom-nav" aria-label="Mobile quick navigation">
