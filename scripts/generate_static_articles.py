@@ -72,7 +72,7 @@ for article in articles:
 <meta name="description" content="{esc(description[:160])}">
 <meta name="robots" content="index,follow,max-image-preview:large">
 <link rel="canonical" href="{esc(article['public_url'])}">
-<link rel="stylesheet" href="../../style.css">
+<link rel="preconnect" href="https://fonts.googleapis.com">\n<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>\n<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Telugu:wght@400;500;600;700;800&display=swap" rel="stylesheet">\n<link rel="stylesheet" href="/style.css?v=telugu-font-20261108">
 <meta property="og:site_name" content="K Media Telugu">
 <meta property="og:type" content="article">
 <meta property="og:title" content="{esc(title)}">
