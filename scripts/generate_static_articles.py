@@ -22,6 +22,39 @@ def slugify(value, fallback):
     slug = re.sub(r"-+", "-", slug).strip("-")
     return slug[:90].strip("-") or fallback
 
+def render_content(value):
+    """Render safe, simple Markdown paragraphs and headings for Telugu articles."""
+    lines = str(value or "").replace("\\r\\n", "\\n").replace("\\r", "\\n").split("\\n")
+    out = []
+    paragraph = []
+    def flush():
+        if paragraph:
+            joined = " ".join(part.strip() for part in paragraph if part.strip())
+            if joined:
+                joined = re.sub(r"\\*\\*(.+?)\\*\\*", r"<strong>\\1</strong>", joined)
+                out.append("<p>" + joined + "</p>")
+            paragraph.clear()
+    for raw in lines:
+        line = raw.strip()
+        if not line:
+            flush()
+        elif line.startswith("### "):
+            flush()
+            out.append("<h3>" + esc(line[4:]) + "</h3>")
+        elif line.startswith("## "):
+            flush()
+            out.append("<h2>" + esc(line[3:]) + "</h2>")
+        elif line.startswith("# "):
+            flush()
+            out.append("<h2>" + esc(line[2:]) + "</h2>")
+        elif line.startswith("- ") or line.startswith("* "):
+            flush()
+            out.append("<p class=\"article-list-item\">• " + esc(line[2:]) + "</p>")
+        else:
+            paragraph.append(esc(line))
+    flush()
+    return "\\n".join(out)
+
 with open("/tmp/news.json", encoding="utf-8") as f:
     articles = json.load(f)
 
@@ -44,7 +77,7 @@ for article in articles:
     description = article.get("meta_description") or article.get("summary") or article.get("title") or "K Media Telugu తాజా తెలుగు వార్తలు"
     image = article.get("featured_image") or BASE + "K%20Media%20Logo.jpg"
     published = article.get("published_at") or ""
-    body = esc(article.get("content") or "").replace("\\r\\n", "\\n").replace("\\n", "<br>")
+    body = render_content(article.get("content") or "")
 
     schema = {
         "@context": "https://schema.org",
