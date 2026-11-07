@@ -1,0 +1,68 @@
+<!doctype html>
+<html lang="te">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>తెలుగు ఫాంట్ కన్వర్టర్ | K Media Telugu</title>
+<meta name="description" content="తెలుగు యూనికోడ్ మరియు అనూ 6, అనూ 7 నాన్-యూనికోడ్ టెక్స్ట్‌ను రెండు వైపులా మార్చుకోండి.">
+<meta name="robots" content="index,follow">
+<link rel="canonical" href="https://kmediatelugu.com/telugu-converter/">
+<meta name="theme-color" content="#d71920">
+<style>
+:root{--red:#d71920;--ink:#172033;--muted:#64748b;--line:#e2e8f0}
+*{box-sizing:border-box}body{margin:0;background:#f4f6fa;color:var(--ink);font-family:system-ui,-apple-system,"Noto Sans Telugu",sans-serif}
+header{background:#101827;color:#fff;padding:15px 20px}header .inner{max-width:1050px;margin:auto;display:flex;align-items:center;justify-content:space-between;gap:12px}header a{color:#fff;text-decoration:none;font-weight:800}header small{color:#cbd5e1}
+main{max-width:1050px;margin:30px auto;padding:0 16px}.back{color:var(--red);text-decoration:none;font-weight:700;font-size:14px}
+.hero{margin:16px 0 20px}.hero h1{font-size:clamp(25px,4vw,36px);margin:8px 0}.hero p{color:var(--muted);margin:0;line-height:1.7}
+.panel{background:#fff;border:1px solid var(--line);border-radius:18px;padding:20px;box-shadow:0 10px 30px #0f172a0a}
+.controls{display:flex;flex-wrap:wrap;gap:12px;align-items:end;margin-bottom:18px}.field{display:grid;gap:6px}.field label{font-size:13px;font-weight:750}.field select{min-width:150px;padding:11px 12px;border:1px solid var(--line);border-radius:10px;background:white;font:inherit}
+.mode{display:flex;gap:8px;flex-wrap:wrap}.mode button,.actions button{border:0;border-radius:10px;padding:11px 15px;font:inherit;font-weight:750;cursor:pointer}.mode button{background:#eef2f7;color:#334155}.mode button.active,.primary{background:var(--red)!important;color:#fff!important}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:15px}.editor label{display:block;font-weight:800;margin:0 0 8px}.editor textarea{width:100%;min-height:260px;resize:vertical;padding:14px;border:1px solid var(--line);border-radius:12px;font:18px/1.8 system-ui,sans-serif;outline-color:var(--red)}.editor textarea[readonly]{background:#f8fafc}
+.actions{display:flex;flex-wrap:wrap;gap:9px;margin-top:16px}.actions button{background:#e9eef5;color:#263449}.status{margin-top:13px;min-height:24px;color:var(--muted);font-size:13px}.note{background:#fff8e8;border:1px solid #f4dfaa;border-radius:12px;padding:13px 15px;color:#73551b;font-size:13px;line-height:1.7;margin-top:16px}
+footer{text-align:center;color:#64748b;font-size:12px;padding:24px 16px}footer a{color:#475569}
+@media(max-width:700px){main{margin:20px auto}.panel{padding:14px}.grid{grid-template-columns:1fr}.editor textarea{min-height:190px}.controls{align-items:stretch}.field,.field select{width:100%}header .inner{align-items:flex-start;flex-direction:column}}
+</style>
+</head>
+<body>
+<header><div class="inner"><a href="/">K MEDIA TELUGU</a><small>తెలుగు ఉపయోగకరమైన ఆన్‌లైన్ సాధనాలు</small></div></header>
+<main>
+<a class="back" href="/">← K Media Telugu హోమ్‌కు వెళ్లండి</a>
+<section class="hero"><h1>తెలుగు ఫాంట్ కన్వర్టర్</h1><p>యూనికోడ్ తెలుగు ↔ అనూ 6 / అనూ 7 నాన్-యూనికోడ్ టెక్స్ట్‌ను మార్చుకోండి.</p></section>
+<section class="panel">
+<div class="controls">
+<div class="field"><label for="version">అనూ వెర్షన్</label><select id="version"><option value="anu7">అనూ 7</option><option value="anu6">అనూ 6</option></select></div>
+<div class="field"><label>మార్పిడి దిశ</label><div class="mode"><button id="toLegacy" class="active" type="button">యూనికోడ్ → అనూ</button><button id="toUnicode" type="button">అనూ → యూనికోడ్</button></div></div>
+</div>
+<div class="grid">
+<div class="editor"><label id="inputLabel" for="source">యూనికోడ్ తెలుగు టెక్స్ట్</label><textarea id="source" placeholder="ఇక్కడ తెలుగు టెక్స్ట్‌ను టైప్ చేయండి లేదా పేస్ట్ చేయండి"></textarea></div>
+<div class="editor"><label id="outputLabel" for="result">అనూ టెక్స్ట్</label><textarea id="result" readonly placeholder="మార్చిన టెక్స్ట్ ఇక్కడ కనిపిస్తుంది"></textarea></div>
+</div>
+<div class="actions"><button class="primary" id="convert" type="button">మార్చండి</button><button id="copy" type="button">ఫలితాన్ని కాపీ చేయండి</button><button id="swap" type="button">దిశ మార్చండి ⇄</button><button id="clear" type="button">క్లియర్ చేయండి</button></div>
+<div class="status" id="status" role="status" aria-live="polite">మార్పిడి పట్టికను లోడ్ చేస్తున్నాం…</div>
+<div class="note">గమనిక: అనూ ఫాంట్‌లో ఫలితాన్ని సరిగ్గా చూడటానికి మీ కంప్యూటర్‌లో సంబంధిత అనూ ఫాంట్ చట్టబద్ధంగా ఇన్‌స్టాల్ అయి ఉండాలి. ఫాంట్ ఫైళ్లను ఈ వెబ్‌సైట్ అందించదు. ముఖ్యమైన డాక్యుమెంట్లలో వాడే ముందు ఫలితాన్ని ఒకసారి పరిశీలించండి.</div>
+</section>
+</main>
+<footer>© K Media Telugu · <a href="/privacy-policy.html">గోప్యతా విధానం</a></footer>
+<script>
+(()=> {
+ const DATA_URL='https://unicodetononunicode.com/data/anu-mapping.json';
+ const source=document.getElementById('source'), result=document.getElementById('result');
+ const version=document.getElementById('version'), status=document.getElementById('status');
+ const toLegacy=document.getElementById('toLegacy'), toUnicode=document.getElementById('toUnicode');
+ let direction='encode', rows=[], ready=false;
+ function setDirection(next){direction=next;toLegacy.classList.toggle('active',next==='encode');toUnicode.classList.toggle('active',next==='decode');
+ document.getElementById('inputLabel').textContent=next==='encode'?'యూనికోడ్ తెలుగు టెక్స్ట్':'అనూ నాన్-యూనికోడ్ టెక్స్ట్';
+ document.getElementById('outputLabel').textContent=next==='encode'?'అనూ టెక్స్ట్':'యూనికోడ్ తెలుగు';source.placeholder=next==='encode'?'ఇక్కడ తెలుగు టెక్స్ట్‌ను టైప్ చేయండి లేదా పేస్ట్ చేయండి':'ఇక్కడ అనూ టెక్స్ట్‌ను పేస్ట్ చేయండి';result.value='';}
+ function buildMap(){const key=version.value;const pairs=rows.map(r=>({from:direction==='encode'?r.unicode:r[key],to:direction==='encode'?r[key]:r.unicode})).filter(x=>x.from&&x.to);
+ pairs.sort((a,b)=>b.from.length-a.from.length);
+ const map=new Map();for(const p of pairs)if(!map.has(p.from))map.set(p.from,p.to);return [...map.entries()];}
+ function convert(){if(!ready){status.textContent='మార్పిడి పట్టిక ఇంకా సిద్ధంగా లేదు.';return;}const pairs=buildMap();let out='',i=0;while(i<source.value.length){let found=false;for(const [from,to] of pairs){if(source.value.startsWith(from,i)){out+=to;i+=from.length;found=true;break;}}if(!found){out+=source.value[i];i++;}}result.value=out;status.textContent='మార్పిడి పూర్తయింది · '+out.length+' అక్షరాలు';}
+ toLegacy.addEventListener('click',()=>setDirection('encode'));toUnicode.addEventListener('click',()=>setDirection('decode'));
+ version.addEventListener('change',()=>{if(source.value)convert();});
+ document.getElementById('convert').addEventListener('click',convert);
+ document.getElementById('swap').addEventListener('click',()=>{setDirection(direction==='encode'?'decode':'encode');source.value=result.value;result.value='';});
+ document.getElementById('clear').addEventListener('click',()=>{source.value='';result.value='';status.textContent='టెక్స్ట్ క్లియర్ చేయబడింది.';});
+ document.getElementById('copy').addEventListener('click',async()=>{if(!result.value){status.textContent='ముందుగా టెక్స్ట్ మార్చండి.';return;}try{await navigator.clipboard.writeText(result.value);status.textContent='ఫలితం కాపీ అయింది.';}catch(e){result.select();status.textContent='ఫలితాన్ని సెలెక్ట్ చేశాం. Ctrl+C నొక్కి కాపీ చేయండి.';}});
+ fetch(DATA_URL).then(r=>{if(!r.ok)throw new Error('Mapping unavailable');return r.json();}).then(data=>{rows=data.rows||[];if(!rows.length)throw new Error('Empty mapping');ready=true;status.textContent='సిద్ధంగా ఉంది · '+rows.length+' తెలుగు రూపాలు · మీ టెక్స్ట్ మీ బ్రౌజర్‌లోనే మారుతుంది.';}).catch(()=>{status.textContent='మార్పిడి పట్టికను పొందలేకపోయాం. ఇంటర్నెట్ కనెక్షన్‌ను పరిశీలించి పేజీని మళ్లీ తెరవండి.';});
+})();
+</script>
+</body></html>
