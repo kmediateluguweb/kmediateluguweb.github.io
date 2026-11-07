@@ -187,7 +187,7 @@ function cleanNewsTitle(value) {
     .trim();
 }
 const GEMINI_API_KEY = process.env.GEMINI_API_KEY;
-const GEMINI_MODEL = process.env.GEMINI_MODEL || "gemini-2.5-flash";
+const GEMINI_MODEL = process.env.GEMINI_MODEL || "gemini-3.8-flash";
 if (!GEMINI_API_KEY) throw new Error("Missing GitHub Actions secret: GEMINI_API_KEY. Add it under Settings > Secrets and variables > Actions.");
 
 async function generateTeluguNews({ title, description, articleBody, categoryName }) {
