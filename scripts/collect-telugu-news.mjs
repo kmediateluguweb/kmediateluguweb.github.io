@@ -51,7 +51,7 @@ function cleanPlainText(value) {
     .replace(/\s+/g, " ").trim();
 }
 const tag = (xml, name) => {
-  const re = new RegExp("<" + name + "(?:\s[^>]*)?>([\s\\S]*?)<\\/" + name + ">", "i");
+  const re = new RegExp("<" + name + "(?:\\s[^>]*)?>([\\s\\S]*?)<\\/" + name + ">", "i");
   return decode(xml.match(re)?.[1] || "");
 };
 async function api(path, options = {}) {
