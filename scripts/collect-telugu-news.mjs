@@ -272,13 +272,7 @@ async function main() {
       if (existing.length) {
         const patch = { updated_at: new Date().toISOString() };
         if (featuredImage && (!existing[0].featured_image || isGoogleImage(existing[0].featured_image))) patch.featured_image = featuredImage;
-        if (existing[0].status === "draft") {
-          patch.title = generatedNews.title;
-          patch.seo_title = generatedNews.seo_title;
-          patch.content = generatedNews.content;
-          patch.summary = generatedNews.summary;
-          patch.meta_description = generatedNews.meta_description;
-        }
+        // Preserve existing drafts: collector may add a missing image, but never overwrite editor content.
         if (Object.keys(patch).length > 1) {
           await api("news_articles?id=eq." + encodeURIComponent(existing[0].id), { method: "PATCH", body: JSON.stringify(patch) });
           console.log("Repaired existing article:", title);
