@@ -187,7 +187,7 @@ function cleanNewsTitle(value) {
     .trim();
 }
 const GEMINI_API_KEY = process.env.GEMINI_API_KEY;
-const GEMINI_MODEL = process.env.GEMINI_MODEL || "gemini-3.8-flash";
+const GEMINI_MODEL = process.env.GEMINI_MODEL || "gemini-2.5-flash-lite";
 if (!GEMINI_API_KEY) throw new Error("Missing GitHub Actions secret: GEMINI_API_KEY. Add it under Settings > Secrets and variables > Actions.");
 
 async function generateTeluguNews({ title, description, articleBody, categoryName }) {
@@ -260,7 +260,7 @@ async function main() {
   for (const feed of feeds) {
     const category = findCategory(feed.categoryKey);
     if (!category) { console.warn("Missing category for feed:", feed.categoryKey); continue; }
-    if (addedByCategory[feed.categoryKey] >= 6) continue;
+    if (addedByCategory[feed.categoryKey] >= 1) continue;
     const response = await fetch(feed.url, { headers: { "User-Agent": "KMediaTeluguNewsBot/1.0" } });
     if (!response.ok) { console.warn("RSS unavailable:", response.status, feed.url); continue; }
     const xml = await response.text();
@@ -283,8 +283,19 @@ async function main() {
       const articleBody = await fetchPublisherContent(publisherUrl || link);
       let generatedNews = null;
       try { generatedNews = await generateTeluguNews({ title, description, articleBody, categoryName: category.name }); }
-      catch (error) { console.warn("Gemini generation failed:", error.message); }
-      if (!generatedNews) { console.warn("Skipping draft: insufficient source or Gemini content:", title); skipped++; skipReasons.invalid++; continue; }
+      catch (error) { console.warn("Gemini generation failed; using clearly labelled RSS-only draft:", error.message); }
+      if (!generatedNews && description.replace(/\\s/g, "").length >= 40) {
+        const summary = description.slice(0, 450);
+        generatedNews = {
+          title: cleanNewsTitle(title).slice(0, 250),
+          summary,
+          seo_title: cleanNewsTitle(title).slice(0, 70),
+          meta_description: summary.slice(0, 160),
+          content: writeOriginalTeluguSummary(title, description, category.name, link)
+        };
+        console.log("Created preliminary RSS-only draft for editor verification:", title);
+      }
+      if (!generatedNews) { console.warn("Skipping draft: insufficient RSS source:", title); skipped++; skipReasons.invalid++; continue; }
       const originalSummary = generatedNews.summary;
       const existing = await api("news_articles?select=id,featured_image,content,summary,meta_description,status&source_url=eq." + encodeURIComponent(link) + "&limit=1");
       if (existing.length) {
