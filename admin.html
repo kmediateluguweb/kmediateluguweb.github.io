@@ -122,6 +122,17 @@ textarea{min-height:110px}
 <div id="dashboardMessage" role="status" aria-live="polite"></div>
 </div>
 
+<div class="panel" id="topStoryPanel">
+<h3>Top Story Photo మార్చండి</h3>
+<p class="small">హోమ్‌పేజీ Top Storyలో ఫోటో మాత్రమే కనిపిస్తుంది. ఇక్కడ కొత్త ఫోటో ఎంచుకుని Save చేస్తే అందరికీ Websiteలో మారుతుంది.</p>
+<label>Top Story Photo (Gallery నుంచి ఎంచుకోండి)</label>
+<input id="topStoryFile" type="file" accept="image/jpeg,image/png,image/webp">
+<p class="small">JPG, PNG లేదా WebP. గరిష్టంగా 5 MB. Landscape 16:9 ఫోటో ఉత్తమం.</p>
+<img id="topStoryPreview" alt="Top Story photo preview" style="display:none;width:100%;max-width:480px;aspect-ratio:16/9;object-fit:cover;border-radius:10px;margin:4px 0 14px">
+<div class="row"><button class="primary" id="saveTopStoryBtn" type="button">Top Story Photo Save చేయండి</button></div>
+<div id="topStoryMessage" role="status" aria-live="polite" class="small" style="margin-top:10px"></div>
+</div>
+
 <div class="panel">
 <h3>మీ వార్తలు — Draft & Published</h3>
 <div class="row" style="margin:10px 0">
@@ -275,6 +286,50 @@ $("imageFile").addEventListener("change",()=>{
   preview.src=URL.createObjectURL(file);
   preview.style.display="block";
 });
+
+const TOP_STORY_PATH = "top-story/current";
+const TOP_STORY_PUBLIC_URL = SUPABASE_URL + "/storage/v1/object/public/news-images/" + TOP_STORY_PATH;
+
+$("topStoryFile").addEventListener("change",()=>{
+  const file=$("topStoryFile").files[0];
+  const preview=$("topStoryPreview");
+  if(!file){preview.style.display="none";preview.removeAttribute("src");return;}
+  if(!["image/jpeg","image/png","image/webp"].includes(file.type)||file.size>5*1024*1024){
+    $("topStoryMessage").textContent="JPG, PNG లేదా WebP ఫోటో మాత్రమే ఎంచుకోండి. గరిష్ట పరిమాణం 5 MB.";
+    $("topStoryMessage").style.color="#dc3545";
+    $("topStoryFile").value="";
+    preview.style.display="none";
+    return;
+  }
+  preview.src=URL.createObjectURL(file);
+  preview.style.display="block";
+  $("topStoryMessage").textContent="Preview సిద్ధంగా ఉంది. Save నొక్కండి.";
+  $("topStoryMessage").style.color="#087c55";
+});
+
+$("saveTopStoryBtn").onclick=async()=>{
+  const file=$("topStoryFile").files[0];
+  if(!file){$("topStoryMessage").textContent="ముందుగా ఫోటో ఎంచుకోండి.";$("topStoryMessage").style.color="#dc3545";return;}
+  const button=$("saveTopStoryBtn");
+  button.disabled=true;
+  button.textContent="Uploading...";
+  try{
+    const {error}=await db.storage.from("news-images").upload(TOP_STORY_PATH,file,{
+      cacheControl:"60",upsert:true,contentType:file.type
+    });
+    if(error)throw error;
+    $("topStoryPreview").src=TOP_STORY_PUBLIC_URL+"?v="+Date.now();
+    $("topStoryMessage").textContent="Top Story ఫోటో విజయవంతంగా Save అయింది. Homepageలో కొత్త ఫోటో కనిపిస్తుంది.";
+    $("topStoryMessage").style.color="#087c55";
+    $("topStoryFile").value="";
+  }catch(error){
+    $("topStoryMessage").textContent="Upload కాలేదు: "+error.message;
+    $("topStoryMessage").style.color="#dc3545";
+  }finally{
+    button.disabled=false;
+    button.textContent="Top Story Photo Save చేయండి";
+  }
+};
 
 async function uploadNewsImage(file){
   if(!file)return $("image").value.trim()||null;
