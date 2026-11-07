@@ -186,26 +186,42 @@ function cleanNewsTitle(value) {
     .replace(/\s*[-|–—:]\s*(?:NTV(?:\s+Telugu)?|TV9(?:\s+Telugu)?|ABN(?:\s+Andhra\s+Jyothy)?|ETV(?:\s+Telangana)?|Sakshi(?:\s+Post)?|Eenadu|Andhra\s+Jyothy|The\s+Hindu|Times\s+of\s+India|India\s+Today|AP7AM|Samayam(?:\s+Telugu)?|Greatandhra|123telugu|Idlebrain|Gulte)\s*$/i, "")
     .trim();
 }
-const GEMINI_API_KEY = process.env.GEMINI_API_KEY;
-const GEMINI_MODEL = process.env.GEMINI_MODEL || "gemini-3.8-flash";
+const OPENAI_API_KEY = process.env.OPENAI_API_KEY;
+const OPENAI_MODEL = process.env.OPENAI_MODEL || "gpt-4o-mini";
 
 async function generateTeluguNews({ title, description, articleBody, categoryName }) {
-  if (!GEMINI_API_KEY) throw new Error("Missing GitHub Actions secret: GEMINI_API_KEY");
+  if (!OPENAI_API_KEY) throw new Error("Missing GitHub Actions secret: OPENAI_API_KEY");
   const sourceText = [description, articleBody].filter(Boolean).join("\n\n").slice(0, 10000);
   if (sourceText.replace(/\s/g, "").length < 120) return null;
-  const prompt = "మీరు K Media Telugu తెలుగు న్యూస్ ఎడిటర్. కింద ఇచ్చిన మూల సమాచారాన్ని మాత్రమే ఉపయోగించి స్వంత పదాలతో సహజమైన తెలుగు వార్తా డ్రాఫ్ట్ రాయండి. మూలంలో లేని పేర్లు, తేదీలు, సంఖ్యలు, కోట్స్ లేదా సంఘటనలు కల్పించవద్దు. ఇతర మీడియా సంస్థల పేర్లు, టెంప్లేట్ వాక్యాలు కంటెంట్‌లో పెట్టవద్దు. వివరాలు తక్కువైతే ఊహించి పొడిగించకుండా ఉన్న వాస్తవాలనే రాయండి. JSON మాత్రమే ఇవ్వండి: title, summary (1-2 వాక్యాలు), seo_title (70 అక్షరాల లోపు), meta_description (160 అక్షరాల లోపు), content (వాస్తవాల ఆధారంగా 250+ తెలుగు పదాలు సాధ్యమైతే; లేకపోతే అందుబాటులో ఉన్న వివరాలకే పరిమితం).\nవిభాగం: " + categoryName + "\nశీర్షిక: " + title + "\nRSS వివరణ: " + description + "\nమూల కథనం టెక్స్ట్: " + (articleBody || "లభించలేదు");
-  const response = await fetch("https://generativelanguage.googleapis.com/v1beta/models/" + GEMINI_MODEL + ":generateContent?key=" + encodeURIComponent(GEMINI_API_KEY), {
-    method: "POST", headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ contents: [{ role: "user", parts: [{ text: prompt }] }], generationConfig: { temperature: 0.35, maxOutputTokens: 1800, responseMimeType: "application/json" } }),
+  const prompt = "మీరు K Media Telugu తెలుగు న్యూస్ ఎడిటర్. కింద ఇచ్చిన మూల సమాచారాన్ని మాత్రమే ఉపయోగించి స్వంత పదాలతో సహజమైన తెలుగు వార్తా డ్రాఫ్ట్ రాయండి. మూలంలో లేని పేర్లు, తేదీలు, సంఖ్యలు, కోట్స్ లేదా సంఘటనలు కల్పించవద్దు. ఇతర మీడియా సంస్థల పేర్లు, టెంప్లేట్ వాక్యాలు కంటెంట్‌లో పెట్టవద్దు. RSSలో ఉన్న వివరాలకంటే ఎక్కువ నిజాలు కల్పించవద్దు. JSON మాత్రమే ఇవ్వండి: title, summary (1-2 వాక్యాలు), seo_title (70 అక్షరాల లోపు), meta_description (160 అక్షరాల లోపు), content (మూలంలో తగిన వివరాలు ఉంటే 250+ తెలుగు పదాలు; సమాచారం తక్కువైతే నిజమైన వివరాలనే పరిమితంగా రాయండి).\nవిభాగం: " + categoryName + "\nశీర్షిక: " + title + "\nRSS వివరణ: " + description + "\nమూల కథనం టెక్స్ట్: " + (articleBody || "లభించలేదు");
+  const response = await fetch("https://api.openai.com/v1/chat/completions", {
+    method: "POST",
+    headers: { "Content-Type": "application/json", "Authorization": "Bearer " + OPENAI_API_KEY },
+    body: JSON.stringify({
+      model: OPENAI_MODEL,
+      messages: [
+        { role: "system", content: "Return only valid JSON. Write accurate Telugu news based strictly on supplied source material. Never invent facts." },
+        { role: "user", content: prompt }
+      ],
+      temperature: 0.35,
+      max_tokens: 1800,
+      response_format: { type: "json_object" }
+    }),
     signal: AbortSignal.timeout(45000)
   });
   const raw = await response.text();
-  if (!response.ok) throw new Error("Gemini API " + response.status + ": " + raw.slice(0, 400));
+  if (!response.ok) throw new Error("OpenAI API " + response.status + ": " + raw.slice(0, 400));
   const data = JSON.parse(raw);
-  const output = data.candidates?.[0]?.content?.parts?.map(p => p.text || "").join("").trim();
-  if (!output) throw new Error("Gemini returned empty content");
-  const item = JSON.parse(output.replace(/^\`\`\`json\s*/i, "").replace(/\s*\`\`\`$/, ""));
-  const result = { title: cleanNewsTitle(item.title || title).slice(0,250), summary: String(item.summary || "").trim().slice(0,500), seo_title: String(item.seo_title || item.title || title).trim().slice(0,70), meta_description: String(item.meta_description || item.summary || "").trim().slice(0,160), content: String(item.content || "").trim().slice(0,12000) };
+  const output = data.choices?.[0]?.message?.content?.trim();
+  if (!output) throw new Error("OpenAI returned empty content");
+  const item = JSON.parse(output);
+  const result = {
+    title: cleanNewsTitle(item.title || title).slice(0,250),
+    summary: String(item.summary || "").trim().slice(0,500),
+    seo_title: String(item.seo_title || item.title || title).trim().slice(0,70),
+    meta_description: String(item.meta_description || item.summary || "").trim().slice(0,160),
+    content: String(item.content || "").trim().slice(0,12000)
+  };
   if (result.content.length < 500 || result.summary.length < 30) return null;
   return result;
 }
