@@ -22,5 +22,7 @@ jobs:
       - name: Collect RSS news as drafts
         env:
           SUPABASE_URL: https://mewyojxgsuceppsauesh.supabase.co
-          SUPABASE_SERVICE_ROLE_KEY: "${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}"\n          GEMINI_API_KEY: "${{ secrets.GEMINI_API_KEY }}"\n          GEMINI_MODEL: "gemini-3.8-flash"
+          SUPABASE_SERVICE_ROLE_KEY: "${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}"
+          GEMINI_API_KEY: "${{ secrets.GEMINI_API_KEY }}"
+          GEMINI_MODEL: "gemini-3.8-flash"
         run: node scripts/collect-telugu-news.mjs
