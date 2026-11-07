@@ -46,47 +46,125 @@ footer{text-align:center;color:#64748b;font-size:12px;padding:24px 16px}footer a
 </main>
 <footer>© K Media Telugu · <a href="/privacy-policy.html">గోప్యతా విధానం</a><br>అనూ మార్పిడి పట్టిక: <a href="https://unicodetononunicode.com/data/" target="_blank" rel="noopener">Unicode to Non Unicode</a> · CC BY 4.0</footer>
 <script>
-(()=> {
- const DATA_URL='https://unicodetononunicode.com/data/anu-mapping.json';
- const source=document.getElementById('source'), result=document.getElementById('result');
- const version=document.getElementById('version'), fontFace=document.getElementById('fontFace'), status=document.getElementById('status');
- const autoCopy=document.getElementById('autoCopy'), replaceSpaces=document.getElementById('replaceSpaces');
- let rows=[], ready=false, pairs=[];
- function buildMap(){
-   const key=version.value;
-   pairs=rows.map(r=>({from:String(r.unicode||''),to:String(r[key]||'')}))
-     .filter(x=>x.from&&x.to)
-     .sort((a,b)=>Array.from(b.from).length-Array.from(a.from).length);
- }
- function convert(copyAfter=false){
-   if(!source.value.trim()){result.value='';status.textContent='ముందుగా యూనికోడ్ తెలుగు టెక్స్ట్ నమోదు చేయండి.';return;}
-   if(!ready){status.textContent='మార్పిడి పట్టిక లోడ్ అవుతోంది. కొద్దిసేపటి తర్వాత మళ్లీ ప్రయత్నించండి.';return;}
-   let out='',i=0;
-   while(i<source.value.length){
-     let found=false;
-     for(const p of pairs){if(source.value.startsWith(p.from,i)){out+=p.to;i+=p.from.length;found=true;break;}}
-     if(!found){out+=source.value[i];i++;}
-   }
-   result.value=out;
-   status.textContent='మార్పిడి పూర్తయింది · '+Array.from(out).length+' అక్షరాలు';
-   if(copyAfter||autoCopy.checked) copyResult();
- }
- async function copyResult(){
-   if(!result.value)return;
-   try{await navigator.clipboard.writeText(result.value);status.textContent+=' · కాపీ అయింది';}
-   catch(e){status.textContent+=' · కాపీ కోసం ఫలితాన్ని సెలెక్ట్ చేసి Ctrl+C నొక్కండి';}
- }
- document.getElementById('convert').addEventListener('click',()=>convert(true));
- source.addEventListener('input',()=>{if(ready)convert(false);});
- version.addEventListener('change',()=>{buildMap();if(source.value)convert(false);});
- fontFace.addEventListener('change',()=>{if(source.value)convert(false);});\n replaceSpaces.addEventListener('change',()=>{if(source.value)convert(false);});\n altRa.addEventListener('change',()=>{if(source.value)convert(false);});
- document.getElementById('clear').addEventListener('click',()=>{source.value='';result.value='';status.textContent='టెక్స్ట్ క్లియర్ చేయబడింది.';source.focus();});
- document.getElementById('copy').addEventListener('click',copyResult);
- document.getElementById('sample').addEventListener('click',()=>{source.value='తెలుగు భాష మన అందరి గర్వం. క మీడియా తెలుగు.';convert(false);});
- fetch(DATA_URL,{mode:'cors',cache:'no-cache'})
- .then(r=>{if(!r.ok)throw new Error('HTTP '+r.status);return r.json();})
- .then(data=>{rows=Array.isArray(data)?data:(data.rows||[]);if(!rows.length)throw new Error('Mapping data is empty');ready=true;buildMap();status.textContent='సిద్ధంగా ఉంది · '+rows.length+' తెలుగు రూపాలు · అనూ '+(version.value==='anu7'?'7':'6')+' · '+fontFace.value;if(source.value)convert(false);})
- .catch(err=>{ready=false;status.textContent='మార్పిడి పట్టిక లోడ్ కాలేదు. దయచేసి మళ్లీ ప్రయత్నించండి.';console.error('KMT converter mapping error:',err);});
+(function () {
+  const DATA_URL = 'https://unicodetononunicode.com/data/anu-mapping.json';
+  const source = document.getElementById('source');
+  const result = document.getElementById('result');
+  const version = document.getElementById('version');
+  const fontFace = document.getElementById('fontFace');
+  const status = document.getElementById('status');
+  const autoCopy = document.getElementById('autoCopy');
+  const replaceSpaces = document.getElementById('replaceSpaces');
+  let pairs = [];
+  let ready = false;
+
+  function buildMap(data) {
+    const key = version.value;
+    pairs = data.rows
+      .filter(row => row.unicode && row[key])
+      .map(row => ({ from: row.unicode, to: row[key] }))
+      .sort((a, b) => b.from.length - a.from.length);
+  }
+
+  function convert() {
+    if (!source.value.trim()) {
+      result.value = '';
+      status.textContent = 'ముందుగా యూనికోడ్ తెలుగు టెక్స్ట్ నమోదు చేయండి.';
+      return;
+    }
+    if (!ready) {
+      status.textContent = 'మార్పిడి పట్టిక ఇంకా లోడ్ కాలేదు. పేజీని రిఫ్రెష్ చేయండి.';
+      return;
+    }
+    let output = '';
+    let pos = 0;
+    while (pos < source.value.length) {
+      let match = null;
+      for (const item of pairs) {
+        if (source.value.startsWith(item.from, pos)) {
+          match = item;
+          break;
+        }
+      }
+      if (match) {
+        output += match.to;
+        pos += match.from.length;
+      } else {
+        output += source.value[pos];
+        pos += 1;
+      }
+    }
+    if (replaceSpaces.checked) output = output.replace(/ /g, '\u00A0');
+    result.value = output;
+    status.textContent = 'మార్పిడి పూర్తయింది · ' + output.length + ' అక్షరాలు · ' + fontFace.value;
+    if (autoCopy.checked) copyResult();
+  }
+
+  async function copyResult() {
+    if (!result.value) {
+      status.textContent = 'ముందుగా టెక్స్ట్ మార్చండి.';
+      return;
+    }
+    try {
+      await navigator.clipboard.writeText(result.value);
+      status.textContent = 'ఫలితం కాపీ అయింది.';
+    } catch (error) {
+      result.focus();
+      result.select();
+      status.textContent = 'ఫలితాన్ని సెలెక్ట్ చేశాం. Ctrl+C నొక్కి కాపీ చేయండి.';
+    }
+  }
+
+  document.getElementById('convert').addEventListener('click', function () {
+    convert();
+    if (result.value) copyResult();
+  });
+  source.addEventListener('input', function () {
+    if (ready) convert();
+  });
+  version.addEventListener('change', function () {
+    if (window.kmtMappingData) buildMap(window.kmtMappingData);
+    if (source.value) convert();
+  });
+  fontFace.addEventListener('change', function () {
+    if (source.value && ready) convert();
+  });
+  replaceSpaces.addEventListener('change', function () {
+    if (source.value && ready) convert();
+  });
+  document.getElementById('clear').addEventListener('click', function () {
+    source.value = '';
+    result.value = '';
+    status.textContent = 'టెక్స్ట్ క్లియర్ చేయబడింది.';
+    source.focus();
+  });
+  document.getElementById('copy').addEventListener('click', copyResult);
+  document.getElementById('sample').addEventListener('click', function () {
+    source.value = 'వేసవికాలం కోసం క్రియేటివ్ న్యూస్ ప్రమోషనల్ పోస్టర్ రెడీ!';
+    convert();
+  });
+
+  status.textContent = 'మార్పిడి పట్టికను లోడ్ చేస్తున్నాం…';
+  fetch(DATA_URL, { mode: 'cors', cache: 'no-store' })
+    .then(function (response) {
+      if (!response.ok) throw new Error('HTTP ' + response.status);
+      return response.json();
+    })
+    .then(function (data) {
+      if (!data || !Array.isArray(data.rows) || !data.rows.length) {
+        throw new Error('Invalid mapping format');
+      }
+      window.kmtMappingData = data;
+      ready = true;
+      buildMap(data);
+      status.textContent = 'మ్యాపింగ్ సిద్ధంగా ఉంది · ' + data.rows.length + ' తెలుగు రూపాలు · అనూ ' + (version.value === 'anu7' ? '7' : '6');
+      if (source.value) convert();
+    })
+    .catch(function (error) {
+      ready = false;
+      status.textContent = 'మ్యాపింగ్ లోడ్ కాలేదు (' + error.message + '). మళ్లీ రిఫ్రెష్ చేయండి.';
+      console.error('K Media Telugu converter:', error);
+    });
 })();
 </script>
 </body></html>
