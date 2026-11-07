@@ -33,7 +33,7 @@ footer{text-align:center;color:#64748b;font-size:12px;padding:24px 16px}footer a
 <div class="field"><label for="fontFace">ఫాంట్ శైలి (30)</label><select id="fontFace">
 <option>Pallavi Thin</option><option>Pallavi Medium</option><option>Pallavi Bold</option><option>Dharani</option><option>Bapu Script</option><option>Bapu Bold</option><option>Bapu Brush</option><option>Pridhvi</option><option>Brahma</option><option>Anupama Thin</option><option>Anupama Medium</option><option>Anupama Bold</option><option>Anupama Ext. Bold</option><option>Pragathi</option><option>Pragathi Special</option><option>Pragathi Narrow</option><option>Pragathi Italic</option><option>Ramana Script</option><option>Ramana Script Med</option><option>Ramana Brush</option><option>Kranthi</option><option>Gowthami Thin</option><option>Gowthami Medium</option><option>Gowthami Narrow</option><option>Gowthami Bold</option><option>Gowthami Ext. Bold</option><option>Gowthami Black</option><option>Ajantha</option><option>Jyothi</option><option>Deepika</option>
 </select></div>
-<div class="field"><label>మార్పిడి విధానం</label><div style="padding:11px 14px;border:1px solid var(--line);border-radius:10px;background:#fff;font-weight:750">యూనికోడ్ → నాన్-యూనికోడ్</div></div><label style="display:flex;align-items:center;gap:7px;font-size:13px;font-weight:700"><input id="autoCopy" type="checkbox"> పేస్ట్ చేసిన వెంటనే కాపీ చేయి</label>
+<div class="field"><label>మార్పిడి విధానం</label><div style="padding:11px 14px;border:1px solid var(--line);border-radius:10px;background:#fff;font-weight:750">యూనికోడ్ → నాన్-యూనికోడ్</div></div><label style="display:flex;align-items:center;gap:7px;font-size:13px;font-weight:700"><input id="autoCopy" type="checkbox"> పేస్ట్ చేసిన వెంటనే కాపీ చేయి</label><label style="display:flex;align-items:center;gap:7px;font-size:13px;font-weight:700"><input id="replaceSpaces" type="checkbox"> నాన్-యూనికోడ్ ఖాళీలు</label><label style="display:flex;align-items:center;gap:7px;font-size:13px;font-weight:700"><input id="altRa" type="checkbox"> ప్రత్యామ్నాయ రా వత్తు</label>
 </div>
 <div class="grid">
 <div class="editor"><label id="inputLabel" for="source">యూనికోడ్ తెలుగు టెక్స్ట్</label><textarea id="source" placeholder="ఇక్కడ తెలుగు టెక్స్ట్‌ను టైప్ చేయండి లేదా పేస్ట్ చేయండి"></textarea></div>
@@ -50,7 +50,7 @@ footer{text-align:center;color:#64748b;font-size:12px;padding:24px 16px}footer a
  const DATA_URL='https://unicodetononunicode.com/data/anu-mapping.json';
  const source=document.getElementById('source'), result=document.getElementById('result');
  const version=document.getElementById('version'), fontFace=document.getElementById('fontFace'), status=document.getElementById('status');
- const autoCopy=document.getElementById('autoCopy');
+ const autoCopy=document.getElementById('autoCopy'), replaceSpaces=document.getElementById('replaceSpaces'), altRa=document.getElementById('altRa');
  let rows=[], ready=false, pairs=[];
  function buildMap(){
    const key=version.value;
@@ -79,11 +79,11 @@ footer{text-align:center;color:#64748b;font-size:12px;padding:24px 16px}footer a
  document.getElementById('convert').addEventListener('click',()=>convert(true));
  source.addEventListener('input',()=>{if(ready)convert(false);});
  version.addEventListener('change',()=>{buildMap();if(source.value)convert(false);});
- fontFace.addEventListener('change',()=>{if(source.value)convert(false);});
+ fontFace.addEventListener('change',()=>{if(source.value)convert(false);});\n replaceSpaces.addEventListener('change',()=>{if(source.value)convert(false);});\n altRa.addEventListener('change',()=>{if(source.value)convert(false);});
  document.getElementById('clear').addEventListener('click',()=>{source.value='';result.value='';status.textContent='టెక్స్ట్ క్లియర్ చేయబడింది.';source.focus();});
  document.getElementById('copy').addEventListener('click',copyResult);
  document.getElementById('sample').addEventListener('click',()=>{source.value='తెలుగు భాష మన అందరి గర్వం. క మీడియా తెలుగు.';convert(false);});
- fetch(DATA_URL,{mode:'cors',cache:'force-cache'})
+ fetch(DATA_URL,{mode:'cors',cache:'no-cache'})
  .then(r=>{if(!r.ok)throw new Error('HTTP '+r.status);return r.json();})
  .then(data=>{rows=Array.isArray(data)?data:(data.rows||[]);if(!rows.length)throw new Error('Mapping data is empty');ready=true;buildMap();status.textContent='సిద్ధంగా ఉంది · '+rows.length+' తెలుగు రూపాలు · అనూ '+(version.value==='anu7'?'7':'6')+' · '+fontFace.value;if(source.value)convert(false);})
  .catch(err=>{ready=false;status.textContent='మార్పిడి పట్టిక లోడ్ కాలేదు. దయచేసి మళ్లీ ప్రయత్నించండి.';console.error('KMT converter mapping error:',err);});
