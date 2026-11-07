@@ -78,7 +78,8 @@ footer{text-align:center;color:#64748b;font-size:12px;padding:24px 16px}footer a
  }
  document.getElementById('convert').addEventListener('click',()=>convert(true));
  source.addEventListener('input',()=>{if(ready)convert(false);});
- version.addEventListener('change',()=>{buildMap();if(source.value)convert(false);});\n fontFace.addEventListener('change',()=>{if(source.value)convert(false);});
+ version.addEventListener('change',()=>{buildMap();if(source.value)convert(false);});
+ fontFace.addEventListener('change',()=>{if(source.value)convert(false);});
  document.getElementById('clear').addEventListener('click',()=>{source.value='';result.value='';status.textContent='టెక్స్ట్ క్లియర్ చేయబడింది.';source.focus();});
  document.getElementById('copy').addEventListener('click',copyResult);
  document.getElementById('sample').addEventListener('click',()=>{source.value='తెలుగు భాష మన అందరి గర్వం. క మీడియా తెలుగు.';convert(false);});
