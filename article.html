@@ -180,7 +180,7 @@ socialMeta('property','og:locale','te_IN');
 box.innerHTML=`
 <p class="eyebrow">K MEDIA TELUGU · వార్తలు</p>
 <h1>${esc(data.title)}</h1>
-<p class="article-meta">${data.published_at?new Date(data.published_at).toLocaleString('te-IN'):''} · K Media Telugu</p>
+<p class="article-meta">${data.published_at?new Date(data.published_at).toLocaleString('te-IN',{timeZone:'Asia/Kolkata'}):''} · K Media Telugu</p>
 <div class="article-views" style="display:flex;align-items:center;gap:7px;color:#64748b;font-size:12px;margin:0 0 12px!important"><span aria-hidden="true">👁</span><strong id="articleViewCount">${Number(data.view_count||0).toLocaleString('en-IN')} Views</strong></div>
 ${data.featured_image?`<img src="${esc(data.featured_image)}" alt="${esc(data.title)}">`:''}
 ${data.summary?`<p class="article-summary">${esc(data.summary)}</p>`:''}
