@@ -448,3 +448,11 @@ button,a,input{touch-action:manipulation}
 .news-card a{font-size:11px!important;color:#e01850!important;font-weight:800!important;text-decoration:none!important;margin-top:auto!important;padding-top:5px!important}
 @media(max-width:700px){.news-grid{grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:10px!important}.news-card:before{width:28px!important;height:28px!important;top:7px!important;right:7px!important}.card-body{padding:9px!important}.news-card h3{-webkit-line-clamp:4!important;font-size:13px!important}}
 @media(max-width:420px){.news-grid{grid-template-columns:1fr!important;gap:12px!important}.news-card-image,.image-placeholder{aspect-ratio:16/9!important}.news-card h3{font-size:14px!important;-webkit-line-clamp:3!important}}
+
+
+/* Admin-selected Top Story photo only: no headline or overlay text */
+.hero-feature .top-story-only-image{
+  position:absolute!important;inset:0!important;width:100%!important;height:100%!important;
+  display:block!important;object-fit:cover!important;opacity:1!important;
+}
+.hero-feature:after{display:none!important}
