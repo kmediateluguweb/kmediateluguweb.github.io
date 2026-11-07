@@ -18,7 +18,7 @@
 <style>
 .article-wrap{max-width:850px;margin:45px auto;background:#fff;padding:28px;border-radius:14px}
 .article-wrap img{width:100%;max-height:480px;object-fit:cover;border-radius:10px}
-.article-wrap h1{margin:8px 0 10px!important;line-height:1.35!important}.article-meta{margin:4px 0 8px!important;padding:0 0 8px!important}.article-wrap>p{margin:8px 0 10px!important;line-height:1.55!important}.article-content{font-size:18px;line-height:1.55;white-space:normal;color:#252932;margin:6px 0 0!important}.article-content p{display:block;margin:0 0 7px!important;padding:0!important;line-height:1.55!important}.article-content p:last-child{margin-bottom:0!important}.article-content br{display:block;content:'';margin-top:1px}
+.article-wrap h1{margin:8px 0 10px!important;line-height:1.35!important}.article-meta{margin:4px 0 8px!important;padding:0 0 8px!important}.article-wrap>p{margin:8px 0 10px!important;line-height:1.55!important}.article-content{font-size:18px;line-height:1.45;white-space:normal;color:#252932;margin:6px 0 0!important}.article-content .news-body-text{white-space:pre-line;line-height:1.45!important;margin:0!important;padding:0!important}
 .article-meta{color:#777}
 @media(max-width:700px){.article-wrap{margin:20px auto;padding:18px}}
 </style>
@@ -54,7 +54,7 @@ const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({
 }[c]));
 
 // Convert editor text into evenly spaced paragraphs; collapse excessive blank lines.
-const formatNewsContent=value=>String(value??'').replace(/\r\n?/g,'\n').split('\n').map(line=>line.trim()).filter(Boolean).map(line=>`<p>${esc(line)}</p>`).join('');
+const formatNewsContent=value=>{const normalized=String(value??'').replace(/\\n/g,'\n').replace(/\r\n?/g,'\n').split('\n').map(line=>line.trim()).filter(Boolean).join('\n');return `<div class="news-body-text">${esc(normalized)}</div>`;};
 
 (async()=>{
 const id=new URLSearchParams(location.search).get('id');
