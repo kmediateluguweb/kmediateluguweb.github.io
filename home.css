@@ -424,3 +424,11 @@ button,a,input{touch-action:manipulation}
 .brand-logo{width:54px!important;height:54px!important;max-width:54px!important;object-fit:contain!important}
 .footer-brand .brand-logo{width:44px!important;height:44px!important}
 @media(max-width:700px){.side-brand img{width:60px!important;height:60px!important}.brand-logo{width:44px!important;height:44px!important}}
+
+
+/* Keep the official K Media Telugu logo in the main header only. */
+.side-brand{display:none!important}
+/* Prevent accidental oversized media from breaking the news layout. */
+.news-card-image,.trend-item img,.hero-feature>img{max-width:100%;height:auto;object-fit:cover}
+.news-card-image{height:145px}
+@media(max-width:560px){.news-card-image{height:112px}}
