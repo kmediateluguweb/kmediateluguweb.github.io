@@ -188,6 +188,7 @@ function cleanNewsTitle(value) {
 }
 const OPENAI_API_KEY = process.env.OPENAI_API_KEY;
 const OPENAI_MODEL = process.env.OPENAI_MODEL || "gpt-4o-mini";
+if (!OPENAI_API_KEY) throw new Error("Missing GitHub Actions secret: OPENAI_API_KEY. Add it under Settings > Secrets and variables > Actions.");
 
 async function generateTeluguNews({ title, description, articleBody, categoryName }) {
   if (!OPENAI_API_KEY) throw new Error("Missing GitHub Actions secret: OPENAI_API_KEY");
