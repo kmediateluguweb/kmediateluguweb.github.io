@@ -47,22 +47,35 @@ footer{text-align:center;color:#64748b;font-size:12px;padding:24px 16px}footer a
  const DATA_URL='https://unicodetononunicode.com/data/anu-mapping.json';
  const source=document.getElementById('source'), result=document.getElementById('result');
  const version=document.getElementById('version'), status=document.getElementById('status');
- const toLegacy=document.getElementById('toLegacy'), toUnicode=document.getElementById('toUnicode');
  let rows=[], ready=false;
- function setDirection(next){direction=next;toLegacy.classList.toggle('active',next==='encode');toUnicode.classList.toggle('active',next==='decode');
- document.getElementById('inputLabel').textContent=next==='encode'?'యూనికోడ్ తెలుగు టెక్స్ట్':'అనూ నాన్-యూనికోడ్ టెక్స్ట్';
- document.getElementById('outputLabel').textContent=next==='encode'?'అనూ టెక్స్ట్':'యూనికోడ్ తెలుగు';source.placeholder=next==='encode'?'ఇక్కడ తెలుగు టెక్స్ట్‌ను టైప్ చేయండి లేదా పేస్ట్ చేయండి':'ఇక్కడ అనూ టెక్స్ట్‌ను పేస్ట్ చేయండి';result.value='';}
- function buildMap(){const key=version.value;const pairs=rows.map(r=>({from:direction==='encode'?r.unicode:r[key],to:direction==='encode'?r[key]:r.unicode})).filter(x=>x.from&&x.to);
- pairs.sort((a,b)=>b.from.length-a.from.length);
- const map=new Map();for(const p of pairs)if(!map.has(p.from))map.set(p.from,p.to);return [...map.entries()];}
- function convert(){if(!ready){status.textContent='మార్పిడి పట్టిక ఇంకా సిద్ధంగా లేదు.';return;}const pairs=buildMap();let out='',i=0;while(i<source.value.length){let found=false;for(const [from,to] of pairs){if(source.value.startsWith(from,i)){out+=to;i+=from.length;found=true;break;}}if(!found){out+=source.value[i];i++;}}result.value=out;status.textContent='మార్పిడి పూర్తయింది · '+out.length+' అక్షరాలు';}
- toLegacy.addEventListener('click',()=>setDirection('encode'));toUnicode.addEventListener('click',()=>setDirection('decode'));
- version.addEventListener('change',()=>{if(source.value)convert();});
+ function buildMap(){
+   const key=version.value;
+   const pairs=rows.map(r=>({from:String(r.unicode||''),to:String(r[key]||'')})).filter(x=>x.from&&x.to);
+   pairs.sort((a,b)=>b.from.length-a.from.length);
+   return pairs;
+ }
+ function convert(){
+   if(!source.value.trim()){result.value='';status.textContent='ముందుగా యూనికోడ్ తెలుగు టెక్స్ట్ నమోదు చేయండి.';return;}
+   if(!ready){status.textContent='మార్పిడి పట్టిక అందుబాటులో లేదు. దయచేసి కొద్దిసేపటి తర్వాత మళ్లీ ప్రయత్నించండి.';return;}
+   const pairs=buildMap();let out='',i=0;
+   while(i<source.value.length){
+     let found=false;
+     for(const p of pairs){if(source.value.startsWith(p.from,i)){out+=p.to;i+=p.from.length;found=true;break;}}
+     if(!found){out+=source.value[i];i++;}
+   }
+   result.value=out;status.textContent='మార్పిడి పూర్తయింది · '+out.length+' అక్షరాలు';
+ }
  document.getElementById('convert').addEventListener('click',convert);
- document.getElementById('swap').addEventListener('click',()=>{const previous=result.value;setDirection(direction==='encode'?'decode':'encode');source.value=previous;result.value='';});
+ version.addEventListener('change',()=>{if(source.value)convert();});
  document.getElementById('clear').addEventListener('click',()=>{source.value='';result.value='';status.textContent='టెక్స్ట్ క్లియర్ చేయబడింది.';});
- document.getElementById('copy').addEventListener('click',async()=>{if(!result.value){status.textContent='ముందుగా టెక్స్ట్ మార్చండి.';return;}try{await navigator.clipboard.writeText(result.value);status.textContent='ఫలితం కాపీ అయింది.';}catch(e){result.select();status.textContent='ఫలితాన్ని సెలెక్ట్ చేశాం. Ctrl+C నొక్కి కాపీ చేయండి.';}});
- fetch(DATA_URL).then(r=>{if(!r.ok)throw new Error('Mapping unavailable');return r.json();}).then(data=>{rows=data.rows||[];if(!rows.length)throw new Error('Empty mapping');ready=true;status.textContent='సిద్ధంగా ఉంది · '+rows.length+' తెలుగు రూపాలు · మీ టెక్స్ట్ మీ బ్రౌజర్‌లోనే మారుతుంది.';}).catch(()=>{status.textContent='మార్పిడి పట్టికను పొందలేకపోయాం. ఇంటర్నెట్ కనెక్షన్‌ను పరిశీలించి పేజీని మళ్లీ తెరవండి.';});
+ document.getElementById('copy').addEventListener('click',async()=>{
+   if(!result.value){status.textContent='ముందుగా టెక్స్ట్ మార్చండి.';return;}
+   try{await navigator.clipboard.writeText(result.value);status.textContent='ఫలితం కాపీ అయింది.';}
+   catch(e){result.select();status.textContent='ఫలితాన్ని సెలెక్ట్ చేశాం. Ctrl+C నొక్కి కాపీ చేయండి.';}
+ });
+ fetch(DATA_URL).then(r=>{if(!r.ok)throw new Error('Mapping unavailable');return r.json();})
+ .then(data=>{rows=Array.isArray(data)?data:(data.rows||[]);if(!rows.length)throw new Error('Empty mapping');ready=true;status.textContent='సిద్ధంగా ఉంది · '+rows.length+' తెలుగు రూపాలు';})
+ .catch(()=>{ready=false;status.textContent='మార్పిడి పట్టిక లోడ్ కాలేదు. ఈ సమస్యను సరిచేస్తున్నాం.';});
 })();
 </script>
 </body></html>
