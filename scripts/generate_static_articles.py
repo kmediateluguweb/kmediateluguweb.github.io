@@ -118,11 +118,19 @@ for article in articles:
 <meta name="twitter:image" content="{esc(image)}">
 <script type="application/ld+json">{schema_json}</script>
 <style>
-.article-wrap{{max-width:850px;margin:40px auto;background:#fff;padding:28px;border-radius:14px}}
-.article-wrap img{{width:100%;max-height:480px;object-fit:cover;border-radius:10px}}
-.article-content{{font-size:18px;line-height:1.9;white-space:normal;overflow-wrap:anywhere}}
-.article-meta{{color:#777;font-size:14px}}
-@media(max-width:700px){{.article-wrap{{margin:18px auto;padding:18px}}}}
+:root{{color-scheme:light}}
+body{{background:#f5f6f8!important;color:#242833;font-family:"Noto Sans Telugu",Arial,sans-serif}}
+.article-wrap{{box-sizing:border-box;max-width:900px;margin:28px auto;background:#fff;padding:30px 34px;border:1px solid #e5e8ee;border-radius:8px;box-shadow:0 2px 12px rgba(20,35,60,.05)}}
+.article-wrap h1{{font-family:"Noto Sans Telugu",Arial,sans-serif;color:#172f56;font-size:clamp(25px,3vw,32px);font-weight:700;line-height:1.45;margin:10px 0 14px}}
+.article-wrap img{{display:block;width:100%;height:auto;max-height:480px;object-fit:contain;border-radius:6px;margin:16px 0 20px}}
+.article-content{{font-family:"Noto Sans Telugu",Arial,sans-serif;color:#252a33;font-size:16px;font-weight:400;line-height:1.72;letter-spacing:0;white-space:normal;overflow-wrap:anywhere}}
+.article-content p{{margin:0 0 15px}}
+.article-content h2{{font-size:23px;line-height:1.45;font-weight:700;color:#1d3c68;margin:25px 0 10px}}
+.article-content h3{{font-size:19px;line-height:1.5;font-weight:700;color:#284d78;margin:20px 0 8px}}
+.article-content strong{{font-weight:700;color:#202a3a}}
+.article-content .article-list-item{{margin:0 0 7px 18px}}
+.article-meta{{color:#737b88;font-size:12px;margin:8px 0 14px}}
+@media(max-width:700px){{.article-wrap{{margin:12px auto;padding:18px 16px;border-radius:6px}}.article-wrap h1{{font-size:24px;line-height:1.5}}.article-content{{font-size:15px;line-height:1.75}}.article-content h2{{font-size:20px;margin-top:22px}}}}
 </style>
 </head>
 <body>
