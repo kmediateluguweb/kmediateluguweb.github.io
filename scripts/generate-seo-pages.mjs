@@ -60,7 +60,7 @@ for (const item of articles) {
   const body = contentLines.map(line => {
     const heading = line.match(/^#{1,3}\s+(.+)$/) || line.match(/^\*\*(.+)\*\*$/);
     return heading ? `<h2>${esc(heading[1])}</h2>` : `<p>${formatInline(line)}</p>`;
-  }).join("\\n");
+  }).join("");
   const html = `<!doctype html>
 <html lang="te"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>${esc(title)} | K Media Telugu</title><meta name="description" content="${esc(description)}">
