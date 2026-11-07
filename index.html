@@ -93,8 +93,18 @@ function renderLoadedNews(){
   const h=document.getElementById("heroFeature");
   if(h){
     const heroImage="https://mewyojxgsuceppsauesh.supabase.co/storage/v1/object/public/news-images/top-story/current";
-    h.innerHTML='<img class="top-story-only-image" src="'+heroImage+'?v='+Date.now()+'" alt="" fetchpriority="high" decoding="async">';
+    h.innerHTML="";
+    h.style.setProperty("background-image",'url("'+heroImage+'")',"important");
+    h.style.setProperty("background-size","cover","important");
+    h.style.setProperty("background-position","center","important");
+    h.style.setProperty("background-repeat","no-repeat","important");
+    h.style.setProperty("padding","0","important");
+    h.style.setProperty("min-height","0","important");
+    h.style.setProperty("aspect-ratio","16 / 9","important");
+    h.style.setProperty("height","auto","important");
+    h.style.setProperty("border","0","important");
     h.setAttribute("aria-label","K Media Telugu Top Story photo");
+    h.setAttribute("role","img");
   }
 }
 async function loadNews(){
