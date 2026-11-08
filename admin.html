@@ -143,7 +143,11 @@ textarea{min-height:110px}
 <details class="compact-options">
 <summary>Top Story Photo మార్చండి</summary>
 <div class="details-content">
-<p class="small">హోమ్‌పేజీ Top Storyలో ఫోటో మాత్రమే కనిపిస్తుంది. ఇక్కడ కొత్త ఫోటో ఎంచుకుని Save చేస్తే అందరికీ Websiteలో మారుతుంది.</p>
+<p class="small">హోమ్‌పేజీలో ఏది చూపించాలో ఇక్కడ ఎంచుకోండి. YouTube వీడియో లేదా మీ Top Story ఫోటో — ఎప్పుడైనా మార్చుకోవచ్చు.</p>
+<div class="row" style="margin:10px 0">
+<button class="secondary" id="showTopStoryVideoBtn" type="button">YouTube వీడియో చూపించు</button>
+<button class="secondary" id="showTopStoryPhotoBtn" type="button">Top Story Photo చూపించు</button>
+</div>
 <label>Top Story Photo (Gallery నుంచి ఎంచుకోండి)</label>
 <input id="topStoryFile" type="file" accept="image/jpeg,image/png,image/webp">
 <p class="small">JPG, PNG లేదా WebP. గరిష్టంగా 5 MB. Landscape 16:9 ఫోటో ఉత్తమం.</p>
@@ -376,6 +380,10 @@ $("saveTopStoryBtn").onclick=async()=>{
       cacheControl:"60",upsert:true,contentType:file.type
     });
     if(error)throw error;
+    const modeResult=await db.storage.from("news-images").upload("top-story/mode.txt",new Blob(["photo"],{type:"text/plain"}),{
+      cacheControl:"0",upsert:true,contentType:"text/plain"
+    });
+    if(modeResult.error)throw modeResult.error;
     $("topStoryPreview").src=TOP_STORY_PUBLIC_URL+"?v="+Date.now();
     $("topStoryMessage").textContent="Top Story ఫోటో విజయవంతంగా Save అయింది. Homepageలో కొత్త ఫోటో కనిపిస్తుంది.";
     $("topStoryMessage").style.color="#087c55";
@@ -388,6 +396,29 @@ $("saveTopStoryBtn").onclick=async()=>{
     button.textContent="Top Story Photo Save చేయండి";
   }
 };
+
+async function setTopStoryMode(mode){
+  const messageEl=$("topStoryMessage");
+  const buttons=[$("showTopStoryVideoBtn"),$("showTopStoryPhotoBtn")];
+  buttons.forEach(button=>button.disabled=true);
+  messageEl.textContent="Saving...";
+  messageEl.style.color="#087c55";
+  try{
+    const {error}=await db.storage.from("news-images").upload("top-story/mode.txt",new Blob([mode],{type:"text/plain"}),{
+      cacheControl:"0",upsert:true,contentType:"text/plain"
+    });
+    if(error)throw error;
+    messageEl.textContent=mode==="youtube"?"Homepageలో YouTube వీడియో చూపించేలా మార్చాం.":"Homepageలో Top Story Photo చూపించేలా మార్చాం.";
+    messageEl.style.color="#087c55";
+  }catch(error){
+    messageEl.textContent="మార్చలేకపోయాం: "+error.message;
+    messageEl.style.color="#dc3545";
+  }finally{
+    buttons.forEach(button=>button.disabled=false);
+  }
+}
+$("showTopStoryVideoBtn").onclick=()=>setTopStoryMode("youtube");
+$("showTopStoryPhotoBtn").onclick=()=>setTopStoryMode("photo");
 
 async function uploadNewsImage(file){
   if(!file)return $("image").value.trim()||null;
