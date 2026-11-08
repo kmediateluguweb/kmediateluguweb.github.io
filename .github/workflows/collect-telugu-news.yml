@@ -1,12 +1,6 @@
 name: Collect Telugu cinema news drafts
 on:
-  push:
-    paths:
-      - "scripts/collect-telugu-news.mjs"
-      - ".github/workflows/collect-telugu-news.yml"
   workflow_dispatch:
-  schedule:
-    - cron: "17 0,8,16 * * *"
 permissions:
   contents: read
 concurrency:
