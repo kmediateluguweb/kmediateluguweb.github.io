@@ -62,12 +62,16 @@ textarea{min-height:110px}
 
 <main>
 <section id="login" class="panel">
-<h3>Admin Login</h3>
-<label>Email Address</label>
-<input id="email" type="email" placeholder="Admin email">
-<label>Password</label>
-<input id="password" type="password" placeholder="Password">
-<button class="primary" id="loginBtn">Login</button>
+<h3>Admin Login — Email OTP Verification</h3>
+<label>Admin Email Address</label>
+<input id="email" type="email" autocomplete="email" placeholder="Admin email">
+<button class="primary" id="loginBtn" type="button">Send OTP</button>
+<div id="otpSection" style="display:none">
+<label>Emailకి వచ్చిన 6-digit OTP</label>
+<input id="otpCode" type="text" inputmode="numeric" autocomplete="one-time-code" maxlength="6" placeholder="6-digit OTP">
+<button class="primary" id="verifyOtpBtn" type="button">Verify OTP & Login</button>
+<button class="secondary" id="resendOtpBtn" type="button">Resend OTP</button>
+</div>
 <div id="loginMessage" role="status" aria-live="polite"></div>
 </section>
 
@@ -150,7 +154,7 @@ textarea{min-height:110px}
 const SUPABASE_URL = "https://mewyojxgsuceppsauesh.supabase.co";
 const SUPABASE_KEY = "sb_publishable_-ee5Pt9U0ZvZuUkipLcq-Q_KBXKsEDa";
 
-const db = window.supabase.createClient(SUPABASE_URL,SUPABASE_KEY,{auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:true}});
+const db = window.supabase.createClient(SUPABASE_URL,SUPABASE_KEY,{auth:{persistSession:false,autoRefreshToken:true,detectSessionInUrl:false}});
 const $ = id => document.getElementById(id);
 let currentPublishedAt = null;
 
@@ -201,14 +205,39 @@ async function showDashboard(user){
   }
 }
 
-$("loginBtn").onclick=async()=>{
-  message("Logging in...","#087c55","loginMessage");
-  const {data,error}=await db.auth.signInWithPassword({
-    email:$("email").value.trim(),
-    password:$("password").value
-  });
-  if(error){message(error.message,"#dc3545","loginMessage");return;}
-  await showDashboard(data.user);
+async function sendAdminOtp(){
+  const email=$("email").value.trim().toLowerCase();
+  if(!email){message("Admin email address ఇవ్వండి.","#dc3545","loginMessage");return;}
+  $("loginBtn").disabled=true;
+  message("OTP పంపిస్తున్నాం...","#087c55","loginMessage");
+  try{
+    const {error}=await db.auth.signInWithOtp({
+      email,
+      options:{shouldCreateUser:false}
+    });
+    if(error)throw error;
+    $("otpSection").style.display="block";
+    message("మీ Emailకి OTP పంపించాం. Inbox / Spam చెక్ చేయండి.","#087c55","loginMessage");
+    $("otpCode").focus();
+  }catch(error){
+    message("OTP పంపలేకపోయాం: "+error.message,"#dc3545","loginMessage");
+  }finally{$("loginBtn").disabled=false;}
+}
+$("loginBtn").onclick=sendAdminOtp;
+$("resendOtpBtn").onclick=sendAdminOtp;
+$("verifyOtpBtn").onclick=async()=>{
+  const email=$("email").value.trim().toLowerCase();
+  const token=$("otpCode").value.trim();
+  if(!/^\\d{6}$/.test(token)){message("6-digit OTP నమోదు చేయండి.","#dc3545","loginMessage");return;}
+  $("verifyOtpBtn").disabled=true;
+  message("OTP verify చేస్తున్నాం...","#087c55","loginMessage");
+  try{
+    const {data,error}=await db.auth.verifyOtp({email,token,type:"email"});
+    if(error)throw error;
+    await showDashboard(data.user);
+  }catch(error){
+    message("OTP సరైనది కాదు లేదా గడువు ముగిసింది: "+error.message,"#dc3545","loginMessage");
+  }finally{$("verifyOtpBtn").disabled=false;}
 };
 
 $("logout").onclick=async()=>{
@@ -457,9 +486,9 @@ $("newNewsBtn").onclick=()=>{resetForm();window.scrollTo({top:0,behavior:"smooth
 $("cancelBtn").onclick=resetForm;
 $("refreshBtn").onclick=loadNews;
 
+// OTP is required on each fresh Admin page visit; sessions are not persisted.
 (async()=>{
-  const {data}=await db.auth.getSession();
-  if(data.session)await showDashboard(data.session.user);
+  await db.auth.signOut();
 })();
 
 // The admin panel shares the main domain; do not register a second root-scope worker.
