@@ -18,7 +18,7 @@ self.addEventListener("fetch", event => {
         const response = await fetch(request, {cache:"no-store"});
         if (url.pathname.startsWith("/articles/")) {
           const html = await response.clone().text();
-          const canonical = html.match(/<link\\s+rel=["\x27]canonical["\x27]\\s+href=["\x27]([^"\x27]+)["\x27]/i);
+          const canonical = html.match(/<link\s+rel=["\x27]canonical["\x27]\s+href=["\x27]([^"\x27]+)["\x27]/i);
           const expected = url.origin + url.pathname;
           if (!response.ok || !canonical || canonical[1] !== expected) {
             return new Response("ఈ వార్తా పేజీ సర్వర్‌లో ఇంకా సరిగా అందుబాటులో లేదు. కొద్దిసేపటి తర్వాత మళ్లీ ప్రయత్నించండి.", {status:503,headers:{"Content-Type":"text/plain; charset=utf-8"}});
