@@ -105,9 +105,23 @@ function renderLoadedNews(){
       photo.onerror = showChannelVideos;
       photo.src = topStoryImage;
     };
+    const showCustomTopStoryVideo = async () => {
+      try {
+        const response = await fetch("https://mewyojxgsuceppsauesh.supabase.co/storage/v1/object/public/news-images/top-story/custom-video.txt?v=" + Date.now(),{cache:"no-store"});
+        if(!response.ok) return showChannelVideos();
+        const videoId = (await response.text()).trim();
+        if(!/^[A-Za-z0-9_-]{11}$/.test(videoId)) return showChannelVideos();
+        h.innerHTML = '<div class="top-story-video-frame"><iframe src="https://www.youtube-nocookie.com/embed/' + videoId + '?autoplay=1&mute=1&playsinline=1&controls=1&rel=0" title="K Media Telugu Top Story video" loading="eager" referrerpolicy="strict-origin-when-cross-origin" allow="autoplay; encrypted-media; picture-in-picture; web-share" allowfullscreen></iframe></div>';
+      } catch(error) { showChannelVideos(); }
+    };
     fetch(topStoryModeUrl,{cache:"no-store"})
       .then(response => response.ok ? response.text() : "youtube")
-      .then(mode => mode.trim().toLowerCase() === "photo" ? showTopStoryPhoto() : showChannelVideos())
+      .then(mode => {
+        const selected = mode.trim().toLowerCase();
+        if(selected === "photo") showTopStoryPhoto();
+        else if(selected === "custom") showCustomTopStoryVideo();
+        else showChannelVideos();
+      })
       .catch(showChannelVideos);
     h.style.setProperty("position","relative","important");
     h.style.setProperty("display","block","important");
