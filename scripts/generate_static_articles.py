@@ -130,6 +130,7 @@ body{{background:#f5f6f8!important;color:#242833;font-family:"Noto Sans Telugu",
 .article-content strong{{font-weight:700;color:#202a3a}}
 .article-content .article-list-item{{margin:0 0 7px 18px}}
 .article-meta{{color:#737b88;font-size:12px;margin:8px 0 14px}}
+.share-bar{{display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin:22px 0 8px;padding:14px 0;border-top:1px solid #eee5ed;border-bottom:1px solid #eee5ed}}.share-label{{width:100%;font-size:13px;font-weight:800;color:#30253a}}.share-btn{{display:inline-flex;align-items:center;justify-content:center;min-height:36px;padding:8px 12px;border:1px solid #eadde7;border-radius:7px;background:#fff;color:#33283b!important;text-decoration:none!important;font-size:12px;font-weight:700;cursor:pointer}}.share-btn:hover{{background:#fff2f7;border-color:#ed174c}}.share-copy{{font-family:inherit}}
 @media(max-width:700px){{.article-wrap{{margin:12px auto;padding:18px 16px;border-radius:6px}}.article-wrap h1{{font-size:24px;line-height:1.5}}.article-content{{font-size:15px;line-height:1.75}}.article-content h2{{font-size:20px;margin-top:22px}}}}
 </style>
 </head>
@@ -142,8 +143,14 @@ body{{background:#f5f6f8!important;color:#242833;font-family:"Noto Sans Telugu",
 {('<img src="' + esc(image) + '" alt="' + esc(article.get('title')) + '" fetchpriority="high">') if article.get('featured_image') else ''}
 {('<p><strong>' + esc(article.get('summary')) + '</strong></p>') if article.get('summary') else ''}
 <div class="article-content">{body}</div>
+<div class="share-bar" data-share-bar><span class="share-label">ఈ వార్తను Share చేయండి</span><a class="share-btn" data-share="whatsapp" target="_blank" rel="noopener">WhatsApp</a><a class="share-btn" data-share="facebook" target="_blank" rel="noopener">Facebook</a><a class="share-btn" data-share="telegram" target="_blank" rel="noopener">Telegram</a><a class="share-btn" data-share="x" target="_blank" rel="noopener">X</a><button class="share-btn share-copy" type="button" data-share="copy">లింక్ Copy చేయండి</button></div>
 <p><a href="../../">← హోమ్‌కు తిరిగి వెళ్లండి</a></p>
 </article></main>
+<script>
+function setupArticleShare(container,title,url){const q=encodeURIComponent(title);const u=encodeURIComponent(url);const targets={whatsapp:'https://wa.me/?text='+q+'%20'+u,facebook:'https://www.facebook.com/sharer/sharer.php?u='+u,telegram:'https://t.me/share/url?url='+u+'&text='+q,x:'https://twitter.com/intent/tweet?url='+u+'&text='+q};container.querySelectorAll('a[data-share]').forEach(link=>{link.href=targets[link.dataset.share]||'#';});const copy=container.querySelector('[data-share="copy"]');copy.addEventListener('click',async()=>{try{await navigator.clipboard.writeText(url);copy.textContent='Copied ✓';}catch(e){const field=document.createElement('textarea');field.value=url;document.body.appendChild(field);field.select();document.execCommand('copy');field.remove();copy.textContent='Copied ✓';}setTimeout(()=>copy.textContent='లింక్ Copy చేయండి',2000);});}
+const shareArticle=document.querySelector('[data-share-bar]');
+setupArticleShare(shareArticle, {json.dumps(title, ensure_ascii=False)}, {json.dumps(article["public_url"])});
+</script>
 <footer><div class="copyright">© 2026 K Media Telugu. All rights reserved. | <a style="color:#fff" href="../../privacy-policy.html">Privacy Policy</a></div></footer>
 </body></html>
 """
