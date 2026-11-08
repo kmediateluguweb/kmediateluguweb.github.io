@@ -209,7 +209,7 @@ $("resendOtpBtn").onclick=sendAdminOtp;
 $("verifyOtpBtn").onclick=async()=>{
   const email=$("email").value.trim().toLowerCase();
   const token=$("otpCode").value.trim();
-  if(!/^\\d{6}$/.test(token)){message("6-digit OTP నమోదు చేయండి.","#dc3545","loginMessage");return;}
+  if(!/^\d{6}$/.test(token)){message("6-digit OTP నమోదు చేయండి.","#dc3545","loginMessage");return;}
   $("verifyOtpBtn").disabled=true;
   message("OTP verify చేస్తున్నాం...","#087c55","loginMessage");
   try{
