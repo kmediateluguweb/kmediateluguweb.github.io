@@ -51,6 +51,8 @@ footer{margin-top:12px}
  .article-content .news-body-text h2{font-size:15px!important}
  .article-wrap>img{max-height:none;margin-bottom:12px!important}
 }
+
+.share-bar{display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin:22px 0 8px;padding:14px 0;border-top:1px solid #eee5ed;border-bottom:1px solid #eee5ed}.share-label{width:100%;font-size:13px;font-weight:800;color:#30253a}.share-btn{display:inline-flex;align-items:center;justify-content:center;min-height:36px;padding:8px 12px;border:1px solid #eadde7;border-radius:7px;background:#fff;color:#33283b!important;text-decoration:none!important;font-size:12px;font-weight:700;cursor:pointer}.share-btn:hover{background:#fff2f7;border-color:#ed174c}.share-copy{font-family:inherit}
 </style>
 </head>
 <body>
@@ -82,6 +84,9 @@ const db=window.supabase.createClient(
 const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({
 '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'
 }[c]));
+
+
+function setupArticleShare(container,title,url){const q=encodeURIComponent(title);const u=encodeURIComponent(url);const targets={whatsapp:'https://wa.me/?text='+q+'%20'+u,facebook:'https://www.facebook.com/sharer/sharer.php?u='+u,telegram:'https://t.me/share/url?url='+u+'&text='+q,x:'https://twitter.com/intent/tweet?url='+u+'&text='+q};container.querySelectorAll('a[data-share]').forEach(link=>{link.href=targets[link.dataset.share]||'#';});const copy=container.querySelector('[data-share="copy"]');copy.addEventListener('click',async()=>{try{await navigator.clipboard.writeText(url);copy.textContent='Copied ✓';}catch(e){const field=document.createElement('textarea');field.value=url;document.body.appendChild(field);field.select();document.execCommand('copy');field.remove();copy.textContent='Copied ✓';}setTimeout(()=>copy.textContent='లింక్ Copy చేయండి',2000);});}
 
 // Convert editor text into evenly spaced paragraphs; collapse excessive blank lines.
 const formatNewsContent=value=>{const lines=String(value??'').replace(/\\n/g,'\n').replace(/\r\n?/g,'\n').split('\n').map(line=>line.trim()).filter(Boolean);const inline=line=>esc(line.replace(/^[-*]\s+/,'' )).replace(/\*\*(.+?)\*\*/g,'<strong>$1</strong>').replace(/__(.+?)__/g,'<strong>$1</strong>');return `<div class="news-body-text">${lines.map(line=>{const heading=line.match(/^#{1,3}\s+(.+)$/)||line.match(/^\*\*(.+)\*\*$/);return heading?`<h2>${esc(heading[1])}</h2>`:`<p>${inline(line)}</p>`;}).join('')}</div>`;};
@@ -185,8 +190,11 @@ box.innerHTML=`
 ${data.featured_image?`<img src="${esc(data.featured_image)}" alt="${esc(data.title)}">`:''}
 ${data.summary?`<p class="article-summary">${esc(data.summary)}</p>`:''}
 <div class="article-content">${formatNewsContent(data.content)}</div>
+${<div class="share-bar" data-share-bar><span class="share-label">ఈ వార్తను Share చేయండి</span><a class="share-btn" data-share="whatsapp" target="_blank" rel="noopener">WhatsApp</a><a class="share-btn" data-share="facebook" target="_blank" rel="noopener">Facebook</a><a class="share-btn" data-share="telegram" target="_blank" rel="noopener">Telegram</a><a class="share-btn" data-share="x" target="_blank" rel="noopener">X</a><button class="share-btn share-copy" type="button" data-share="copy">లింక్ Copy చేయండి</button></div>}
+
 <p><a href="/">← హోమ్‌కు తిరిగి వెళ్లండి</a></p>
 `;
+setupArticleShare(box, data.title, staticArticleUrl);
 // Count one view per browser tab/session; database RPC performs an atomic increment.
 try{
   const viewedKey='kmt-viewed-'+id;
