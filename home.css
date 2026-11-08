@@ -417,7 +417,7 @@ button,a,input{touch-action:manipulation}
 
 /* Remove any stray oversized logo image from the homepage hero; keep only the featured story image */
 .hero-panel{background:transparent!important}
-.hero-panel>img,.hero-panel>.hero-copy img,.hero-panel>.hero-feature>img{display:none!important}
+.hero-panel>img,.hero-panel>.hero-copy img,.hero-panel>.hero-feature>img:not(.top-story-only-image){display:none!important}
 .hero-panel>.hero-feature{background:#17191f!important}
 .hero-panel>.hero-feature .hero-photo-link img{display:block!important}
 .side-brand img{width:92px!important;max-width:92px!important;height:92px!important;object-fit:contain!important;margin:0 auto 18px!important}
