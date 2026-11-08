@@ -161,20 +161,36 @@ function renderISTClock(){
   if (el) el.textContent = date + " · " + time + " IST";
 }
 async function syncISTClock(){
-  try {
-    const response = await fetch("https://worldtimeapi.org/api/timezone/Asia/Kolkata", {
-      cache:"no-store"
-    });
-    if (!response.ok) throw new Error("IST time service HTTP " + response.status);
-    const data = await response.json();
-    if (!Number.isFinite(data.unixtime)) throw new Error("IST time response invalid");
-    istClockBase = data.unixtime * 1000;
-    istClockPerfBase = performance.now();
-    renderISTClock();
-  } catch (error) {
-    console.warn("IST time sync unavailable; using device clock temporarily.", error);
-    renderISTClock();
+  const endpoints = [
+    async () => {
+      const response = await fetch("https://timeapi.io/api/time/current/zone?timeZone=Asia%2FKolkata", {cache:"no-store"});
+      if (!response.ok) throw new Error("TimeAPI HTTP " + response.status);
+      const data = await response.json();
+      const timestamp = Date.parse(data.dateTime);
+      if (!Number.isFinite(timestamp)) throw new Error("TimeAPI response invalid");
+      return timestamp;
+    },
+    async () => {
+      const response = await fetch("https://worldtimeapi.org/api/timezone/Asia/Kolkata", {cache:"no-store"});
+      if (!response.ok) throw new Error("WorldTimeAPI HTTP " + response.status);
+      const data = await response.json();
+      if (!Number.isFinite(data.unixtime)) throw new Error("WorldTimeAPI response invalid");
+      return data.unixtime * 1000;
+    }
+  ];
+  for (const getTime of endpoints) {
+    try {
+      const timestamp = await getTime();
+      istClockBase = timestamp;
+      istClockPerfBase = performance.now();
+      renderISTClock();
+      return;
+    } catch (error) {
+      console.warn("IST clock source failed; trying backup.", error);
+    }
   }
+  console.warn("All IST time services unavailable; using device clock temporarily.");
+  if (istClockBase === null) renderISTClock();
 }
 document.getElementById("searchForm").addEventListener("submit",e=>{e.preventDefault();const q=document.getElementById("searchInput").value.trim().toLowerCase();render("latestNews",articles.filter(a=>(a.title+" "+(a.summary||"")+" "+a.category_name).toLowerCase().includes(q)).slice(0,12),"ఈ పదానికి సంబంధించిన వార్తలు కనిపించలేదు.");document.getElementById("latest").scrollIntoView({behavior:"smooth"});});// Upcoming Telugu movie feed. Add a TMDB API Read Access Token in the config below to activate live results.
 const KMT_TMDB_TOKEN="ADD_TMDB_API_READ_ACCESS_TOKEN";
