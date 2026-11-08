@@ -92,19 +92,15 @@ function renderLoadedNews(){
   document.getElementById("trendingList").innerHTML=articles.slice(0,5).map((a,i)=>'<a class="trend-item" href="'+url(a)+'"><b>'+String(i+1).padStart(2,"0")+'</b>'+(a.featured_image?'<img src="'+esc(a.featured_image)+'" alt="" loading="lazy">':'<span class="trend-placeholder">K</span>')+'<span><strong>'+esc(a.title)+'</strong><small>👁 '+Number(a.view_count||0).toLocaleString("en-IN")+' Views · '+(a.published_at?new Date(a.published_at).toLocaleDateString("te-IN"):"K Media Telugu")+'</small></span></a>').join("")||'<p class="empty-state">ట్రెండింగ్ వార్తలు త్వరలో...</p>';
   const h=document.getElementById("heroFeature");
   if(h){
-    const heroImage="https://mewyojxgsuceppsauesh.supabase.co/storage/v1/object/public/news-images/top-story/current";
-    h.innerHTML="";
-    h.style.setProperty("background-image",'url("'+heroImage+'")',"important");
-    h.style.setProperty("background-size","cover","important");
-    h.style.setProperty("background-position","center","important");
-    h.style.setProperty("background-repeat","no-repeat","important");
+    h.innerHTML = '<div style="position:relative;width:100%;aspect-ratio:16/9;background:#080808;border-radius:16px;overflow:hidden"><iframe src="https://www.youtube-nocookie.com/embed/videoseries?list=UU0dM3uiSoM9Vhb2ENeUFW2g" title="K Media Telugu latest YouTube videos" style="position:absolute;inset:0;width:100%;height:100%;border:0" loading="lazy" referrerpolicy="strict-origin-when-cross-origin" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe></div>';
+    h.style.setProperty("background","transparent","important");
     h.style.setProperty("padding","0","important");
     h.style.setProperty("min-height","0","important");
-    h.style.setProperty("aspect-ratio","16 / 9","important");
     h.style.setProperty("height","auto","important");
+    h.style.setProperty("aspect-ratio","auto","important");
     h.style.setProperty("border","0","important");
-    h.setAttribute("aria-label","K Media Telugu Top Story photo");
-    h.setAttribute("role","img");
+    h.setAttribute("aria-label","K Media Telugu latest YouTube videos");
+    h.removeAttribute("role");
   }
 }
 async function loadNews(){
