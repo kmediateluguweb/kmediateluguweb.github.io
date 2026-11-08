@@ -456,3 +456,22 @@ button,a,input{touch-action:manipulation}
   display:block!important;object-fit:cover!important;opacity:1!important;
 }
 .hero-feature:after{display:none!important}
+
+
+/* Mobile polish: keep swipeable category chips without showing a horizontal scrollbar. */
+@media (max-width: 700px) {
+  .category-pills {
+    scrollbar-width: none !important;
+    -ms-overflow-style: none !important;
+    overscroll-behavior-x: contain;
+    -webkit-overflow-scrolling: touch;
+  }
+  .category-pills::-webkit-scrollbar {
+    display: none !important;
+    width: 0 !important;
+    height: 0 !important;
+  }
+  #latest, #trending, #videos {
+    scroll-margin-top: 12px;
+  }
+}
