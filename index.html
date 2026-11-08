@@ -95,7 +95,7 @@ function renderLoadedNews(){
     const topStoryImage = "https://mewyojxgsuceppsauesh.supabase.co/storage/v1/object/public/news-images/top-story/current?v=" + Date.now();
     const topStoryModeUrl = "https://mewyojxgsuceppsauesh.supabase.co/storage/v1/object/public/news-images/top-story/mode.txt?v=" + Date.now();
     const showChannelVideos = () => {
-      h.innerHTML = '<div style="position:relative;width:100%;aspect-ratio:16/9;background:#080808;border-radius:16px;overflow:hidden"><iframe src="https://www.youtube-nocookie.com/embed/videoseries?list=UU0dM3uiSoM9Vhb2ENeUFW2g" title="K Media Telugu latest YouTube videos" style="position:absolute;inset:0;width:100%;height:100%;border:0" loading="eager" referrerpolicy="strict-origin-when-cross-origin" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe></div>';
+      h.innerHTML = '<div class="top-story-video-frame"><iframe src="https://www.youtube-nocookie.com/embed/videoseries?list=UU0dM3uiSoM9Vhb2ENeUFW2g&autoplay=1&mute=1&playsinline=1&controls=1&rel=0" title="K Media Telugu Top Story videos" loading="eager" referrerpolicy="strict-origin-when-cross-origin" allow="autoplay; encrypted-media; picture-in-picture; web-share" allowfullscreen></iframe></div>';
     };
     const showTopStoryPhoto = () => {
       const photo = new Image();
@@ -109,6 +109,13 @@ function renderLoadedNews(){
       .then(response => response.ok ? response.text() : "youtube")
       .then(mode => mode.trim().toLowerCase() === "photo" ? showTopStoryPhoto() : showChannelVideos())
       .catch(showChannelVideos);
+    h.style.setProperty("position","relative","important");
+    h.style.setProperty("display","block","important");
+    h.style.setProperty("width","100%","important");
+    h.style.setProperty("height","auto","important");
+    h.style.setProperty("min-height","0","important");
+    h.style.setProperty("aspect-ratio","16 / 9","important");
+    h.style.setProperty("overflow","hidden","important");
     h.style.setProperty("background","transparent","important");
     h.style.setProperty("padding","0","important");
     h.style.setProperty("border","0","important");
