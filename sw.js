@@ -1,4 +1,4 @@
-const CACHE_NAME = "k-media-telugu-v22";
+const CACHE_NAME = "k-media-telugu-v23";
 const APP_SHELL = ["/", "/index.html", "/home.css?v=20261107-02", "/manifest.webmanifest", "/home-feed.json?v=20261107-01", "/logo-mark.svg"];
 self.addEventListener("install", event => {
   event.waitUntil(caches.open(CACHE_NAME).then(cache => cache.addAll(APP_SHELL)).then(() => self.skipWaiting()));
@@ -16,9 +16,14 @@ self.addEventListener("fetch", event => {
     event.respondWith((async () => {
       try {
         const response = await fetch(request, {cache:"no-store"});
-        if (response && response.ok && new URL(response.url || request.url).pathname === url.pathname) {
-          const copy = response.clone();
-          caches.open(CACHE_NAME).then(cache => cache.put(request, copy));
+        if (url.pathname.startsWith("/articles/")) {
+          const html = await response.clone().text();
+          const canonical = html.match(/<link\\s+rel=["\x27]canonical["\x27]\\s+href=["\x27]([^"\x27]+)["\x27]/i);
+          const expected = url.origin + url.pathname;
+          if (!response.ok || !canonical || canonical[1] !== expected) {
+            return new Response("ఈ వార్తా పేజీ సర్వర్‌లో ఇంకా సరిగా అందుబాటులో లేదు. కొద్దిసేపటి తర్వాత మళ్లీ ప్రయత్నించండి.", {status:503,headers:{"Content-Type":"text/plain; charset=utf-8"}});
+          }
+          return new Response(html, {status:response.status,headers:response.headers});
         }
         return response;
       } catch (error) {
