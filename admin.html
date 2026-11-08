@@ -227,7 +227,7 @@ $("resendOtpBtn").onclick=sendAdminOtp;
 $("verifyOtpBtn").onclick=async()=>{
   const email=$("email").value.trim().toLowerCase();
   const token=$("otp").value.trim();
-  if(!/^\\d{6}$/.test(token)){message("6 అంకెల OTP ఎంటర్ చేయండి.","#dc3545","loginMessage");return;}
+  if(!/^\d{6}$/.test(token)){message("6 అంకెల OTP ఎంటర్ చేయండి.","#dc3545","loginMessage");return;}
   $("verifyOtpBtn").disabled=true;
   message("OTP Verify చేస్తున్నాం...","#087c55","loginMessage");
   const {data,error}=await db.auth.verifyOtp({email,token,type:"email"});
