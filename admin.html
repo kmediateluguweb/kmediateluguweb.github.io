@@ -65,13 +65,8 @@ textarea{min-height:110px}
 <h3>Admin Login</h3>
 <label>Admin Gmail</label>
 <input id="email" type="email" placeholder="Admin Gmail address" autocomplete="username" inputmode="email">
-<button class="primary" id="sendOtpBtn" type="button">Gmailకి OTP పంపండి</button>
-<div id="otpStep" style="display:none;margin-top:14px">
-  <label>6-Digit OTP</label>
-  <input id="otp" type="text" inputmode="numeric" autocomplete="one-time-code" maxlength="6" pattern="[0-9]{6}" placeholder="6 అంకెల OTP">
-  <button class="primary" id="verifyOtpBtn" type="button">OTP Verify చేసి Login</button>
-  <button class="secondary" id="resendOtpBtn" type="button">OTP మళ్లీ పంపండి</button>
-</div>
+<button class="primary" id="sendOtpBtn" type="button">Gmailకి Login Link పంపండి</button>
+<div id="otpStep" style="display:none;margin-top:14px;color:#087c55">మీ Gmailలో వచ్చిన Sign-in Linkను అదే Browserలో ఓపెన్ చేయండి. లింక్ గడువు ముగిస్తే కొద్దిసేపటి తర్వాత కొత్త లింక్ పంపండి.</div>
 <div id="loginMessage" role="status" aria-live="polite"></div>
 </section>
 
@@ -157,6 +152,7 @@ const SUPABASE_KEY = "sb_publishable_-ee5Pt9U0ZvZuUkipLcq-Q_KBXKsEDa";
 const db = window.supabase.createClient(SUPABASE_URL,SUPABASE_KEY,{auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:true}});
 const $ = id => document.getElementById(id);
 let currentPublishedAt = null;
+let loginLinkCooldown = false;
 
 function message(text,color="#087c55",target="dashboardMessage"){
   const el=$(target);
@@ -208,33 +204,31 @@ async function showDashboard(user){
 async function sendAdminOtp(){
   const email=$("email").value.trim().toLowerCase();
   if(!email){message("ముందుగా Admin Gmail ఎంటర్ చేయండి.","#dc3545","loginMessage");return;}
+  if(loginLinkCooldown)return;
+  loginLinkCooldown=true;
   $("sendOtpBtn").disabled=true;
-  $("resendOtpBtn").disabled=true;
-  message("Gmailకి OTP పంపిస్తున్నాం...","#087c55","loginMessage");
-  const {error}=await db.auth.signInWithOtp({
-    email,
-    options:{shouldCreateUser:false}
-  });
-  $("sendOtpBtn").disabled=false;
-  $("resendOtpBtn").disabled=false;
-  if(error){message(error.message,"#dc3545","loginMessage");return;}
-  $("otpStep").style.display="block";
-  $("otp").focus();
-  message("OTP పంపించాం. Gmail Inbox / Spamలో చూసి 6 అంకెల కోడ్ ఎంటర్ చేయండి.","#087c55","loginMessage");
+  $("sendOtpBtn").textContent="Login Link పంపిస్తున్నాం...";
+  message("Gmailకి సురక్షితమైన Login Link పంపిస్తున్నాం...","#087c55","loginMessage");
+  try{
+    const {error}=await db.auth.signInWithOtp({
+      email,
+      options:{
+        shouldCreateUser:false,
+        emailRedirectTo:"https://kmediatelugu.com/admin.html"
+      }
+    });
+    if(error)throw error;
+    $("otpStep").style.display="block";
+    message("Login Link పంపించాం. Gmail Inbox / Spamలో చూసి Sign-in Linkను క్లిక్ చేయండి. అదే Browserలో తెరవండి.","#087c55","loginMessage");
+  }catch(error){
+    message(error.message||"Login Link పంపలేకపోయాం. కొద్దిసేపటి తర్వాత ప్రయత్నించండి.","#dc3545","loginMessage");
+  }finally{
+    $("sendOtpBtn").disabled=false;
+    $("sendOtpBtn").textContent="Gmailకి Login Link మళ్లీ పంపండి";
+    setTimeout(()=>{loginLinkCooldown=false;},30000);
+  }
 }
 $("sendOtpBtn").onclick=sendAdminOtp;
-$("resendOtpBtn").onclick=sendAdminOtp;
-$("verifyOtpBtn").onclick=async()=>{
-  const email=$("email").value.trim().toLowerCase();
-  const token=$("otp").value.trim();
-  if(!/^\d{6}$/.test(token)){message("6 అంకెల OTP ఎంటర్ చేయండి.","#dc3545","loginMessage");return;}
-  $("verifyOtpBtn").disabled=true;
-  message("OTP Verify చేస్తున్నాం...","#087c55","loginMessage");
-  const {data,error}=await db.auth.verifyOtp({email,token,type:"email"});
-  $("verifyOtpBtn").disabled=false;
-  if(error){message("OTP తప్పు లేదా గడువు ముగిసింది. మళ్లీ ప్రయత్నించండి.","#dc3545","loginMessage");return;}
-  await showDashboard(data.user);
-};
 
 $("logout").onclick=async()=>{
   await db.auth.signOut();
