@@ -98,7 +98,7 @@ function renderLoadedNews(){
     };
     const photo = new Image();
     photo.onload = () => {
-      h.innerHTML = '<img src="' + topStoryImage + '" alt="K Media Telugu Top Story" style="display:block;width:100%;height:auto;aspect-ratio:16/9;object-fit:cover;border-radius:16px">';
+      h.innerHTML = '<img class="top-story-only-image" src="' + topStoryImage + '" alt="K Media Telugu Top Story" style="display:block;width:100%;height:100%;aspect-ratio:16/9;object-fit:cover;border-radius:16px">';
     };
     photo.onerror = showChannelVideos;
     photo.src = topStoryImage;
