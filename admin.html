@@ -145,9 +145,13 @@ textarea{min-height:110px}
 <div class="details-content">
 <p class="small">హోమ్‌పేజీలో ఏది చూపించాలో ఇక్కడ ఎంచుకోండి. YouTube వీడియో లేదా మీ Top Story ఫోటో — ఎప్పుడైనా మార్చుకోవచ్చు.</p>
 <div class="row" style="margin:10px 0">
-<button class="secondary" id="showTopStoryVideoBtn" type="button">YouTube వీడియో చూపించు</button>
+<button class="secondary" id="showTopStoryVideoBtn" type="button">మన ఛానెల్ వీడియోలు చూపించు</button>
 <button class="secondary" id="showTopStoryPhotoBtn" type="button">Top Story Photo చూపించు</button>
 </div>
+<label>నీకు నచ్చిన YouTube Video URL</label>
+<input id="customTopStoryUrl" type="url" placeholder="https://www.youtube.com/watch?v=XXXXXXXXXXX">
+<p class="small">YouTube వీడియో లింక్ paste చేసి Save చేస్తే అదే Top Storyలో కనిపిస్తుంది.</p>
+<div class="row"><button class="primary" id="saveCustomTopStoryBtn" type="button">ఈ YouTube వీడియోను Top Storyలో పెట్టు</button></div>
 <label>Top Story Photo (Gallery నుంచి ఎంచుకోండి)</label>
 <input id="topStoryFile" type="file" accept="image/jpeg,image/png,image/webp">
 <p class="small">JPG, PNG లేదా WebP. గరిష్టంగా 5 MB. Landscape 16:9 ఫోటో ఉత్తమం.</p>
@@ -419,6 +423,46 @@ async function setTopStoryMode(mode){
 }
 $("showTopStoryVideoBtn").onclick=()=>setTopStoryMode("youtube");
 $("showTopStoryPhotoBtn").onclick=()=>setTopStoryMode("photo");
+function extractYouTubeVideoId(value){
+  try{
+    const url=new URL(value.trim());
+    let id="";
+    if(url.hostname==="youtu.be"||url.hostname==="www.youtu.be") id=url.pathname.split("/").filter(Boolean)[0]||"";
+    else if(["youtube.com","www.youtube.com","m.youtube.com","youtube-nocookie.com","www.youtube-nocookie.com"].includes(url.hostname)){
+      if(url.pathname==="/watch") id=url.searchParams.get("v")||"";
+      else if(/^\/(embed|shorts|live)\//.test(url.pathname)) id=url.pathname.split("/")[2]||"";
+    }
+    return /^[A-Za-z0-9_-]{11}$/.test(id)?id:null;
+  }catch(error){return null;}
+}
+$("saveCustomTopStoryBtn").onclick=async()=>{
+  const button=$("saveCustomTopStoryBtn");
+  const messageEl=$("topStoryMessage");
+  const videoId=extractYouTubeVideoId($("customTopStoryUrl").value);
+  if(!videoId){
+    messageEl.textContent="సరైన YouTube వీడియో URL ఇవ్వండి (youtube.com/watch?v=... లేదా youtu.be/...).";
+    messageEl.style.color="#dc3545";
+    return;
+  }
+  button.disabled=true;
+  button.textContent="Saving...";
+  messageEl.textContent="YouTube వీడియో Save చేస్తున్నాం...";
+  messageEl.style.color="#087c55";
+  try{
+    const videoResult=await db.storage.from("news-images").upload("top-story/custom-video.txt",new Blob([videoId],{type:"text/plain"}),{cacheControl:"0",upsert:true,contentType:"text/plain"});
+    if(videoResult.error)throw videoResult.error;
+    const modeResult=await db.storage.from("news-images").upload("top-story/mode.txt",new Blob(["custom"],{type:"text/plain"}),{cacheControl:"0",upsert:true,contentType:"text/plain"});
+    if(modeResult.error)throw modeResult.error;
+    messageEl.textContent="నీ YouTube వీడియో Top Storyలో Save అయింది. Homepage Refresh చేయి.";
+    messageEl.style.color="#087c55";
+  }catch(error){
+    messageEl.textContent="Save కాలేదు: "+error.message;
+    messageEl.style.color="#dc3545";
+  }finally{
+    button.disabled=false;
+    button.textContent="ఈ YouTube వీడియోను Top Storyలో పెట్టు";
+  }
+};
 
 async function uploadNewsImage(file){
   if(!file)return $("image").value.trim()||null;
