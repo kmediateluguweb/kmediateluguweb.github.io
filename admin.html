@@ -65,8 +65,12 @@ textarea{min-height:110px}
 <h3>Admin Login</h3>
 <label>Admin Gmail</label>
 <input id="email" type="email" placeholder="Admin Gmail address" autocomplete="username" inputmode="email">
-<button class="primary" id="sendOtpBtn" type="button">Gmailకి Login Link పంపండి</button>
-<div id="otpStep" style="display:none;margin-top:14px;color:#087c55">మీ Gmailలో వచ్చిన Sign-in Linkను అదే Browserలో ఓపెన్ చేయండి. లింక్ గడువు ముగిస్తే కొద్దిసేపటి తర్వాత కొత్త లింక్ పంపండి.</div>
+<button class="primary" id="sendOtpBtn" type="button">Gmailకి OTP పంపండి</button>
+<div id="otpStep" style="display:none;margin-top:14px;color:#087c55">
+  <label for="otp">Gmailలో వచ్చిన 6-digit OTP</label>
+  <input id="otp" type="text" inputmode="numeric" autocomplete="one-time-code" maxlength="6" placeholder="6-digit OTP">
+  <button class="primary" id="verifyOtpBtn" type="button">OTP Verify చేయండి</button>
+</div>
 <div id="loginMessage" role="status" aria-live="polite"></div>
 </section>
 
@@ -152,7 +156,7 @@ const SUPABASE_KEY = "sb_publishable_-ee5Pt9U0ZvZuUkipLcq-Q_KBXKsEDa";
 const db = window.supabase.createClient(SUPABASE_URL,SUPABASE_KEY,{auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:true}});
 const $ = id => document.getElementById(id);
 let currentPublishedAt = null;
-let loginLinkCooldown = false;
+let otpCooldown = false;
 
 function message(text,color="#087c55",target="dashboardMessage"){
   const el=$(target);
@@ -204,31 +208,48 @@ async function showDashboard(user){
 async function sendAdminOtp(){
   const email=$("email").value.trim().toLowerCase();
   if(!email){message("ముందుగా Admin Gmail ఎంటర్ చేయండి.","#dc3545","loginMessage");return;}
-  if(loginLinkCooldown)return;
-  loginLinkCooldown=true;
+  if(otpCooldown)return;
+  otpCooldown=true;
   $("sendOtpBtn").disabled=true;
-  $("sendOtpBtn").textContent="Login Link పంపిస్తున్నాం...";
-  message("Gmailకి సురక్షితమైన Login Link పంపిస్తున్నాం...","#087c55","loginMessage");
+  $("sendOtpBtn").textContent="OTP పంపిస్తున్నాం...";
+  message("Gmailకి 6-digit OTP పంపిస్తున్నాం...","#087c55","loginMessage");
   try{
     const {error}=await db.auth.signInWithOtp({
       email,
-      options:{
-        shouldCreateUser:false,
-        emailRedirectTo:"https://kmediatelugu.com/admin.html"
-      }
+      options:{shouldCreateUser:false}
     });
     if(error)throw error;
     $("otpStep").style.display="block";
-    message("Login Link పంపించాం. Gmail Inbox / Spamలో చూసి Sign-in Linkను క్లిక్ చేయండి. అదే Browserలో తెరవండి.","#087c55","loginMessage");
+    $("otp").focus();
+    message("OTP పంపించాం. Gmail Inbox / Spamలో 6-digit code చూడండి.","#087c55","loginMessage");
   }catch(error){
-    message(error.message||"Login Link పంపలేకపోయాం. కొద్దిసేపటి తర్వాత ప్రయత్నించండి.","#dc3545","loginMessage");
+    message(error.message||"OTP పంపలేకపోయాం. కొద్దిసేపటి తర్వాత ప్రయత్నించండి.","#dc3545","loginMessage");
   }finally{
     $("sendOtpBtn").disabled=false;
-    $("sendOtpBtn").textContent="Gmailకి Login Link మళ్లీ పంపండి";
-    setTimeout(()=>{loginLinkCooldown=false;},30000);
+    $("sendOtpBtn").textContent="OTP మళ్లీ పంపండి";
+    setTimeout(()=>{otpCooldown=false;},30000);
+  }
+}
+async function verifyAdminOtp(){
+  const email=$("email").value.trim().toLowerCase();
+  const token=$("otp").value.trim();
+  if(!email){message("ముందుగా Admin Gmail ఎంటర్ చేయండి.","#dc3545","loginMessage");return;}
+  if(!/^\\d{6}$/.test(token)){message("Gmailలో వచ్చిన 6-digit OTP ఎంటర్ చేయండి.","#dc3545","loginMessage");$("otp").focus();return;}
+  $("verifyOtpBtn").disabled=true;
+  message("OTP Verify చేస్తున్నాం...","#087c55","loginMessage");
+  try{
+    const {data,error}=await db.auth.verifyOtp({email,token,type:"email"});
+    if(error)throw error;
+    if(!data.user)throw new Error("OTP Verify కాలేదు. మళ్లీ ప్రయత్నించండి.");
+    await showDashboard(data.user);
+  }catch(error){
+    message(error.message||"OTP Verify కాలేదు. సరైన OTP ఎంటర్ చేయండి.","#dc3545","loginMessage");
+  }finally{
+    $("verifyOtpBtn").disabled=false;
   }
 }
 $("sendOtpBtn").onclick=sendAdminOtp;
+$("verifyOtpBtn").onclick=verifyAdminOtp;
 
 $("logout").onclick=async()=>{
   await db.auth.signOut();
