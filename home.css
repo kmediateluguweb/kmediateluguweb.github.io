@@ -475,3 +475,35 @@ button,a,input{touch-action:manipulation}
     scroll-margin-top: 12px;
   }
 }
+
+/* Final homepage highlight player sizing override */
+.hero-panel,
+.hero-panel>.hero-feature{
+  display:block!important;
+  width:100%!important;
+  min-width:0!important;
+  min-height:0!important;
+  max-height:none!important;
+  height:auto!important;
+  aspect-ratio:16/9!important;
+  padding:0!important;
+  margin:0!important;
+  border:0!important;
+  overflow:hidden!important;
+  box-sizing:border-box!important;
+}
+.hero-panel>.hero-feature>div{
+  position:absolute!important;
+  inset:0!important;
+  width:100%!important;
+  height:100%!important;
+  aspect-ratio:auto!important;
+}
+.hero-panel>.hero-feature iframe{
+  position:absolute!important;
+  inset:0!important;
+  display:block!important;
+  width:100%!important;
+  height:100%!important;
+  border:0!important;
+}
