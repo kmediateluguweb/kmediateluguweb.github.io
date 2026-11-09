@@ -137,7 +137,7 @@ async function loadNews(){
   const SUPABASE_KEY="sb_publishable_-ee5Pt9U0ZvZuUkipLcq-Q_KBXKsEDa";
   // Render the static published feed first so the homepage never waits for Supabase.
   try{
-    const fallback=await fetch("/home-feed.json?v=20261106-13",{cache:"no-store"});
+    const fallback=await fetch("/home-feed.json?v=20261109-1",{cache:"no-store"});
     if(!fallback.ok)throw new Error("Fallback feed HTTP "+fallback.status);
     const rows=await fallback.json();
     articles=Array.isArray(rows)?rows:[];
