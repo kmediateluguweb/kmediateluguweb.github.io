@@ -14,10 +14,10 @@
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
 (async()=>{
+ const id="4ccf8462-e5b6-44ae-9ed4-1aa1909b5999";
  const readers=document.getElementById("articleUniqueReaders");
  const el=document.getElementById("articleViewCount");
  try{
-  const id="4ccf8462-e5b6-44ae-9ed4-1aa1909b5999";
   if(!window.supabase?.createClient) throw new Error("Supabase JS library did not load");
   const db=window.supabase.createClient("https://mewyojxgsuceppsauesh.supabase.co","sb_publishable_-ee5Pt9U0ZvZuUkipLcq-Q_KBXKsEDa");
   const makeId=()=>crypto.randomUUID();
@@ -27,7 +27,7 @@
   let sessionId=sessionStorage.getItem(sessionKey);
   if(!sessionId){sessionId=makeId();sessionStorage.setItem(sessionKey,sessionId);}
   const {data,error}=await db.rpc("record_article_view",{
-   p_article_id:id,p_visitor_id:visitorId,p_session_id:sessionId
+   p_article_id:String(id),p_visitor_id:visitorId,p_session_id:sessionId
   });
   if(error) throw error;
   const stats=Array.isArray(data)?data[0]:data;

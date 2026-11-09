@@ -15,25 +15,28 @@
 <script>
 (async()=>{
  const id="8845cf13-9eb6-4d51-9eb3-b49647c38d91";
- const db=window.supabase.createClient("https://mewyojxgsuceppsauesh.supabase.co","sb_publishable_-ee5Pt9U0ZvZuUkipLcq-Q_KBXKsEDa");
+ const readers=document.getElementById("articleUniqueReaders");
  const el=document.getElementById("articleViewCount");
- const copyButton=document.getElementById("copyArticleLink");
- if(copyButton)copyButton.addEventListener("click",async()=>{try{await navigator.clipboard.writeText(location.href);copyButton.textContent="Copied ✓";}catch(e){const field=document.createElement("textarea");field.value=location.href;document.body.appendChild(field);field.select();document.execCommand("copy");field.remove();copyButton.textContent="Copied ✓";}setTimeout(()=>copyButton.textContent="లింక్ Copy చేయండి",2000);});
  try{
-  const visitorKey="kmt-visitor-id-v1",sessionKey="kmt-session-id-v1";
+  if(!window.supabase?.createClient) throw new Error("Supabase JS library did not load");
+  const db=window.supabase.createClient("https://mewyojxgsuceppsauesh.supabase.co","sb_publishable_-ee5Pt9U0ZvZuUkipLcq-Q_KBXKsEDa");
   const makeId=()=>crypto.randomUUID();
+  const visitorKey="kmt-visitor-id-v1",sessionKey="kmt-session-id-v1";
   let visitorId=localStorage.getItem(visitorKey);
   if(!visitorId){visitorId=makeId();localStorage.setItem(visitorKey,visitorId);}
   let sessionId=sessionStorage.getItem(sessionKey);
   if(!sessionId){sessionId=makeId();sessionStorage.setItem(sessionKey,sessionId);}
-  const {data:stats,error}=await db.rpc("record_article_view",{
+  const {data,error}=await db.rpc("record_article_view",{
    p_article_id:String(id),p_visitor_id:visitorId,p_session_id:sessionId
   });
-  if(!error&&stats){
-   if(el)el.textContent=Number(stats.total_views||0).toLocaleString("en-IN")+" Views";
-   const readers=document.getElementById("articleUniqueReaders");
-   if(readers)readers.textContent=Number(stats.unique_visitors||0).toLocaleString("en-IN")+" Unique Readers";
-  }else if(error)console.warn("New view tracking RPC unavailable",error);
- }catch(e){console.warn("View counter unavailable",e);}
+  if(error) throw error;
+  const stats=Array.isArray(data)?data[0]:data;
+  if(!stats) throw new Error("RPC returned no data");
+  if(el)el.textContent=Number(stats.total_views||0).toLocaleString("en-IN")+" Views";
+  if(readers)readers.textContent=Number(stats.unique_visitors||0).toLocaleString("en-IN")+" Unique Readers";
+ }catch(error){
+  console.error("K Media Telugu visitor tracking:",error);
+  if(readers)readers.textContent="Readers unavailable: "+(error.code?error.code+" — ":"")+(error.message||String(error));
+ }
 })();
 </script></body></html>
