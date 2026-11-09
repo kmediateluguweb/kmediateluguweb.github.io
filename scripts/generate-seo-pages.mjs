@@ -75,7 +75,7 @@ for (const item of articles) {
       '</ul></section>'
     : "";
   const html = `<!doctype html>
-<html lang="te"><head><script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-5378557048937438" crossorigin="anonymous"></script><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<html lang="te"><head><script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-5378557048937438" crossorigin="anonymous"></script><script>window.addEventListener("load",()=>setTimeout(()=>{const s=document.createElement("script");s.src="https://www.googletagmanager.com/gtag/js?id=G-RBRNK8Q0F1";s.async=true;document.head.appendChild(s);window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}window.gtag=gtag;gtag("js",new Date());gtag("config","G-RBRNK8Q0F1");},3500),{once:true});</script><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>${esc(pageTitle)}</title><meta name="description" content="${esc(description)}">
 <meta name="robots" content="index,follow,max-image-preview:large"><link rel="canonical" href="${url}">
 <meta property="og:site_name" content="K Media Telugu"><meta property="og:type" content="article"><meta property="og:locale" content="te_IN">
