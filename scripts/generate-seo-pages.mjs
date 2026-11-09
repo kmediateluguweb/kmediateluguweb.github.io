@@ -110,7 +110,7 @@ for (const item of articles) {
    const readers=document.getElementById("articleUniqueReaders");
    if(readers)readers.textContent=Number(stats.unique_visitors||0).toLocaleString("en-IN")+" Unique Readers";
   }else if(error)console.warn("New view tracking RPC unavailable",error);
- }catch(e){console.warn("View counter unavailable",e);} }catch(e){console.warn("View counter unavailable",e);}
+ }catch(e){console.warn("View counter unavailable",e);}
 })();
 </script></body></html>`;
   await import("node:fs/promises").then(fs => fs.mkdir(dir, { recursive: true }));
