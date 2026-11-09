@@ -19,7 +19,7 @@
  const el=document.getElementById("articleViewCount");
  try{
   if(!window.supabase?.createClient) throw new Error("Supabase JS library did not load");
-  const db=window.supabase.createClient("https://mewyojxgsuceppsauesh.supabase.co","sb_publishable_-ee5Pt9U0ZvZuUkipLcq-Q_KBXKsEDa",{auth:{persistSession:false,autoRefreshToken:false,detectSessionInUrl:false,storageKey:"kmt-public-article-tracking"}});
+  const db=window.supabase.createClient("https://mewyojxgsuceppsauesh.supabase.co","sb_publishable_-ee5Pt9U0ZvZuUkipLcq-Q_KBXKsEDa");
   const makeId=()=>crypto.randomUUID();
   const visitorKey="kmt-visitor-id-v1",sessionKey="kmt-session-id-v1";
   let visitorId=localStorage.getItem(visitorKey);
