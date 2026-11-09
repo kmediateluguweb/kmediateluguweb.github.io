@@ -29,14 +29,31 @@ main{max-width:1050px;margin:25px auto;padding:15px}
 .panel{background:white;padding:22px;border-radius:10px;margin-bottom:20px;box-shadow:0 2px 10px #0000000c}
 h3{margin-top:0}
 input,textarea,select{width:100%;padding:12px;margin:7px 0 15px;border:1px solid #ccd2dc;border-radius:6px;font-size:15px}
-textarea{min-height:130px;resize:vertical}
+textarea{min-height:100px;resize:vertical}
+#content{min-height:190px}
 label{font-weight:bold;font-size:14px}
+details.compact-options{border:1px solid #e2e8f0;border-radius:8px;padding:12px 14px;margin:12px 0 16px;background:#fafbfc}
+details.compact-options>summary{cursor:pointer;font-weight:bold;color:#334155;list-style:none;display:flex;align-items:center;justify-content:space-between;gap:10px}
+details.compact-options>summary::-webkit-details-marker{display:none}
+details.compact-options>summary:after{content:"＋";font-size:18px;color:#087c55}
+details.compact-options[open]>summary:after{content:"−"}
+.details-content{padding-top:14px}
 .row{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
 .article{border:1px solid #ddd;padding:15px;margin:12px 0;border-radius:8px}
 .article h4{margin:0 0 8px}
 .small{font-size:13px;color:#64748b}
 #dashboard,#logout{display:none}
 #message{margin:12px 0;color:#087c55;font-weight:bold}
+.analytics-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;margin:14px 0}
+.analytics-card{background:#f8fafc;border:1px solid #e2e8f0;border-radius:10px;padding:15px;min-width:0}
+.analytics-card strong{display:block;font-size:25px;color:#101827;margin-top:7px;overflow-wrap:anywhere}
+.analytics-card span{font-size:12px;color:#64748b}
+.analytics-links{display:flex;gap:9px;flex-wrap:wrap;margin-top:14px}
+.analytics-links a{display:inline-block;text-decoration:none;background:#101827;color:#fff;padding:11px 14px;border-radius:7px;font-size:13px;font-weight:bold}
+.analytics-note{background:#fff8e7;border:1px solid #f3dfaa;border-radius:8px;padding:12px;color:#765719;font-size:13px;line-height:1.6;margin-top:12px}
+.analytics-top{padding-left:20px;margin:8px 0}
+.analytics-top li{padding:5px 0}
+@media(max-width:760px){.analytics-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
 @media(max-width:600px){
 main{padding:10px;margin:12px auto}
 header{padding:12px;align-items:center}
@@ -75,56 +92,115 @@ textarea{min-height:110px}
 </section>
 
 <section id="dashboard" style="display:none">
+<div class="panel" id="analyticsPanel">
+<h3>📊 Website Analytics</h3>
+<p class="small">Admin Dashboardలో అందుబాటులో ఉన్న నిజమైన News Database గణాంకాలు. GA4, AdSense, Search Console వివరాలకు అధికారిక Reports లింకులు.</p>
+<div class="analytics-grid">
+  <div class="analytics-card"><span>Published Articles</span><strong id="anPublished">—</strong></div>
+  <div class="analytics-card"><span>Draft Articles</span><strong id="anDrafts">—</strong></div>
+  <div class="analytics-card"><span>Article Views (Database)</span><strong id="anViews">—</strong></div>
+  <div class="analytics-card"><span>Top Article Views</span><strong id="anTopViews">—</strong></div>
+</div>
+<h4>ఎక్కువగా చూసిన వార్తలు</h4>
+<ol class="analytics-top" id="anTopArticles"><li>Analytics లోడ్ అవుతోంది...</li></ol>
+<div class="analytics-links">
+  <a href="https://analytics.google.com/analytics/web/#/p" target="_blank" rel="noopener noreferrer">Google Analytics 4 ↗</a>
+  <a href="https://search.google.com/search-console" target="_blank" rel="noopener noreferrer">Search Console ↗</a>
+  <a href="https://www.google.com/adsense/" target="_blank" rel="noopener noreferrer">AdSense Earnings ↗</a>
+</div>
+<div class="analytics-note" id="anIntegrationNote">Visitors, live users, traffic sources, Google Search clicks మరియు AdSense ఆదాయాన్ని ఈ పేజీలో ఆటోమేటిక్‌గా చూపించడానికి Google API OAuth connection ఇంకా అవసరం. ఇప్పటివరకు కనెక్ట్ కాని డేటాను అంచనా వేసి చూపించము.</div>
+<div class="row" style="margin-top:12px"><button class="secondary" id="refreshAnalyticsBtn" type="button">Analytics Refresh</button></div>
+<div id="analyticsMessage" class="small" role="status" aria-live="polite"></div>
+</div>
+
 <div class="panel">
-<h3 id="formTitle">Add New News</h3>
+<h3 id="formTitle">కొత్త వార్తను పోస్ట్ చేయండి</h3>
+<p class="small">సులభమైన విధానం: శీర్షిక, కేటగిరీ, వార్త వివరాలు ఇవ్వండి. SEO వివరాలు ఆటోమేటిక్‌గా నింపుకోవచ్చు. ముందుగా Draftగా సేవ్ చేసి చూసిన తర్వాత Publish చేయండి.</p>
 <input type="hidden" id="editId">
 
-<label>News Title</label>
+<label>వార్త శీర్షిక *</label>
 <input id="title" placeholder="వార్త శీర్షిక">
 
-<label>Category</label>
+<label>వార్త కేటగిరీ *</label>
 <select id="category">
 <option value="">Select Category</option>
 </select>
 
-<label>Short Summary</label>
+<label>చిన్న వివరణ</label>
 <textarea id="summary" placeholder="వార్త సంక్షిప్త వివరణ"></textarea>
 
+<label>పూర్తి వార్త వివరాలు *</label>
+<p class="small">ప్రతి పేరాగ్రాఫ్ తర్వాత ఒకసారి Enter నొక్కండి. ఎక్కువ ఖాళీ లైన్లు అవసరం లేదు.</p>
+<textarea id="content" placeholder="పూర్తి వార్త వివరాలు"></textarea>
+
+<details class="compact-options">
+<summary>అదనపు వివరాలు — SEO, Photo, Source, Publish</summary>
+<div class="details-content">
 <label>SEO Title (Google Search)</label>
 <input id="seoTitle" maxlength="70" placeholder="Googleలో కనిపించే Title">
 
 <label>Meta Description (Google Search)</label>
 <textarea id="metaDescription" maxlength="160" placeholder="Googleలో కనిపించే చిన్న వివరణ"></textarea>
 
-<label>Full News Content</label>
-<textarea id="content" placeholder="పూర్తి వార్త వివరాలు"></textarea>
-
 <label>News Photo (Phone Gallery నుంచి ఎంచుకోండి)</label>
 <input id="imageFile" type="file" accept="image/*">
-<p class="small">JPG, PNG లేదా WebP ఫోటో. గరిష్టంగా 5 MB.</p>
+<p class="small">ఫోన్ లేదా కంప్యూటర్ నుంచి ఫోటో ఎంచుకోండి. JPG, PNG లేదా WebP — గరిష్టంగా 5 MB.</p>
 <img id="imagePreview" alt="Selected news photo preview" style="display:none;width:100%;max-width:320px;max-height:200px;object-fit:contain;border-radius:8px;margin:4px 0 14px">
 <label>లేదా Featured Image URL</label>
 <input id="image" type="url" placeholder="https://example.com/image.jpg">
 
-<label>Source URL (Optional)</label>
+<label>వార్త మూలం లింక్ (ఐచ్ఛికం)</label>
 <input id="source" type="url" placeholder="News source link">
 
-<label>Publishing Status</label>
+<label>పోస్టింగ్ విధానం</label>
 <select id="status">
-<option value="draft">Save as Draft</option>
-<option value="published">Publish Now</option>
+<option value="draft">Draftగా సేవ్ చేయండి (ముందుగా ఇదే ఎంచుకోండి)</option>
+<option value="published">వెంటనే Publish చేయండి</option>
 </select>
+<div class="row">
+<button class="secondary" id="seoBtn" type="button">SEO ఆటోమేటిక్‌గా నింపండి</button>
+</div>
+</div>
+</details>
 
 <div class="row">
-<button class="primary" id="saveBtn">Save News</button>
+<button class="primary" id="saveBtn">వార్త సేవ్ చేయండి</button>
 <button class="secondary" id="cancelBtn" style="display:none">Cancel Edit</button>
 </div>
 <div id="dashboardMessage" role="status" aria-live="polite"></div>
 </div>
 
+<div class="panel" id="topStoryPanel">
+<details class="compact-options">
+<summary>Top Story Photo మార్చండి</summary>
+<div class="details-content">
+<p class="small">హోమ్‌పేజీలో ఏది చూపించాలో ఇక్కడ ఎంచుకోండి. YouTube వీడియో లేదా మీ Top Story ఫోటో — ఎప్పుడైనా మార్చుకోవచ్చు.</p>
+<div class="row" style="margin:10px 0">
+<button class="secondary" id="showTopStoryVideoBtn" type="button">మన ఛానెల్ వీడియోలు చూపించు</button>
+<button class="secondary" id="showTopStoryPhotoBtn" type="button">Top Story Photo చూపించు</button>
+</div>
+<label>నీకు నచ్చిన YouTube Video URL</label>
+<input id="customTopStoryUrl" type="url" placeholder="https://www.youtube.com/watch?v=XXXXXXXXXXX">
+<p class="small">YouTube వీడియో లింక్ paste చేసి Save చేస్తే అదే Top Storyలో కనిపిస్తుంది.</p>
+<div class="row"><button class="primary" id="saveCustomTopStoryBtn" type="button">ఈ YouTube వీడియోను Top Storyలో పెట్టు</button></div>
+<label>Top Story Photo (Gallery నుంచి ఎంచుకోండి)</label>
+<input id="topStoryFile" type="file" accept="image/jpeg,image/png,image/webp">
+<p class="small">JPG, PNG లేదా WebP. గరిష్టంగా 5 MB. Landscape 16:9 ఫోటో ఉత్తమం.</p>
+<img id="topStoryPreview" alt="Top Story photo preview" style="display:none;width:100%;max-width:480px;aspect-ratio:16/9;object-fit:cover;border-radius:10px;margin:4px 0 14px">
+<div class="row"><button class="primary" id="saveTopStoryBtn" type="button">Top Story Photo Save చేయండి</button></div>
+<div id="topStoryMessage" role="status" aria-live="polite" class="small" style="margin-top:10px"></div>
+</div>
+</details>
+</div>
+
 <div class="panel">
-<h3>Published & Draft News</h3>
-<button class="secondary" id="refreshBtn">Refresh News</button>
+<h3>మీ వార్తలు — Draft & Published</h3>
+<div class="row" style="margin:10px 0">
+<button class="secondary" id="refreshBtn">వార్తలను Refresh చేయండి</button>
+<button class="secondary" id="newNewsBtn" type="button">+ కొత్త వార్త</button>
+
+</div>
+<p class="small">ఇక్కడ మీ వార్తలను చూడండి. Edit ద్వారా మార్చవచ్చు; Delete చేయడానికి ముందు నిర్ధారణ అడుగుతుంది.</p>
 <div id="newsList">Loading...</div>
 </div>
 </section>
@@ -180,6 +256,7 @@ async function showDashboard(user){
     $("logout").style.display="inline-block";
     await loadCategories();
     await loadNews();
+    await loadAdminAnalytics();
   }catch(error){
     message(error.message,"#dc3545","loginMessage");
     await db.auth.signOut();
@@ -206,9 +283,13 @@ async function sendAdminOtp(){
   }catch(error){
     message(error.message||"OTP పంపలేకపోయాం. కొద్దిసేపటి తర్వాత ప్రయత్నించండి.","#dc3545","loginMessage");
   }finally{
-    $("sendOtpBtn").disabled=false;
-    $("sendOtpBtn").textContent="OTP మళ్లీ పంపండి";
-    setTimeout(()=>{otpCooldown=false;},30000);
+    $("sendOtpBtn").disabled=true;
+    $("sendOtpBtn").textContent="30 సెకన్ల తర్వాత మళ్లీ ప్రయత్నించండి";
+    setTimeout(()=>{
+      otpCooldown=false;
+      $("sendOtpBtn").disabled=false;
+      $("sendOtpBtn").textContent="OTP మళ్లీ పంపండి";
+    },30000);
   }
 }
 async function verifyAdminOtp(){
@@ -236,6 +317,43 @@ $("logout").onclick=async()=>{
   await db.auth.signOut();
   location.reload();
 };
+
+async function loadAdminAnalytics(){
+  const statusEl=$("analyticsMessage");
+  if(statusEl)statusEl.textContent="Database గణాంకాలు లోడ్ అవుతున్నాయి...";
+  const {data,error}=await db.from("news_articles")
+    .select("id,title,status,view_count,created_at")
+    .order("created_at",{ascending:false})
+    .limit(1000);
+  if(error){
+    ["anPublished","anDrafts","anViews","anTopViews"].forEach(id=>$(id).textContent="—");
+    $("anTopArticles").textContent="గణాంకాలు లోడ్ కాలేదు: "+String(error.message||"Database error").replace(/[<>]/g,"");
+    if(statusEl)statusEl.textContent="Database analytics అందుబాటులో లేవు.";
+    return;
+  }
+  const articles=data||[];
+  const published=articles.filter(x=>x.status==="published");
+  const drafts=articles.filter(x=>x.status==="draft");
+  const totalViews=articles.reduce((sum,x)=>sum+Math.max(0,Number(x.view_count)||0),0);
+  const top=[...articles].sort((a,b)=>(Number(b.view_count)||0)-(Number(a.view_count)||0)).slice(0,5);
+  $("anPublished").textContent=published.length.toLocaleString("en-IN");
+  $("anDrafts").textContent=drafts.length.toLocaleString("en-IN");
+  $("anViews").textContent=totalViews.toLocaleString("en-IN");
+  $("anTopViews").textContent=Number(top[0]?.view_count||0).toLocaleString("en-IN");
+  const list=$("anTopArticles");
+  list.innerHTML="";
+  if(!top.length){
+    const li=document.createElement("li");li.textContent="ఇంకా వార్తలు లేవు.";list.appendChild(li);
+  }else{
+    top.forEach(item=>{
+      const li=document.createElement("li");
+      const title=document.createElement("strong");title.textContent=item.title||"Untitled";
+      const count=document.createElement("span");count.textContent=" — "+Number(item.view_count||0).toLocaleString("en-IN")+" views";
+      li.append(title,count);list.appendChild(li);
+    });
+  }
+  if(statusEl)statusEl.textContent="చివరిగా అప్‌డేట్: "+new Date().toLocaleString("te-IN");
+}
 
 async function loadNews(){
   $("newsList").textContent="Loading...";
@@ -308,6 +426,117 @@ $("imageFile").addEventListener("change",()=>{
   preview.style.display="block";
 });
 
+const TOP_STORY_PATH = "top-story/current";
+const TOP_STORY_PUBLIC_URL = SUPABASE_URL + "/storage/v1/object/public/news-images/" + TOP_STORY_PATH;
+
+$("topStoryFile").addEventListener("change",()=>{
+  const file=$("topStoryFile").files[0];
+  const preview=$("topStoryPreview");
+  if(!file){preview.style.display="none";preview.removeAttribute("src");return;}
+  if(!["image/jpeg","image/png","image/webp"].includes(file.type)||file.size>5*1024*1024){
+    $("topStoryMessage").textContent="JPG, PNG లేదా WebP ఫోటో మాత్రమే ఎంచుకోండి. గరిష్ట పరిమాణం 5 MB.";
+    $("topStoryMessage").style.color="#dc3545";
+    $("topStoryFile").value="";
+    preview.style.display="none";
+    return;
+  }
+  preview.src=URL.createObjectURL(file);
+  preview.style.display="block";
+  $("topStoryMessage").textContent="Preview సిద్ధంగా ఉంది. Save నొక్కండి.";
+  $("topStoryMessage").style.color="#087c55";
+});
+
+$("saveTopStoryBtn").onclick=async()=>{
+  const file=$("topStoryFile").files[0];
+  if(!file){$("topStoryMessage").textContent="ముందుగా ఫోటో ఎంచుకోండి.";$("topStoryMessage").style.color="#dc3545";return;}
+  const button=$("saveTopStoryBtn");
+  button.disabled=true;
+  button.textContent="Uploading...";
+  try{
+    const {error}=await db.storage.from("news-images").upload(TOP_STORY_PATH,file,{
+      cacheControl:"60",upsert:true,contentType:file.type
+    });
+    if(error)throw error;
+    const modeResult=await db.storage.from("news-images").upload("top-story/mode.txt",new Blob(["photo"],{type:"text/plain"}),{
+      cacheControl:"0",upsert:true,contentType:"text/plain"
+    });
+    if(modeResult.error)throw modeResult.error;
+    $("topStoryPreview").src=TOP_STORY_PUBLIC_URL+"?v="+Date.now();
+    $("topStoryMessage").textContent="Top Story ఫోటో విజయవంతంగా Save అయింది. Homepageలో కొత్త ఫోటో కనిపిస్తుంది.";
+    $("topStoryMessage").style.color="#087c55";
+    $("topStoryFile").value="";
+  }catch(error){
+    $("topStoryMessage").textContent="Upload కాలేదు: "+error.message;
+    $("topStoryMessage").style.color="#dc3545";
+  }finally{
+    button.disabled=false;
+    button.textContent="Top Story Photo Save చేయండి";
+  }
+};
+
+async function setTopStoryMode(mode){
+  const messageEl=$("topStoryMessage");
+  const buttons=[$("showTopStoryVideoBtn"),$("showTopStoryPhotoBtn")];
+  buttons.forEach(button=>button.disabled=true);
+  messageEl.textContent="Saving...";
+  messageEl.style.color="#087c55";
+  try{
+    const {error}=await db.storage.from("news-images").upload("top-story/mode.txt",new Blob([mode],{type:"text/plain"}),{
+      cacheControl:"0",upsert:true,contentType:"text/plain"
+    });
+    if(error)throw error;
+    messageEl.textContent=mode==="youtube"?"Homepageలో YouTube వీడియో చూపించేలా మార్చాం.":"Homepageలో Top Story Photo చూపించేలా మార్చాం.";
+    messageEl.style.color="#087c55";
+  }catch(error){
+    messageEl.textContent="మార్చలేకపోయాం: "+error.message;
+    messageEl.style.color="#dc3545";
+  }finally{
+    buttons.forEach(button=>button.disabled=false);
+  }
+}
+$("showTopStoryVideoBtn").onclick=()=>setTopStoryMode("youtube");
+$("showTopStoryPhotoBtn").onclick=()=>setTopStoryMode("photo");
+function extractYouTubeVideoId(value){
+  try{
+    const url=new URL(value.trim());
+    let id="";
+    if(url.hostname==="youtu.be"||url.hostname==="www.youtu.be") id=url.pathname.split("/").filter(Boolean)[0]||"";
+    else if(["youtube.com","www.youtube.com","m.youtube.com","youtube-nocookie.com","www.youtube-nocookie.com"].includes(url.hostname)){
+      if(url.pathname==="/watch") id=url.searchParams.get("v")||"";
+      else if(/^\/(embed|shorts|live)\//.test(url.pathname)) id=url.pathname.split("/")[2]||"";
+    }
+    return /^[A-Za-z0-9_-]{11}$/.test(id)?id:null;
+  }catch(error){return null;}
+}
+$("saveCustomTopStoryBtn").onclick=async()=>{
+  const button=$("saveCustomTopStoryBtn");
+  const messageEl=$("topStoryMessage");
+  const videoId=extractYouTubeVideoId($("customTopStoryUrl").value);
+  if(!videoId){
+    messageEl.textContent="సరైన YouTube వీడియో URL ఇవ్వండి (youtube.com/watch?v=... లేదా youtu.be/...).";
+    messageEl.style.color="#dc3545";
+    return;
+  }
+  button.disabled=true;
+  button.textContent="Saving...";
+  messageEl.textContent="YouTube వీడియో Save చేస్తున్నాం...";
+  messageEl.style.color="#087c55";
+  try{
+    const videoResult=await db.storage.from("news-images").upload("top-story/custom-video.txt",new Blob([videoId],{type:"text/plain"}),{cacheControl:"0",upsert:true,contentType:"text/plain"});
+    if(videoResult.error)throw videoResult.error;
+    const modeResult=await db.storage.from("news-images").upload("top-story/mode.txt",new Blob(["custom"],{type:"text/plain"}),{cacheControl:"0",upsert:true,contentType:"text/plain"});
+    if(modeResult.error)throw modeResult.error;
+    messageEl.textContent="నీ YouTube వీడియో Top Storyలో Save అయింది. Homepage Refresh చేయి.";
+    messageEl.style.color="#087c55";
+  }catch(error){
+    messageEl.textContent="Save కాలేదు: "+error.message;
+    messageEl.style.color="#dc3545";
+  }finally{
+    button.disabled=false;
+    button.textContent="ఈ YouTube వీడియోను Top Storyలో పెట్టు";
+  }
+};
+
 async function uploadNewsImage(file){
   if(!file)return $("image").value.trim()||null;
   const extension=(file.name.split(".").pop()||"jpg").toLowerCase().replace(/[^a-z0-9]/g,"")||"jpg";
@@ -358,7 +587,7 @@ $("saveBtn").onclick=async()=>{
 
     if(result.error) throw result.error;
 
-    message(id?"News Updated Successfully!":"News Saved Successfully!");
+    message(id?"వార్త విజయవంతంగా Update అయింది!":(payload.status==="published"?"వార్త Publish అయింది!":"వార్త Draftగా సేవ్ అయింది!"));
     resetForm();
     await loadNews();
   }catch(error){
@@ -389,8 +618,8 @@ async function editNews(id){
   $("source").value=data.source_url||"";
   $("status").value=data.status||"draft";
 
-  $("formTitle").textContent="Edit News";
-  $("saveBtn").textContent="Update News";
+  $("formTitle").textContent="వార్తను Edit చేయండి";
+  $("saveBtn").textContent="మార్పులు Update చేయండి";
   $("cancelBtn").style.display="inline-block";
   window.scrollTo({top:0,behavior:"smooth"});
 }
@@ -405,6 +634,7 @@ async function deleteNews(id){
   await loadNews();
 }
 
+
 function resetForm(){
   currentPublishedAt=null;
   ["editId","title","summary","seoTitle","metaDescription","content","image","source","imageFile"].forEach(id=>$(id).value="");
@@ -412,13 +642,27 @@ function resetForm(){
   $("imagePreview").removeAttribute("src");
   $("category").value="";
   $("status").value="draft";
-  $("formTitle").textContent="Add New News";
-  $("saveBtn").textContent="Save News";
+  $("formTitle").textContent="కొత్త వార్తను పోస్ట్ చేయండి";
+  $("saveBtn").textContent="వార్త సేవ్ చేయండి";
   $("cancelBtn").style.display="none";
 }
 
+
+function makeSeoText(){
+  const title=$("title").value.trim();
+  const summary=$("summary").value.trim();
+  if(!title){message("ముందుగా వార్త శీర్షిక ఇవ్వండి.","#dc3545");$("title").focus();return;}
+  $("seoTitle").value=(title+" | K Media Telugu").slice(0,70);
+  const description=summary||title;
+  $("metaDescription").value=(description.length>145?description.slice(0,142).trim()+"...":description).slice(0,160);
+  message("SEO Title, Meta Description ఆటోమేటిక్‌గా నింపబడ్డాయి.");
+}
+$("seoBtn").onclick=makeSeoText;
+$("newNewsBtn").onclick=()=>{resetForm();window.scrollTo({top:0,behavior:"smooth"});$("title").focus();};
+
 $("cancelBtn").onclick=resetForm;
 $("refreshBtn").onclick=loadNews;
+$("refreshAnalyticsBtn").onclick=loadAdminAnalytics;
 
 (async()=>{
   const {data}=await db.auth.getSession();
