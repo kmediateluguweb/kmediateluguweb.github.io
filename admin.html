@@ -44,6 +44,16 @@ details.compact-options[open]>summary:after{content:"−"}
 .small{font-size:13px;color:#64748b}
 #dashboard,#logout{display:none}
 #message{margin:12px 0;color:#087c55;font-weight:bold}
+.analytics-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;margin:14px 0}
+.analytics-card{background:#f8fafc;border:1px solid #e2e8f0;border-radius:10px;padding:15px;min-width:0}
+.analytics-card strong{display:block;font-size:25px;color:#101827;margin-top:7px;overflow-wrap:anywhere}
+.analytics-card span{font-size:12px;color:#64748b}
+.analytics-links{display:flex;gap:9px;flex-wrap:wrap;margin-top:14px}
+.analytics-links a{display:inline-block;text-decoration:none;background:#101827;color:#fff;padding:11px 14px;border-radius:7px;font-size:13px;font-weight:bold}
+.analytics-note{background:#fff8e7;border:1px solid #f3dfaa;border-radius:8px;padding:12px;color:#765719;font-size:13px;line-height:1.6;margin-top:12px}
+.analytics-top{padding-left:20px;margin:8px 0}
+.analytics-top li{padding:5px 0}
+@media(max-width:760px){.analytics-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
 @media(max-width:600px){
 main{padding:10px;margin:12px auto}
 header{padding:12px;align-items:center}
@@ -82,6 +92,27 @@ textarea{min-height:110px}
 </section>
 
 <section id="dashboard" style="display:none">
+<div class="panel" id="analyticsPanel">
+<h3>📊 Website Analytics</h3>
+<p class="small">Admin Dashboardలో అందుబాటులో ఉన్న నిజమైన News Database గణాంకాలు. GA4, AdSense, Search Console వివరాలకు అధికారిక Reports లింకులు.</p>
+<div class="analytics-grid">
+  <div class="analytics-card"><span>Published Articles</span><strong id="anPublished">—</strong></div>
+  <div class="analytics-card"><span>Draft Articles</span><strong id="anDrafts">—</strong></div>
+  <div class="analytics-card"><span>Article Views (Database)</span><strong id="anViews">—</strong></div>
+  <div class="analytics-card"><span>Top Article Views</span><strong id="anTopViews">—</strong></div>
+</div>
+<h4>ఎక్కువగా చూసిన వార్తలు</h4>
+<ol class="analytics-top" id="anTopArticles"><li>Analytics లోడ్ అవుతోంది...</li></ol>
+<div class="analytics-links">
+  <a href="https://analytics.google.com/analytics/web/#/p" target="_blank" rel="noopener noreferrer">Google Analytics 4 ↗</a>
+  <a href="https://search.google.com/search-console" target="_blank" rel="noopener noreferrer">Search Console ↗</a>
+  <a href="https://www.google.com/adsense/" target="_blank" rel="noopener noreferrer">AdSense Earnings ↗</a>
+</div>
+<div class="analytics-note" id="anIntegrationNote">Visitors, live users, traffic sources, Google Search clicks మరియు AdSense ఆదాయాన్ని ఈ పేజీలో ఆటోమేటిక్‌గా చూపించడానికి Google API OAuth connection ఇంకా అవసరం. ఇప్పటివరకు కనెక్ట్ కాని డేటాను అంచనా వేసి చూపించము.</div>
+<div class="row" style="margin-top:12px"><button class="secondary" id="refreshAnalyticsBtn" type="button">Analytics Refresh</button></div>
+<div id="analyticsMessage" class="small" role="status" aria-live="polite"></div>
+</div>
+
 <div class="panel">
 <h3 id="formTitle">కొత్త వార్తను పోస్ట్ చేయండి</h3>
 <p class="small">సులభమైన విధానం: శీర్షిక, కేటగిరీ, వార్త వివరాలు ఇవ్వండి. SEO వివరాలు ఆటోమేటిక్‌గా నింపుకోవచ్చు. ముందుగా Draftగా సేవ్ చేసి చూసిన తర్వాత Publish చేయండి.</p>
@@ -225,6 +256,7 @@ async function showDashboard(user){
     $("logout").style.display="inline-block";
     await loadCategories();
     await loadNews();
+    await loadAdminAnalytics();
   }catch(error){
     message(error.message,"#dc3545","loginMessage");
     await db.auth.signOut();
@@ -285,6 +317,43 @@ $("logout").onclick=async()=>{
   await db.auth.signOut();
   location.reload();
 };
+
+async function loadAdminAnalytics(){
+  const statusEl=$("analyticsMessage");
+  if(statusEl)statusEl.textContent="Database గణాంకాలు లోడ్ అవుతున్నాయి...";
+  const {data,error}=await db.from("news_articles")
+    .select("id,title,status,view_count,created_at")
+    .order("created_at",{ascending:false})
+    .limit(1000);
+  if(error){
+    ["anPublished","anDrafts","anViews","anTopViews"].forEach(id=>$(id).textContent="—");
+    $("anTopArticles").textContent="గణాంకాలు లోడ్ కాలేదు: "+String(error.message||"Database error").replace(/[<>]/g,"");
+    if(statusEl)statusEl.textContent="Database analytics అందుబాటులో లేవు.";
+    return;
+  }
+  const articles=data||[];
+  const published=articles.filter(x=>x.status==="published");
+  const drafts=articles.filter(x=>x.status==="draft");
+  const totalViews=articles.reduce((sum,x)=>sum+Math.max(0,Number(x.view_count)||0),0);
+  const top=[...articles].sort((a,b)=>(Number(b.view_count)||0)-(Number(a.view_count)||0)).slice(0,5);
+  $("anPublished").textContent=published.length.toLocaleString("en-IN");
+  $("anDrafts").textContent=drafts.length.toLocaleString("en-IN");
+  $("anViews").textContent=totalViews.toLocaleString("en-IN");
+  $("anTopViews").textContent=Number(top[0]?.view_count||0).toLocaleString("en-IN");
+  const list=$("anTopArticles");
+  list.innerHTML="";
+  if(!top.length){
+    const li=document.createElement("li");li.textContent="ఇంకా వార్తలు లేవు.";list.appendChild(li);
+  }else{
+    top.forEach(item=>{
+      const li=document.createElement("li");
+      const title=document.createElement("strong");title.textContent=item.title||"Untitled";
+      const count=document.createElement("span");count.textContent=" — "+Number(item.view_count||0).toLocaleString("en-IN")+" views";
+      li.append(title,count);list.appendChild(li);
+    });
+  }
+  if(statusEl)statusEl.textContent="చివరిగా అప్‌డేట్: "+new Date().toLocaleString("te-IN");
+}
 
 async function loadNews(){
   $("newsList").textContent="Loading...";
@@ -593,6 +662,7 @@ $("newNewsBtn").onclick=()=>{resetForm();window.scrollTo({top:0,behavior:"smooth
 
 $("cancelBtn").onclick=resetForm;
 $("refreshBtn").onclick=loadNews;
+$("refreshAnalyticsBtn").onclick=loadAdminAnalytics;
 
 (async()=>{
   const {data}=await db.auth.getSession();
