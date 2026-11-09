@@ -20,21 +20,12 @@
  const copyButton=document.getElementById("copyArticleLink");
  if(copyButton)copyButton.addEventListener("click",async()=>{try{await navigator.clipboard.writeText(location.href);copyButton.textContent="Copied ✓";}catch(e){const field=document.createElement("textarea");field.value=location.href;document.body.appendChild(field);field.select();document.execCommand("copy");field.remove();copyButton.textContent="Copied ✓";}setTimeout(()=>copyButton.textContent="లింక్ Copy చేయండి",2000);});
  try{
-  const visitorKey="kmt-visitor-id-v1";
-  const sessionKey="kmt-session-id-v1";
-  const makeId=()=>crypto.randomUUID();
-  let visitorId=localStorage.getItem(visitorKey);
-  if(!visitorId){visitorId=makeId();localStorage.setItem(visitorKey,visitorId);}
-  let sessionId=sessionStorage.getItem(sessionKey);
-  if(!sessionId){sessionId=makeId();sessionStorage.setItem(sessionKey,sessionId);}
-  const {data:stats,error}=await db.rpc("record_article_view",{
-   p_article_id:id,p_visitor_id:visitorId,p_session_id:sessionId
-  });
-  if(!error&&stats){
-   if(el)el.textContent=Number(stats.total_views||0).toLocaleString("en-IN")+" Views";
-   const uniqueEl=document.getElementById("articleUniqueVisitors");
-   if(uniqueEl)uniqueEl.textContent=Number(stats.unique_visitors||0).toLocaleString("en-IN")+" Readers";
-  }else if(error){console.warn("View tracking migration may not be applied yet",error);}
- }}catch(e){console.warn("View counter unavailable",e);}
+  const key="kmt-viewed-"+id;
+  if(!sessionStorage.getItem(key)){
+   const {data:count,error}=await db.rpc("increment_article_view",{p_article_id:String(id)});
+   if(!error && count!==null && el)el.textContent=Number(count).toLocaleString("en-IN")+" Views";
+   if(!error)sessionStorage.setItem(key,"1");
+  }
+ }catch(e){console.warn("View counter unavailable",e);}
 })();
 </script></body></html>
