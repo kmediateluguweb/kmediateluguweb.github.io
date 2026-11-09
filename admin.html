@@ -251,9 +251,13 @@ async function sendAdminOtp(){
   }catch(error){
     message(error.message||"OTP పంపలేకపోయాం. కొద్దిసేపటి తర్వాత ప్రయత్నించండి.","#dc3545","loginMessage");
   }finally{
-    $("sendOtpBtn").disabled=false;
-    $("sendOtpBtn").textContent="OTP మళ్లీ పంపండి";
-    setTimeout(()=>{otpCooldown=false;},30000);
+    $("sendOtpBtn").disabled=true;
+    $("sendOtpBtn").textContent="30 సెకన్ల తర్వాత మళ్లీ ప్రయత్నించండి";
+    setTimeout(()=>{
+      otpCooldown=false;
+      $("sendOtpBtn").disabled=false;
+      $("sendOtpBtn").textContent="OTP మళ్లీ పంపండి";
+    },30000);
   }
 }
 async function verifyAdminOtp(){
