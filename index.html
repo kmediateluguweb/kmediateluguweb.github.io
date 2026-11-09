@@ -144,7 +144,7 @@ async function loadNews(){
     renderLoadedNews();
   }catch(fallbackError){
     console.warn("Static news feed unavailable:",fallbackError);
-    document.getElementById("latestNews").innerHTML='<div class="empty-state">వార్తలు లోడ్ అవుతున్నాయి...</div>';
+    document.getElementById("latestNews").innerHTML='<div class="empty-state">ప్రస్తుతం వార్తలు అందుబాటులో లేవు. కొద్దిసేపటి తర్వాత మళ్లీ ప్రయత్నించండి.</div>';
   }
   // Refresh from Supabase in the background; keep the static feed if live data is empty or unavailable.
   try{
