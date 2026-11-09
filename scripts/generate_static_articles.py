@@ -140,6 +140,7 @@ body{{background:#f5f6f8!important;color:#242833;font-family:"Noto Sans Telugu",
 <p class="eyebrow">K MEDIA TELUGU</p>
 <h1>{esc(article.get('title'))}</h1>
 <p class="article-meta">{esc(published)}</p>
+{("<p class=\"article-meta\" id=\"articleViews\">👁 Views లెక్కిస్తోంది… · <span id=\"articleUniqueReaders\">Readers లెక్కిస్తోంది…</span></p>")}
 {('<img src="' + esc(image) + '" alt="' + esc(article.get('title')) + '" fetchpriority="high">') if article.get('featured_image') else ''}
 {('<p><strong>' + esc(article.get('summary')) + '</strong></p>') if article.get('summary') else ''}
 <div class="article-content">{body}</div>
@@ -150,6 +151,21 @@ body{{background:#f5f6f8!important;color:#242833;font-family:"Noto Sans Telugu",
 function setupArticleShare(container,title,url){const q=encodeURIComponent(title);const u=encodeURIComponent(url);const targets={whatsapp:'https://wa.me/?text='+q+'%20'+u,facebook:'https://www.facebook.com/sharer/sharer.php?u='+u,telegram:'https://t.me/share/url?url='+u+'&text='+q,x:'https://twitter.com/intent/tweet?url='+u+'&text='+q};container.querySelectorAll('a[data-share]').forEach(link=>{link.href=targets[link.dataset.share]||'#';});const copy=container.querySelector('[data-share="copy"]');copy.addEventListener('click',async()=>{try{await navigator.clipboard.writeText(url);copy.textContent='Copied ✓';}catch(e){const field=document.createElement('textarea');field.value=url;document.body.appendChild(field);field.select();document.execCommand('copy');field.remove();copy.textContent='Copied ✓';}setTimeout(()=>copy.textContent='లింక్ Copy చేయండి',2000);});}
 const shareArticle=document.querySelector('[data-share-bar]');
 setupArticleShare(shareArticle, {json.dumps(title, ensure_ascii=False)}, {json.dumps(article["public_url"])});
+(async()=>{{
+ try{{
+  const db=window.supabase.createClient("https://mewyojxgsuceppsauesh.supabase.co","sb_publishable_-ee5Pt9U0ZvZuUkipLcq-Q_KBXKsEDa");
+  const visitorKey="kmt-visitor-id-v1",sessionKey="kmt-session-id-v1";
+  const makeId=()=>crypto.randomUUID();
+  let visitorId=localStorage.getItem(visitorKey);if(!visitorId){{visitorId=makeId();localStorage.setItem(visitorKey,visitorId);}}
+  let sessionId=sessionStorage.getItem(sessionKey);if(!sessionId){{sessionId=makeId();sessionStorage.setItem(sessionKey,sessionId);}}
+  const result=await db.rpc("record_article_view",{{p_article_id:{json.dumps(article_id)},p_visitor_id:visitorId,p_session_id:sessionId}});
+  if(!result.error&&result.data){{
+   const views=document.getElementById("articleViews"),readers=document.getElementById("articleUniqueReaders");
+   if(views)views.firstChild.textContent="👁 "+Number(result.data.total_views||0).toLocaleString("en-IN")+" Views · ";
+   if(readers)readers.textContent=Number(result.data.unique_visitors||0).toLocaleString("en-IN")+" Unique Readers";
+  }}else if(result.error)console.warn("Article view tracking setup required",result.error);
+ }}catch(error){{console.warn("Article view tracking unavailable",error);}}
+}})();
 </script>
 <footer><div class="copyright">© 2026 K Media Telugu. All rights reserved. | <a style="color:#fff" href="../../privacy-policy.html">Privacy Policy</a></div></footer>
 </body></html>
