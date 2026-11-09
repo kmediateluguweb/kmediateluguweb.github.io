@@ -99,6 +99,7 @@ textarea{min-height:110px}
   <div class="analytics-card"><span>Published Articles</span><strong id="anPublished">—</strong></div>
   <div class="analytics-card"><span>Draft Articles</span><strong id="anDrafts">—</strong></div>
   <div class="analytics-card"><span>Article Views (Database)</span><strong id="anViews">—</strong></div>
+  <div class="analytics-card"><span>Unique Readers (Database)</span><strong id="anUniqueVisitors">—</strong></div>
   <div class="analytics-card"><span>Top Article Views</span><strong id="anTopViews">—</strong></div>
 </div>
 <h4>ఎక్కువగా చూసిన వార్తలు</h4>
@@ -332,6 +333,14 @@ async function loadAdminAnalytics(){
     return;
   }
   const articles=data||[];
+  let uniqueCounts={};
+  const {data:uniqueRows,error:uniqueError}=await db.rpc("get_article_unique_counts");
+  if(!uniqueError&&Array.isArray(uniqueRows)){
+    uniqueRows.forEach(row=>{uniqueCounts[row.article_id]=Number(row.unique_visitors)||0;});
+    $("anUniqueVisitors").textContent=uniqueRows.reduce((sum,row)=>sum+(Number(row.unique_visitors)||0),0).toLocaleString("en-IN");
+  }else{
+    $("anUniqueVisitors").textContent="SQL Setup అవసరం";
+  }
   const published=articles.filter(x=>x.status==="published");
   const drafts=articles.filter(x=>x.status==="draft");
   const totalViews=articles.reduce((sum,x)=>sum+Math.max(0,Number(x.view_count)||0),0);
@@ -348,7 +357,7 @@ async function loadAdminAnalytics(){
     top.forEach(item=>{
       const li=document.createElement("li");
       const title=document.createElement("strong");title.textContent=item.title||"Untitled";
-      const count=document.createElement("span");count.textContent=" — "+Number(item.view_count||0).toLocaleString("en-IN")+" views";
+      const count=document.createElement("span");count.textContent=" — "+Number(item.view_count||0).toLocaleString("en-IN")+" views · "+Number(uniqueCounts[item.id]||0).toLocaleString("en-IN")+" unique readers";
       li.append(title,count);list.appendChild(li);
     });
   }
