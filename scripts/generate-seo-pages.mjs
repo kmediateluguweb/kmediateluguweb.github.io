@@ -121,7 +121,7 @@ for (const item of articles) {
   urls.push({ url, published, modified, title: item.title });
 }
 
-const fixed = ["", "about.html", "contact.html", "privacy-policy.html", "editorial-policy.html", "terms-and-conditions.html", "disclaimer.html"];
+const fixed = ["", "about.html", "contact.html", "advertise.html", "privacy-policy.html", "editorial-policy.html", "terms-and-conditions.html", "disclaimer.html"];
 const sitemapEntries = [
   ...fixed.map(path => `<url><loc>${SITE}/${path}</loc></url>`),
   ...urls.map(x => `<url><loc>${x.url}</loc><lastmod>${x.modified}</lastmod></url>`)
