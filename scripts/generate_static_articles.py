@@ -141,7 +141,7 @@ body{{background:#f5f6f8!important;color:#242833;font-family:"Noto Sans Telugu",
 <h1>{esc(article.get('title'))}</h1>
 <p class="article-meta">{esc(published)}</p>
 {("<p class=\"article-meta\" id=\"articleViews\">👁 Views లెక్కిస్తోంది… · <span id=\"articleUniqueReaders\">Readers లెక్కిస్తోంది…</span></p>")}
-{('<img src="' + esc(image) + '" alt="' + esc(article.get('title')) + '" fetchpriority="high">') if article.get('featured_image') else ''}
+{('<img src="' + esc(image) + '" alt="' + esc(article.get('title')) + '" fetchpriority="high" decoding="async" width="1200" height="675">') if article.get('featured_image') else ''}
 {('<p><strong>' + esc(article.get('summary')) + '</strong></p>') if article.get('summary') else ''}
 <div class="article-content">{body}</div>
 <div class="share-bar" data-share-bar><span class="share-label">ఈ వార్తను Share చేయండి</span><a class="share-btn" data-share="whatsapp" target="_blank" rel="noopener">WhatsApp</a><a class="share-btn" data-share="facebook" target="_blank" rel="noopener">Facebook</a><a class="share-btn" data-share="telegram" target="_blank" rel="noopener">Telegram</a><a class="share-btn" data-share="x" target="_blank" rel="noopener">X</a><button class="share-btn share-copy" type="button" data-share="copy">లింక్ Copy చేయండి</button></div>
