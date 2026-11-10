@@ -88,8 +88,24 @@ function renderLoadedNews(){
   if(h){
     const topStoryImage = "https://mewyojxgsuceppsauesh.supabase.co/storage/v1/object/public/news-images/top-story/current?v=" + Date.now();
     const topStoryModeUrl = "https://mewyojxgsuceppsauesh.supabase.co/storage/v1/object/public/news-images/top-story/mode.txt?v=" + Date.now();
+    const showVideoLauncher = (videoUrl, title) => {
+      h.innerHTML = '<button type="button" class="top-story-video-launch" aria-label="వీడియో చూడటానికి క్లిక్ చేయండి" style="position:absolute;inset:0;width:100%;height:100%;border:0;cursor:pointer;background:linear-gradient(135deg,#17121b,#3b1724);color:#fff;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;font:700 16px Arial,sans-serif"><span aria-hidden="true" style="display:grid;place-items:center;width:66px;height:66px;border-radius:50%;background:#e11d2e;font-size:28px">▶</span><span>' + title + '</span><small style="font-weight:400;color:#ddd">వీడియో చూడటానికి క్లిక్ చేయండి</small></button>';
+      h.querySelector("button").addEventListener("click", () => {
+        const frame = document.createElement("iframe");
+        frame.src = videoUrl;
+        frame.title = title;
+        frame.loading = "lazy";
+        frame.referrerPolicy = "strict-origin-when-cross-origin";
+        frame.allow = "accelerometer; autoplay; encrypted-media; picture-in-picture; web-share";
+        frame.allowFullscreen = true;
+        const wrap = document.createElement("div");
+        wrap.className = "top-story-video-frame";
+        wrap.appendChild(frame);
+        h.replaceChildren(wrap);
+      }, {once:true});
+    };
     const showChannelVideos = () => {
-      h.innerHTML = '<div class="top-story-video-frame"><iframe src="https://www.youtube-nocookie.com/embed/videoseries?list=UU0dM3uiSoM9Vhb2ENeUFW2g&autoplay=1&mute=1&playsinline=1&controls=1&rel=0" title="K Media Telugu Top Story videos" loading="eager" referrerpolicy="strict-origin-when-cross-origin" allow="autoplay; encrypted-media; picture-in-picture; web-share" allowfullscreen></iframe></div>';
+      showVideoLauncher("https://www.youtube-nocookie.com/embed/videoseries?list=UU0dM3uiSoM9Vhb2ENeUFW2g&autoplay=1&mute=1&playsinline=1&controls=1&rel=0", "K Media Telugu తాజా వీడియోలు");
     };
     const showTopStoryPhoto = () => {
       const photo = new Image();
@@ -105,7 +121,7 @@ function renderLoadedNews(){
         if(!response.ok) return showChannelVideos();
         const videoId = (await response.text()).trim();
         if(!/^[A-Za-z0-9_-]{11}$/.test(videoId)) return showChannelVideos();
-        h.innerHTML = '<div class="top-story-video-frame"><iframe src="https://www.youtube-nocookie.com/embed/' + videoId + '?autoplay=1&mute=1&playsinline=1&controls=1&rel=0" title="K Media Telugu Top Story video" loading="eager" referrerpolicy="strict-origin-when-cross-origin" allow="autoplay; encrypted-media; picture-in-picture; web-share" allowfullscreen></iframe></div>';
+        showVideoLauncher("https://www.youtube-nocookie.com/embed/" + videoId + "?autoplay=1&mute=1&playsinline=1&controls=1&rel=0", "K Media Telugu Top Story video");
       } catch(error) { showChannelVideos(); }
     };
     fetch(topStoryModeUrl,{cache:"no-store"})
