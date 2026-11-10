@@ -7,35 +7,60 @@
 <meta name="theme-color" content="#21172b">
 <title>వార్త లోడ్ అవుతోంది | K Media Telugu</title>
 <style>
-*{box-sizing:border-box}body{margin:0;min-height:100vh;display:grid;place-items:center;background:#fff8fc;color:#292333;font-family:Arial,"Noto Sans Telugu",sans-serif;padding:20px}.card{width:min(560px,100%);background:#fff;border:1px solid #f0e1eb;border-radius:14px;padding:28px;text-align:center;box-shadow:0 5px 22px #4b23410a}.logo{font-weight:900;color:#21172b;font-size:20px}.logo span{color:#ed174c}h1{font-size:21px;margin:22px 0 8px}p{line-height:1.7;color:#655c6b}.spin{width:30px;height:30px;border:3px solid #f4c8d7;border-top-color:#ed174c;border-radius:50%;margin:18px auto;animation:turn .8s linear infinite}@keyframes turn{to{transform:rotate(360deg)}}a{color:#ed174c;font-weight:700}
+*{box-sizing:border-box}body{margin:0;min-height:100vh;display:grid;place-items:center;background:#fff8fc;color:#292333;font-family:Arial,"Noto Sans Telugu",sans-serif;padding:20px}.card{width:min(560px,100%);background:#fff;border:1px solid #f0e1eb;border-radius:14px;padding:28px;text-align:center;box-shadow:0 5px 22px #4b23410a}.logo{font-weight:900;color:#21172b;font-size:20px}.logo span{color:#ed174c}h1{font-size:21px;margin:22px 0 8px}p{line-height:1.7;color:#655c6b}.spin{width:30px;height:30px;border:3px solid #f4c8d7;border-top-color:#ed174c;border-radius:50%;margin:18px auto;animation:turn .8s linear infinite}@keyframes turn{to{transform:rotate(360deg)}}a{color:#ed174c;font-weight:700}.hidden{display:none}
 </style>
 </head>
 <body>
-<main class="card">
+<main class="card" id="kmt-article-fallback" data-kmt-article-fallback>
 <div class="logo">K MEDIA <span>TELUGU</span></div>
-<div class="spin" aria-hidden="true"></div>
-<h1>మీ వార్తను తెరుస్తున్నాం...</h1>
-<p id="status">కొత్తగా ప్రచురించిన వార్త సిద్ధమవుతోంది. దయచేసి కొద్దిసేపు వేచి ఉండండి.</p>
+<div class="spin" id="spinner" aria-hidden="true"></div>
+<h1 id="heading">మీ వార్తను తెరుస్తున్నాం...</h1>
+<p id="status" role="status" aria-live="polite">కొత్తగా ప్రచురించిన వార్త సిద్ధమవుతోంది. దయచేసి కొద్దిసేపు వేచి ఉండండి.</p>
 <p><a href="/">హోమ్ పేజీకి వెళ్లండి</a></p>
 </main>
 <script>
 (async()=>{
  const match=location.pathname.match(/^\/articles\/news-([a-z0-9]{8})\/?$/i);
  const status=document.getElementById("status");
- if(!match){status.textContent="ఈ పేజీ అందుబాటులో లేదు. హోమ్ పేజీ నుంచి వార్తను ఎంచుకోండి.";return;}
+ const heading=document.getElementById("heading");
+ const spinner=document.getElementById("spinner");
+ const showError=message=>{
+  heading.textContent="వార్త అందుబాటులో లేదు";
+  status.textContent=message;
+  spinner.classList.add("hidden");
+ };
+ if(!match){showError("ఈ పేజీ అందుబాటులో లేదు. హోమ్ పేజీ నుంచి వార్తను ఎంచుకోండి.");return;}
  const shortId=match[1].toLowerCase();
  const API="https://mewyojxgsuceppsauesh.supabase.co";
  const KEY="sb_publishable_-ee5Pt9U0ZvZuUkipLcq-Q_KBXKsEDa";
+ const pageSize=1000;
+ const sleep=ms=>new Promise(resolve=>setTimeout(resolve,ms));
  try{
-  const response=await fetch(API+"/rest/v1/news_articles?select=id&status=eq.published&limit=1000",{headers:{apikey:KEY}});
-  if(!response.ok)throw new Error("వార్తల జాబితా అందుబాటులో లేదు");
-  const rows=await response.json();
-  const article=rows.find(row=>String(row.id).replace(/[^a-z0-9]/gi,"").slice(0,8).toLowerCase()===shortId);
-  if(!article)throw new Error("ఈ వార్త ఇంకా Publish కాలేదు లేదా సిద్ధమవుతోంది");
+  let article=null;
+  // Supabase/PostgREST may cap a response at 1,000 rows. Page through all
+  // published IDs so older articles are not silently missed.
+  for(let start=0;start<50000;start+=pageSize){
+   let response;
+   for(let attempt=0;attempt<3;attempt++){
+    try{
+     response=await fetch(API+"/rest/v1/news_articles?select=id&status=eq.published&order=published_at.desc",{cache:"no-store",headers:{apikey:KEY,"Range-Unit":"items","Range":start+"-"+(start+pageSize-1)}});
+     if(response.ok)break;
+     throw new Error("Database returned HTTP "+response.status);
+    }catch(error){
+     if(attempt===2)throw error;
+     await sleep(500*(attempt+1));
+    }
+   }
+   const rows=await response.json();
+   article=rows.find(row=>String(row.id).replace(/[^a-z0-9]/gi,"").slice(0,8).toLowerCase()===shortId)||null;
+   if(article)break;
+   if(rows.length<pageSize)break;
+  }
+  if(!article)throw new Error("ఈ వార్త Published Articlesలో కనిపించలేదు. Admin Panelలో Publish అయిందో చెక్ చేయండి.");
   location.replace("/article.html?id="+encodeURIComponent(article.id));
  }catch(error){
-  console.error("Article fallback:",error);
-  status.textContent="వార్తను లోడ్ చేయలేకపోయాం. కొద్దిసేపటి తర్వాత Refresh చేయండి లేదా హోమ్ పేజీ నుంచి తెరవండి.";
+  console.error("K Media Telugu article fallback:",error);
+  showError((error&&error.message?error.message:"వార్తను లోడ్ చేయలేకపోయాం.")+" కొద్దిసేపటి తర్వాత Refresh చేయండి.");
  }
 })();
 </script>
