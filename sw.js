@@ -11,29 +11,26 @@ self.addEventListener("fetch", event => {
   const url = new URL(request.url);
   if (request.method !== "GET") return;
 
-  // Public Supabase news images: cache-first for repeat visits, refresh quietly.
-  // These are public editorial images only; never cache authenticated API data.
+  // Public, filename-versioned Supabase news images: cache-first on repeat visits.
+  // Keep the mutable Top Story pointer uncached so editorial changes appear immediately.
+  // Never cache authenticated API data.
   if (url.hostname === "mewyojxgsuceppsauesh.supabase.co" &&
       url.pathname.startsWith("/storage/v1/object/public/news-images/") &&
+      !url.pathname.endsWith("/top-story/current") &&
       request.destination === "image") {
     event.respondWith((async () => {
       const cache = await caches.open("kmt-public-images-v1");
       const cached = await cache.match(request);
-      const refresh = fetch(request).then(async response => {
-        if (response && (response.ok || response.type === "opaque")) {
-          await cache.put(request, response.clone());
-          const keys = await cache.keys();
-          if (keys.length > 160) {
-            for (const key of keys.slice(0, keys.length - 160)) await cache.delete(key);
-          }
+      if (cached) return cached;
+      const response = await fetch(request);
+      if (response && response.ok) {
+        await cache.put(request, response.clone());
+        const keys = await cache.keys();
+        if (keys.length > 160) {
+          for (const key of keys.slice(0, keys.length - 160)) await cache.delete(key);
         }
-        return response;
-      });
-      if (cached) {
-        event.waitUntil(refresh.catch(() => {}));
-        return cached;
       }
-      return (await refresh).catch(() => caches.match(request));
+      return response;
     })());
     return;
   }
