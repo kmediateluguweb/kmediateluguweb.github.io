@@ -65,7 +65,7 @@ function renderLoadedNews(){
   const usedTitles = [];
   const isFutureYear = a => /2027/.test(String(a.title||""));
   const isDuplicate = a => usedTitles.some(t => {
-    const words = x => new Set(String(x||"").toLowerCase().replace(/[^\\p{L}\\p{N}]+/gu," ").split(/\\s+/).filter(w=>w.length>2));
+    const words = x => new Set(String(x||"").toLowerCase().replace(/[^\p{L}\p{N}]+/gu," ").split(/\s+/).filter(w=>w.length>2));
     const A=words(a.title), B=words(t); let common=0; for(const w of A) if(B.has(w)) common++;
     return common/Math.max(1,Math.min(A.size,B.size))>=0.55;
   });
