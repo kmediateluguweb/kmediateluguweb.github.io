@@ -1,4 +1,4 @@
-const CACHE_NAME = "k-media-telugu-v28";
+const CACHE_NAME = "k-media-telugu-v29";
 const APP_SHELL = ["/", "/index.html", "/home.css?v=20261109-1", "/manifest.webmanifest", "/home-feed.json?v=20261110-1", "/logo-mark.svg"];
 self.addEventListener("install", event => {
   event.waitUntil(caches.open(CACHE_NAME).then(cache => cache.addAll(APP_SHELL)).then(() => self.skipWaiting()));
@@ -9,7 +9,36 @@ self.addEventListener("activate", event => {
 self.addEventListener("fetch", event => {
   const request = event.request;
   const url = new URL(request.url);
-  if (request.method !== "GET" || url.origin !== self.location.origin) return;
+  if (request.method !== "GET") return;
+
+  // Public Supabase news images: cache-first for repeat visits, refresh quietly.
+  // These are public editorial images only; never cache authenticated API data.
+  if (url.hostname === "mewyojxgsuceppsauesh.supabase.co" &&
+      url.pathname.startsWith("/storage/v1/object/public/news-images/") &&
+      request.destination === "image") {
+    event.respondWith((async () => {
+      const cache = await caches.open("kmt-public-images-v1");
+      const cached = await cache.match(request);
+      const refresh = fetch(request).then(async response => {
+        if (response && (response.ok || response.type === "opaque")) {
+          await cache.put(request, response.clone());
+          const keys = await cache.keys();
+          if (keys.length > 160) {
+            for (const key of keys.slice(0, keys.length - 160)) await cache.delete(key);
+          }
+        }
+        return response;
+      });
+      if (cached) {
+        event.waitUntil(refresh.catch(() => {}));
+        return cached;
+      }
+      return (await refresh).catch(() => caches.match(request));
+    })());
+    return;
+  }
+
+  if (url.origin !== self.location.origin) return;
 
   // Navigation must be network-first. A missing static article is intentionally
   // handled by 404.html, which resolves its short ID through Supabase.
