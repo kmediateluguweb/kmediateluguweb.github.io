@@ -1,11 +1,11 @@
 # K Media Telugu Worker API — implementation contract
 
-This is a design contract, not an enabled production API. The current Worker intentionally exposes only `GET /api/health`.
+This is an implementation contract for the staging-only Worker source. The current source implements health plus three public read routes, but is not deployed or connected to a D1 database.
 
 ## Public routes (after D1 parity is verified)
 
 - `GET /api/categories` — list categories.
-- `GET /api/articles?limit=&cursor=` — published articles only; bounded pagination.
+- `GET /api/articles?limit=&before=` — published articles only; bounded pagination using `published_at` as the cursor.
 - `GET /api/articles/:slug` — one published article by slug.
 - `POST /api/articles/:id/view` — privacy-conscious, rate-limited view/session accounting.
 
