@@ -1,0 +1,29 @@
+name: Cloudflare Worker tests
+
+on:
+  pull_request:
+    paths:
+      - "cloudflare/worker/**"
+      - ".github/workflows/cloudflare-worker-tests.yml"
+  push:
+    branches:
+      - "cloudflare-migration/phase-1-blueprint"
+    paths:
+      - "cloudflare/worker/**"
+      - ".github/workflows/cloudflare-worker-tests.yml"
+
+permissions:
+  contents: read
+
+jobs:
+  worker-unit-tests:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - name: Run Worker unit tests
+        run: node --experimental-default-type=module --test cloudflare/worker/test/index.test.mjs
