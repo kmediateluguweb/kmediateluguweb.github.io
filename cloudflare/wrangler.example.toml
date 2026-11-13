@@ -1,0 +1,14 @@
+# Copy to wrangler.toml locally; do not commit credentials.
+name = "k-media-telugu-api"
+main = "worker/src/index.js"
+compatibility_date = "2026-11-13"
+
+# Add D1 and R2 bindings only after creating the resources in Cloudflare.
+# [[d1_databases]]
+# binding = "DB"
+# database_name = "kmt-news"
+# database_id = "SET_IN_CLOUDFLARE_DASHBOARD"
+
+# [[r2_buckets]]
+# binding = "NEWS_IMAGES"
+# bucket_name = "kmt-news-images"
