@@ -7,7 +7,7 @@ This is an implementation contract for the staging-only Worker source. The curre
 - `GET /api/categories` — list categories.
 - `GET /api/articles?limit=&before=` — published articles only; bounded pagination using `published_at` as the cursor.
 - `GET /api/articles/:slug` — one published article by slug.
-- `POST /api/articles/:id/view` — privacy-conscious, rate-limited view/session accounting.
+- `POST /api/articles/:id/view` — idempotent view/session accounting for published articles only. Requires opaque `sessionId` and `visitorId` values (16–80 URL-safe characters) in JSON body; repeated session IDs do not increment views twice.
 
 Public handlers must never return drafts, pending articles, rejected articles, admin records, private source configuration, or raw database errors.
 
@@ -92,3 +92,28 @@ The routes require a D1 binding named `DB`. Until that binding is configured, da
 - [ ] Missing DB binding returns 503 for data routes.
 
 This is source-code implementation only. No Worker deployment, D1 binding, production data write, or live-site change has occurred.
+
+
+## View tracking implementation status
+
+The Worker now implements `POST /api/articles/:id/view`:
+
+- Confirms the target article is currently published before recording anything.
+- Uses the `article_view_sessions` composite key to make repeated requests from the same tab/session idempotent.
+- Increments `news_articles.view_count` only when a new session row is inserted.
+- Upserts an opaque visitor identifier into `article_unique_visitors`.
+- Rejects malformed JSON, oversized request bodies, and invalid identifiers.
+- Does not collect IP addresses, email addresses, or user-agent strings.
+
+This endpoint is not a full abuse-prevention system. Before production use, add edge rate limiting/abuse controls and validate identifier generation/retention in the frontend. Client-provided identifiers can be reset or fabricated; analytics should not be treated as audited unique-person counts.
+
+### Request example
+
+```http
+POST /api/articles/article-123/view
+Content-Type: application/json
+
+{"sessionId":"session_identifier_123","visitorId":"visitor_identifier_123"}
+```
+
+A response includes `recorded` (whether this request created a new session view) and the current `view_count`. It only counts published articles.
