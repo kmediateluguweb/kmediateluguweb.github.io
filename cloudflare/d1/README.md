@@ -56,3 +56,14 @@ The CSV exports did not include column defaults, exact CHECK expressions, all in
 6. Authentication must be designed and tested before any admin endpoint is enabled.
 
 Do not apply this file to production or switch the live site to Cloudflare yet. Keep Supabase unchanged until D1/R2 data parity, Worker authorization, admin workflow, and rollback have been tested.
+
+## Existing Cloudflare D1 database inspection (2026-11-13)
+
+The owner inspected the existing `kmt-news-db` database in the Cloudflare dashboard. The console query showed:
+- Cloudflare internal `_cf_KV` table
+- `categories` table
+- `news_articles` table
+
+A count query returned 0 rows in both `categories` and `news_articles`. The visible D1 `news_articles` definition currently has `category_id INTEGER NOT NULL`, while the Supabase metadata says `category_id` is nullable. This schema difference must be resolved deliberately before any data import; do not assume the tables are exact copies.
+
+The follow-on file `0002_add_missing_tables.sql` creates only the six missing application tables with `IF NOT EXISTS`. It does not create or replace `categories` or `news_articles`. It has been syntax-tested against a local SQLite database with matching existing-table placeholders, but has not been executed in Cloudflare.
