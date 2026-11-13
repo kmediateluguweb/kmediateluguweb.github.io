@@ -71,3 +71,67 @@ test("non-GET methods are rejected", async () => {
   const response = await worker.fetch(new Request("https://example.test/api/articles", { method: "POST" }), { DB: {} });
   assert.equal(response.status, 405);
 });
+
+
+function mockViewDb({ published = true } = {}) {
+  const calls = [];
+  let sessions = new Set();
+  let visitors = new Set();
+  let views = 7;
+  const DB = {
+    prepare(sql) {
+      const call = { sql, values: [] }; calls.push(call);
+      return {
+        bind(...values) { call.values = values; return this; },
+        async first() {
+          if (/SELECT id FROM news_articles/.test(sql)) return published ? { id: call.values[0] } : null;
+          if (/SELECT view_count FROM news_articles/.test(sql)) return { view_count: views };
+          return null;
+        },
+        async run() {
+          if (/INSERT OR IGNORE INTO article_view_sessions/.test(sql)) {
+            const key = call.values.join(":");
+            const before = sessions.size; sessions.add(key);
+            return { meta: { changes: sessions.size - before } };
+          }
+          if (/UPDATE news_articles SET view_count/.test(sql)) { views += 1; return { meta: { changes: 1 } }; }
+          if (/INSERT INTO article_unique_visitors/.test(sql)) { visitors.add(call.values.join(":")); return { meta: { changes: 1 } }; }
+          return { meta: { changes: 0 } };
+        }
+      };
+    }
+  };
+  return { DB, calls, get views() { return views; }, sessions, visitors };
+}
+const validViewBody = { sessionId: "session_identifier_123", visitorId: "visitor_identifier_123" };
+
+test("view endpoint increments published article once per session", async () => {
+  const mock = mockViewDb();
+  const makeRequest = () => new Request("https://example.test/api/articles/article-1/view", {
+    method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(validViewBody)
+  });
+  const first = await worker.fetch(makeRequest(), { DB: mock.DB });
+  assert.equal(first.status, 200);
+  assert.deepEqual(await first.json(), { recorded: true, view_count: 8 });
+  const second = await worker.fetch(makeRequest(), { DB: mock.DB });
+  assert.equal(second.status, 200);
+  assert.deepEqual(await second.json(), { recorded: false, view_count: 8 });
+  assert.equal(mock.views, 8);
+});
+
+test("view endpoint rejects invalid identifiers", async () => {
+  const { DB } = mockViewDb();
+  const response = await worker.fetch(new Request("https://example.test/api/articles/article-1/view", {
+    method: "POST", headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ sessionId: "x", visitorId: "y" })
+  }), { DB });
+  assert.equal(response.status, 400);
+});
+
+test("view endpoint does not count unpublished articles", async () => {
+  const { DB } = mockViewDb({ published: false });
+  const response = await worker.fetch(new Request("https://example.test/api/articles/article-1/view", {
+    method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(validViewBody)
+  }), { DB });
+  assert.equal(response.status, 404);
+});
