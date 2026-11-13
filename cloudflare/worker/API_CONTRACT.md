@@ -67,3 +67,28 @@ The current `main` branch was inspected without changing production files:
 5. No Worker admin route should be enabled until signed sessions and server-side admin authorization are working.
 
 No live website files, Supabase settings, D1 rows, or R2 buckets were changed by this inspection.
+
+## Phase 2 implementation status (13 Nov 2026)
+
+The Worker source now contains three public read routes, in addition to health:
+
+- `GET /api/categories`
+- `GET /api/articles?limit=20&before=<published_at>` (limit clamped to 1–50)
+- `GET /api/articles/:slug`
+
+All article queries enforce `status = 'published'` in SQL. Queries use prepared D1 statements. The Worker returns generic errors rather than exposing SQL details. No write, view-counter, admin, authentication, or image-upload routes have been added.
+
+The routes require a D1 binding named `DB`. Until that binding is configured, data routes return HTTP 503. Health reports whether the binding exists. The example Wrangler configuration still has its D1 binding commented out.
+
+### Staging smoke tests (after binding a staging D1 database)
+
+- [ ] `GET /api/health` returns `ok: true`.
+- [ ] `GET /api/categories` returns category rows.
+- [ ] `GET /api/articles` returns only published articles, with no draft/pending/rejected rows.
+- [ ] `GET /api/articles?limit=500` returns no more than 50 rows.
+- [ ] `GET /api/articles/<known-published-slug>` returns the article.
+- [ ] `GET /api/articles/<draft-slug>` returns 404.
+- [ ] Unknown routes return 404; non-GET requests return 405.
+- [ ] Missing DB binding returns 503 for data routes.
+
+This is source-code implementation only. No Worker deployment, D1 binding, production data write, or live-site change has occurred.
