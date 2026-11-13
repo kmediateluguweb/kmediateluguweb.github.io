@@ -72,3 +72,17 @@ Stop and do not continue if:
 - Any query would alter `kmt-news-db` or Supabase production.
 - A schema error occurs; capture the error and review the SQL rather than improvising edits.
 - Any staging test requires exposing a secret in chat or committing a secret to Git.
+
+
+## Newly observed Supabase quota incident (13 Nov 2026)
+
+A GitHub Actions run of `.github/workflows/seo-publish.yml` failed while requesting published article data from Supabase. The API returned HTTP 402 with `exceed_cached_egress_quota`, stating the project is restricted until the owner upgrades the plan or removes spend caps.
+
+This is a Supabase project billing/usage restriction, not a Worker or D1 schema failure. Do not try to bypass the restriction or change production billing without the owner's decision.
+
+The SEO publishing workflow previously ran on every branch push, which caused migration-branch commits to invoke the production Supabase-dependent script. Its push trigger is now limited to `main`; scheduled/manual production behavior is otherwise unchanged. This change is only on the migration branch until the PR is merged.
+
+Before production cutover:
+- Confirm Supabase service has been restored or the SEO generator has been migrated to the staging/production Worker data source.
+- Run the SEO generator successfully and verify generated article pages and sitemaps.
+- Avoid merging this migration PR while production Supabase-dependent publishing remains broken unless the owner explicitly accepts the impact.
