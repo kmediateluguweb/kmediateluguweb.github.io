@@ -59,3 +59,27 @@ ORDER BY type, name;
 ## Important
 
 The existing Supabase project must remain untouched and available as the source of truth until all gates pass. A D1 schema alone is not a functioning replacement for Supabase Auth, Storage, RLS, and RPC functions.
+
+## Final read-only D1 inspection (13 Nov 2026)
+
+The owner completed the requested read-only console checks. The complete non-system table list is:
+
+- `categories`
+- `news_articles`
+
+Cloudflare's internal `_cf_KV` table is also present and must not be modified. No other application tables currently exist in this D1 database.
+
+The observed `news_articles` foreign key is:
+
+- `category_id` → `categories.id`
+- `ON UPDATE NO ACTION`; `ON DELETE NO ACTION`
+
+The observed application indexes are:
+
+- `idx_news_category` on `news_articles(category_id)`
+- `idx_news_published` on `news_articles(published_at DESC)`
+- `idx_news_status` on `news_articles(status)`
+
+The table-definition query showed the existing `categories` and `news_articles` definitions. No trigger rows were visible in the returned schema listing. Both application tables were previously confirmed empty.
+
+These checks establish the current D1 baseline only. They do not verify the source data, Supabase Auth identities, R2 objects, or Worker authorization. The six missing-table migration remains a draft and has **not** been executed. No production change has been made.
